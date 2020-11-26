@@ -1,4 +1,5 @@
 # Files
+/meson.build.user*
 
 # Folders
 /build*/

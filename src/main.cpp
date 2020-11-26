@@ -19,4 +19,92 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-int main(int argc, char *argv[]) { return 0; }
+#include "diffuse_globals.h"
+#include "diffuse_utils.h"
+
+#include <glibmm/convert.h>
+#include <glibmm/miscutils.h>
+
+namespace Df = Diffuse;
+
+static std::vector<Glib::ustring> getConvertedArgs(int argc, char *argv[]);
+
+int main(int argc, char *argv[]) {
+  // Use the program's location as a starting place to search for supporting
+  // files such as icon and help documentation
+  const auto app_path = Glib::filename_to_utf8(argv[0]);
+  const auto bin_dir = Glib::path_get_dirname(app_path);
+
+  // Locale stuff
+
+  std::vector<Glib::ustring> args{getConvertedArgs(argc, argv)};
+
+  if ((2 == argc) && (("-v" == args[1]) || ("--version" == args[1]))) {
+    Df::printMessage(Df::APP_NAME + " " + Df::VERSION + "\n" + Df::COPYRIGHT);
+    return 0;
+  }
+  if ((2 == argc) &&
+      (("-h" == args[1]) || ("-?" == args[1]) || ("--help" == args[1]))) {
+    Df::printMessage(
+        "Usage:\n"
+        "    diffuse [ [OPTION...] [FILE...] ]...\n"
+        "    diffuse ( -h | -? | --help | -v | --version )\n"
+        "\n"
+        "Diffuse is a graphical tool for merging and comparing text files.  "
+        "Diffuse is\n"
+        "able to compare an arbitrary number of files side-by-side and gives "
+        "users the\n"
+        "ability to manually adjust line matching and directly edit files.  "
+        "Diffuse can\n"
+        "also retrieve revisions of files from Bazaar, CVS, Darcs, Git, "
+        "Mercurial,\n"
+        "Monotone, RCS, Subversion, and SVK repositories for comparison and "
+        "merging.\n"
+        "\n"
+        "Help Options:\n"
+        "  ( -h | -? | --help )             Display this usage information\n"
+        "  ( -v | --version )               Display version and copyright "
+        "information\n"
+        "\n"
+        "Configuration Options:\n"
+        "  --no-rcfile                      Do not read any resource files\n"
+        "  --rcfile <file>                  Specify explicit resource file\n"
+        "\n"
+        "General Options:\n"
+        "  ( -c | --commit ) <rev>          File revisions <rev-1> and <rev>\n"
+        "  ( -D | --close-if-same )         Close all tabs with no "
+        "differences\n"
+        "  ( -e | --encoding ) <codec>      Use <codec> to read and write "
+        "files\n"
+        "  ( -L | --label ) <label>         Display <label> instead of the "
+        "file name\n"
+        "  ( -m | --modified )              Create a new tab for each modified "
+        "file\n"
+        "  ( -r | --revision ) <rev>        File revision <rev>\n"
+        "  ( -s | --separate )              Create a new tab for each file\n"
+        "  ( -t | --tab )                   Start a new tab\n"
+        "  --line <line>                    Start with line <line> selected\n"
+        "  --null-file                      Create a blank file comparison "
+        "pane\n"
+        "\n"
+        "Display Options:\n"
+        "  ( -b | --ignore-space-change )   Ignore changes to white space\n"
+        "  ( -B | --ignore-blank-lines )    Ignore changes in blank lines\n"
+        "  ( -E | --ignore-end-of-line )    Ignore end of line differences\n"
+        "  ( -i | --ignore-case )           Ignore case differences\n"
+        "  ( -w | --ignore-all-space )      Ignore white space differences\n");
+    return 0;
+  }
+
+  return 0;
+}
+
+static std::vector<Glib::ustring> getConvertedArgs(int argc, char *argv[]) {
+  std::vector<Glib::ustring> tmp_args;
+
+  for (auto i = 0; i < argc; ++i) {
+    tmp_args.emplace_back(argv[i]);
+  }
+
+  return tmp_args;
+}

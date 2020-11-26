@@ -1,15 +1,3 @@
-# use the program's location as a starting place to search for supporting files
-# such as icon and help documentation
-if hasattr(sys, 'frozen'):
-    app_path = sys.executable
-else:
-    app_path = os.path.realpath(sys.argv[0])
-bin_dir = os.path.dirname(app_path)
-
-# platform test
-def isWindows():
-    return os.name == 'nt'
-
 # translation location: '../share/locale/<LANG>/LC_MESSAGES/diffuse.mo'
 # where '<LANG>' is the language key
 lang = locale.getdefaultlocale()[0]
@@ -35,89 +23,6 @@ gettext.bindtextdomain('diffuse', locale_dir)
 
 gettext.textdomain('diffuse')
 _ = gettext.gettext
-
-APP_NAME = 'Diffuse'
-VERSION = '0.4.8'
-COPYRIGHT = _('Copyright © 2006-2014 Derrick Moser')
-WEBSITE = 'http://diffuse.sourceforge.net/'
-
-# print a UTF-8 string using the host's native encoding
-def printMessage(s):
-    try:
-        print codecs.encode(unicode(s, 'utf_8'), sys.getfilesystemencoding())
-    except UnicodeEncodeError:
-        pass
-
-# process help options
-if __name__ == '__main__':
-    args = sys.argv
-    argc = len(args)
-    if argc == 2 and args[1] in [ '-v', '--version' ]:
-        printMessage('%s %s\n%s' % (APP_NAME, VERSION, COPYRIGHT))
-        sys.exit(0)
-    if argc == 2 and args[1] in [ '-h', '-?', '--help' ]:
-        printMessage(_('''Usage:
-    diffuse [ [OPTION...] [FILE...] ]...
-    diffuse ( -h | -? | --help | -v | --version )
-
-Diffuse is a graphical tool for merging and comparing text files.  Diffuse is
-able to compare an arbitrary number of files side-by-side and gives users the
-ability to manually adjust line matching and directly edit files.  Diffuse can
-also retrieve revisions of files from Bazaar, CVS, Darcs, Git, Mercurial,
-Monotone, RCS, Subversion, and SVK repositories for comparison and merging.
-
-Help Options:
-  ( -h | -? | --help )             Display this usage information
-  ( -v | --version )               Display version and copyright information
-
-Configuration Options:
-  --no-rcfile                      Do not read any resource files
-  --rcfile <file>                  Specify explicit resource file
-
-General Options:
-  ( -c | --commit ) <rev>          File revisions <rev-1> and <rev>
-  ( -D | --close-if-same )         Close all tabs with no differences
-  ( -e | --encoding ) <codec>      Use <codec> to read and write files
-  ( -L | --label ) <label>         Display <label> instead of the file name
-  ( -m | --modified )              Create a new tab for each modified file
-  ( -r | --revision ) <rev>        File revision <rev>
-  ( -s | --separate )              Create a new tab for each file
-  ( -t | --tab )                   Start a new tab
-  --line <line>                    Start with line <line> selected
-  --null-file                      Create a blank file comparison pane
-
-Display Options:
-  ( -b | --ignore-space-change )   Ignore changes to white space
-  ( -B | --ignore-blank-lines )    Ignore changes in blank lines
-  ( -E | --ignore-end-of-line )    Ignore end of line differences
-  ( -i | --ignore-case )           Ignore case differences
-  ( -w | --ignore-all-space )      Ignore white space differences'''))
-        sys.exit(0)
-
-import pygtk
-pygtk.require('2.0')
-import gtk
-
-import difflib
-import encodings
-import glob
-import gobject
-import pango
-import re
-import shlex
-import stat
-import string
-import subprocess
-import unicodedata
-import webbrowser
-
-if not hasattr(__builtins__, 'WindowsError'):
-    # define 'WindowsError' so 'except' statements will work on all platforms
-    WindowsError = IOError
-
-# convenience function to display debug messages
-def logDebug(s):
-    pass #sys.stderr.write('%s: %s\n', (APP_NAME, s))
 
 # avoid some dictionary lookups when string.whitespace is used in loops
 # this is sorted based upon frequency to speed up code for stripping whitespace
