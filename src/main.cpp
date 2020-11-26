@@ -20,10 +20,15 @@
  */
 
 #include "diffuse_globals.h"
+#include "diffuse_resources.h"
 #include "diffuse_utils.h"
+#include "diffuse_vcss.h"
+#include "diffuse_window.h"
 
 #include <glibmm/convert.h>
+#include <glibmm/i18n.h>
 #include <glibmm/miscutils.h>
+#include <gtkmm/window.h>
 
 namespace Df = Diffuse;
 
@@ -94,6 +99,88 @@ int main(int argc, char *argv[]) {
         "  ( -i | --ignore-case )           Ignore case differences\n"
         "  ( -w | --ignore-all-space )      Ignore white space differences\n");
     return 0;
+  }
+
+  // Associate our icon with all of our windows
+  Gtk::Window::set_default_icon_name("diffuse");
+
+  Df::Resources theResources;
+
+  Df::VCSs theVCSs;
+
+  // Process the command line arguments
+
+  // Find the config directory and create it if it didn't exist
+  bool found = false;
+  auto rc_dir = Glib::getenv("XDG_CONFIG_HOME", found);
+  std::vector<Glib::ustring> subdirs{"diffuse"};
+  if ((false == found) || rc_dir.empty()) {
+    rc_dir = Glib::get_home_dir();
+    subdirs.emplace(subdirs.cbegin(), ".config");
+  }
+  if (false == Df::make_subdirs(rc_dir, subdirs)) {
+    return 1;
+  }
+
+  // Find the local data directory and create it if it didn't exist
+  found = false;
+  auto data_dir = Glib::getenv("XDG_DATA_HOME", found);
+  subdirs = {"diffuse"};
+  if ((false == found) || data_dir.empty()) {
+    data_dir = Glib::get_home_dir();
+    subdirs.emplace(subdirs.cbegin(), ".share");
+    subdirs.emplace(subdirs.cbegin(), ".local");
+  }
+  if (false == Df::make_subdirs(data_dir, subdirs)) {
+    return 1;
+  }
+
+  // Load resource files
+  int i = 1;
+  std::vector<Glib::ustring> rc_files;
+  if ((2 == argc) && ("--no-rcfile" == args[1])) {
+    ++i;
+  } else if ((3 == argc) && ("--rcfile" == args[1])) {
+    ++i;
+    rc_files.emplace_back(args[i]);
+    ++i;
+  } else {
+    // Parse system wide then personal initialization files
+    Glib::ustring sys_rc_file;
+    if (Df::isWindows()) {
+      sys_rc_file = Glib::build_path(
+          G_DIR_SEPARATOR_S, std::vector<Glib::ustring>{bin_dir, "diffuserc"});
+    } else {
+      sys_rc_file = Glib::build_path(
+          G_DIR_SEPARATOR_S,
+          std::vector<Glib::ustring>{bin_dir, "../../etc/diffuserc"});
+    }
+    if (g_file_test(sys_rc_file.c_str(), G_FILE_TEST_IS_REGULAR)) {
+      rc_files.emplace_back(sys_rc_file);
+    }
+    const auto user_rc_file = Glib::build_path(
+        G_DIR_SEPARATOR_S, std::vector<Glib::ustring>{rc_dir, "diffuserc"});
+    if (g_file_test(user_rc_file.c_str(), G_FILE_TEST_IS_REGULAR)) {
+      rc_files.emplace_back(user_rc_file);
+    }
+  }
+
+  for (const auto &rc_file : rc_files) {
+    // Convert to absolute path so the location of any processing errors are
+    // reported with normalised file names
+    const auto parse_rc_file = Glib::canonicalize_filename(rc_file.raw());
+    if (false == theResources.parse(parse_rc_file)) {
+      Df::logError(
+          Glib::ustring::compose(_("Error reading %1."), parse_rc_file));
+    }
+  }
+
+  Df::Window diff{rc_dir};
+  // Load state
+  const auto statepath = Glib::build_path(
+      G_DIR_SEPARATOR_S, std::vector<Glib::ustring>{data_dir, "state"});
+  if (false == diff.loadState(statepath)) {
+    return false;
   }
 
   return 0;

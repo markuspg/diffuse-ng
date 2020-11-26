@@ -28,11 +28,6 @@ _ = gettext.gettext
 # this is sorted based upon frequency to speed up code for stripping whitespace
 whitespace = ' \t\n\r\x0b\x0c'
 
-# associate our icon with all of our windows
-if __name__ == '__main__':
-    # this is not automatically set on some older version of PyGTK
-    gtk.window_set_default_icon_name('diffuse')
-
 # convenience class for displaying a message dialogue
 class MessageDialog(gtk.MessageDialog):
     def __init__(self, parent, type, s):
@@ -43,7 +38,6 @@ class MessageDialog(gtk.MessageDialog):
         gtk.MessageDialog.__init__(self, parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, type, buttons, s)
         self.set_title(APP_NAME)
 
-# report error messages
 def logError(s):
     m = MessageDialog(None, gtk.MESSAGE_ERROR, s)
     m.run()
@@ -573,8 +567,6 @@ class Resources:
             except: # Grr... the 're' module throws weird errors
             #except ValueError:
                 logError(_('Error processing line %(line)d of %(file)s.') % { 'line': i + 1, 'file': file_name })
-
-theResources = Resources()
 
 # map an encoding name to its standard form
 def norm_encoding(e):
@@ -2485,8 +2477,6 @@ class VCSs:
     def findByFilename(self, name, prefs):
         if name is not None:
             return self.findByFolder(os.path.dirname(name), prefs)
-
-theVCSs = VCSs()
 
 # utility method to step advance an adjustment
 def step_adjustment(adj, delta):
@@ -8153,62 +8143,7 @@ gobject.signal_new('reload', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_R
 gobject.signal_new('save', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 
-# create nested subdirectories and return the complete path
-def make_subdirs(p, ss):
-    for s in ss:
-        p = os.path.join(p, s)
-        if not os.path.exists(p):
-            try:
-                os.mkdir(p)
-            except IOError:
-                pass
-    return p
-
-# process the command line arguments
 if __name__ == '__main__':
-    # find the config directory and create it if it didn't exist
-    rc_dir, subdirs = os.environ.get('XDG_CONFIG_HOME', None), ['diffuse']
-    if rc_dir is None:
-        rc_dir = os.path.expanduser('~')
-        subdirs.insert(0, '.config')
-    rc_dir = make_subdirs(rc_dir, subdirs)
-    # find the local data directory and create it if it didn't exist
-    data_dir, subdirs = os.environ.get('XDG_DATA_HOME', None), ['diffuse']
-    if data_dir is None:
-        data_dir = os.path.expanduser('~')
-        subdirs[:0] = [ '.local', 'share' ]
-    data_dir = make_subdirs(data_dir, subdirs)
-    # load resource files
-    i, rc_files = 1, []
-    if argc == 2 and args[1] == '--no-rcfile':
-        i += 1
-    elif argc == 3 and args[1] == '--rcfile':
-        i += 1
-        rc_files.append(args[i])
-        i += 1
-    else:
-        # parse system wide then personal initialisation files
-        if isWindows():
-            rc_file = os.path.join(bin_dir, 'diffuserc')
-        else:
-            rc_file = os.path.join(bin_dir, '../../etc/diffuserc')
-        for rc_file in rc_file, os.path.join(rc_dir, 'diffuserc'):
-            if os.path.isfile(rc_file):
-                rc_files.append(rc_file)
-    for rc_file in rc_files:
-        # convert to absolute path so the location of any processing errors are
-        # reported with normalised file names
-        rc_file = os.path.abspath(rc_file)
-        try:
-            theResources.parse(rc_file)
-        except IOError:
-            logError(_('Error reading %s.') % (rc_file, ))
-
-    diff = Diffuse(rc_dir)
-    # load state
-    statepath = os.path.join(data_dir, 'state')
-    diff.loadState(statepath)
-
     # process remaining command line arguments
     encoding, revs, close_on_same = None, [], False
     specs, had_specs, labels = [], False, []

@@ -19,19 +19,16 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef DIFFUSE_UTILS
-#define DIFFUSE_UTILS
+#ifndef DIFFUSE_RESOURCES_H
+#define DIFFUSE_RESOURCES_H
 
 #include <glibmm/ustring.h>
 
-#include <vector>
-
 namespace Diffuse {
-bool isWindows();
-void logDebug(const Glib::ustring &s);
-void logError(const Glib::ustring &s);
-bool make_subdirs(std::string &p, const std::vector<Glib::ustring> &ss);
-void printMessage(const Glib::ustring &s);
+class Resources {
+public:
+  bool parse(const Glib::ustring &file_name);
+};
 } // namespace Diffuse
 
-#endif // DIFFUSE_UTILS
+#endif // DIFFUSE_RESOURCES_H

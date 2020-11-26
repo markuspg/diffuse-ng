@@ -19,19 +19,11 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef DIFFUSE_UTILS
-#define DIFFUSE_UTILS
-
-#include <glibmm/ustring.h>
-
-#include <vector>
+#ifndef DIFFUSE_VCSS_H
+#define DIFFUSE_VCSS_H
 
 namespace Diffuse {
-bool isWindows();
-void logDebug(const Glib::ustring &s);
-void logError(const Glib::ustring &s);
-bool make_subdirs(std::string &p, const std::vector<Glib::ustring> &ss);
-void printMessage(const Glib::ustring &s);
+class VCSs {};
 } // namespace Diffuse
 
-#endif // DIFFUSE_UTILS
+#endif // DIFFUSE_VCSS_H

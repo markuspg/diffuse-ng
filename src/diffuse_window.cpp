@@ -19,19 +19,10 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef DIFFUSE_UTILS
-#define DIFFUSE_UTILS
+#include "diffuse_window.h"
 
-#include <glibmm/ustring.h>
+namespace Df = Diffuse;
 
-#include <vector>
+Df::Window::Window(const Glib::ustring &rc_dir) {}
 
-namespace Diffuse {
-bool isWindows();
-void logDebug(const Glib::ustring &s);
-void logError(const Glib::ustring &s);
-bool make_subdirs(std::string &p, const std::vector<Glib::ustring> &ss);
-void printMessage(const Glib::ustring &s);
-} // namespace Diffuse
-
-#endif // DIFFUSE_UTILS
+bool Df::Window::loadState(const Glib::ustring &statepath) { return true; }

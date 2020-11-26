@@ -23,6 +23,7 @@
 #include "diffuse_globals.h"
 
 #include <glibmm/convert.h>
+#include <glibmm/miscutils.h>
 
 #include <iostream>
 
@@ -39,7 +40,32 @@ bool Df::isWindows() {
  * \brief Convenience function to display debug messages
  */
 void Df::logDebug(const Glib::ustring &s) {
-    std::cerr << APP_NAME + ": " + s << "\n";
+  std::cerr << APP_NAME + ": " + s << "\n";
+}
+
+/*!
+ * \brief Report error messages
+ */
+void Df::logError(const Glib::ustring &s) {}
+
+/*!
+ * \brief Create nested subdirectories and return the complete path
+ *
+ * On success the new directory's path is returned in the first argument
+ */
+bool Df::make_subdirs(std::string &p, const std::vector<Glib::ustring> &ss) {
+  std::vector<Glib::ustring> path_components;
+  path_components.emplace_back(p);
+  for (const auto &s : ss) {
+    path_components.emplace_back(s);
+  }
+  const auto full_path = Glib::build_path(G_DIR_SEPARATOR_S, path_components);
+  if (0 == g_mkdir_with_parents(full_path.c_str(), 0755)) {
+    p = full_path;
+    return true;
+  }
+
+  return false;
 }
 
 /*!
