@@ -29,6 +29,7 @@ extern const Glib::ustring APP_NAME;
 extern const Glib::ustring COPYRIGHT;
 extern const Glib::ustring VERSION;
 extern const Glib::ustring WEBSITE;
+extern const Glib::ustring whitespace;
 } // namespace Diffuse
 
 #endif // DIFFUSE_GLOBALS

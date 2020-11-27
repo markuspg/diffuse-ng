@@ -24,25 +24,6 @@ gettext.bindtextdomain('diffuse', locale_dir)
 gettext.textdomain('diffuse')
 _ = gettext.gettext
 
-# avoid some dictionary lookups when string.whitespace is used in loops
-# this is sorted based upon frequency to speed up code for stripping whitespace
-whitespace = ' \t\n\r\x0b\x0c'
-
-# convenience class for displaying a message dialogue
-class MessageDialog(gtk.MessageDialog):
-    def __init__(self, parent, type, s):
-        if type == gtk.MESSAGE_ERROR:
-            buttons = gtk.BUTTONS_OK
-        else:
-            buttons = gtk.BUTTONS_OK_CANCEL
-        gtk.MessageDialog.__init__(self, parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, type, buttons, s)
-        self.set_title(APP_NAME)
-
-def logError(s):
-    m = MessageDialog(None, gtk.MESSAGE_ERROR, s)
-    m.run()
-    m.destroy()
-
 # colour resources
 class Colour:
     def __init__(self, r, g, b, a=1.0):

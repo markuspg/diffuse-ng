@@ -19,17 +19,29 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "diffuse_messagedialog.h"
 #include "diffuse_globals.h"
-
-#include <glibmm/i18n.h>
 
 namespace Df = Diffuse;
 
-const Glib::ustring Df::APP_NAME = "Diffuse";
-const Glib::ustring Df::COPYRIGHT = _("Copyright © 2006-2014 Derrick Moser"
-                                      "\nCopyright © 2020      Markus Prasser");
-const Glib::ustring Df::VERSION = "0.4.9";
-const Glib::ustring Df::WEBSITE = "https://github.com/markuspg/diffuse";
-//! Avoid some dictionary lookups when string.whitespace is used in loops this
-//! is sorted based upon frequency to speed up code for stripping whitespace
-const Glib::ustring Df::whitespace = " \t\n\r\x0b\x0c";
+Df::MessageDialog::MessageDialog(const Gtk::MessageType type,
+                                 const Glib::ustring &s)
+    : Gtk::MessageDialog{s, false, type,
+                         type == Gtk::MESSAGE_ERROR ? Gtk::BUTTONS_OK
+                                                    : Gtk::BUTTONS_OK_CANCEL,
+                         true} {
+  set_title(APP_NAME);
+}
+
+Df::MessageDialog::MessageDialog(Gtk::Window &parent,
+                                 const Gtk::MessageType type,
+                                 const Glib::ustring &s)
+    : Gtk::MessageDialog{parent,
+                         s,
+                         false,
+                         type,
+                         type == Gtk::MESSAGE_ERROR ? Gtk::BUTTONS_OK
+                                                    : Gtk::BUTTONS_OK_CANCEL,
+                         true} {
+  set_title(APP_NAME);
+}

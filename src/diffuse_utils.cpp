@@ -21,6 +21,7 @@
 
 #include "diffuse_utils.h"
 #include "diffuse_globals.h"
+#include "diffuse_messagedialog.h"
 
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
@@ -46,7 +47,11 @@ void Df::logDebug(const Glib::ustring &s) {
 /*!
  * \brief Report error messages
  */
-void Df::logError(const Glib::ustring &s) {}
+void Df::logError(const Glib::ustring &s) {
+  MessageDialog m{Gtk::MESSAGE_ERROR, s};
+  m.run();
+  // m.destroy()
+}
 
 /*!
  * \brief Create nested subdirectories and return the complete path

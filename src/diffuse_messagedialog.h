@@ -19,17 +19,25 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "diffuse_globals.h"
+#ifndef DIFFUSE_MESSAGEDIALOG_H
+#define DIFFUSE_MESSAGEDIALOG_H
 
-#include <glibmm/i18n.h>
+#include <gtkmm/messagedialog.h>
 
-namespace Df = Diffuse;
+namespace Gtk {
+class Window;
+} // namespace Gtk
 
-const Glib::ustring Df::APP_NAME = "Diffuse";
-const Glib::ustring Df::COPYRIGHT = _("Copyright © 2006-2014 Derrick Moser"
-                                      "\nCopyright © 2020      Markus Prasser");
-const Glib::ustring Df::VERSION = "0.4.9";
-const Glib::ustring Df::WEBSITE = "https://github.com/markuspg/diffuse";
-//! Avoid some dictionary lookups when string.whitespace is used in loops this
-//! is sorted based upon frequency to speed up code for stripping whitespace
-const Glib::ustring Df::whitespace = " \t\n\r\x0b\x0c";
+namespace Diffuse {
+/*!
+ * \brief Convenience class for displaying a message dialogue
+ */
+class MessageDialog : public Gtk::MessageDialog {
+public:
+  MessageDialog(Gtk::MessageType type, const Glib::ustring &s);
+  MessageDialog(Gtk::Window &parent, Gtk::MessageType type,
+                const Glib::ustring &s);
+};
+} // namespace Diffuse
+
+#endif // DIFFUSE_MESSAGEDIALOG_H
