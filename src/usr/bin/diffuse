@@ -6634,18 +6634,6 @@ class FileInfo:
         # to warn about changes to file on disk
         self.last_stat = None
 
-# assign user specified labels to the corresponding files
-def assign_file_labels(items, labels):
-    new_items = []
-    ss = labels[::-1]
-    for name, data in items:
-        if ss:
-            s = ss.pop()
-        else:
-            s = None
-        new_items.append((name, data, s))
-    return new_items
-
 # the main application class containing a set of file viewers
 # this class displays tab for switching between viewers and dispatches menu
 # commands to the current viewer
@@ -7665,7 +7653,6 @@ class Diffuse(gtk.Window):
         viewer.connect('syntax_changed', self.syntax_changed_cb)
         return viewer
 
-    # create a new viewer to display 'items'
     def newLoadedFileDiffViewer(self, items):
         specs = []
         if len(items) == 0:
@@ -7711,18 +7698,6 @@ class Diffuse(gtk.Window):
         for i, spec in enumerate(specs):
             viewer.load(i, spec)
         return viewer
-
-    # create a new viewer for 'items'
-    def createSingleTab(self, items, labels, options):
-        if len(items) > 0:
-            self.newLoadedFileDiffViewer(assign_file_labels(items, labels)).setOptions(options)
-
-    # create a new viewer for each item in 'items'
-    def createSeparateTabs(self, items, labels, options):
-        # all tabs inherit the first tab's revision and encoding specifications
-        items = [ (name, items[0][1]) for name, data in items ]
-        for item in assign_file_labels(items, labels):
-            self.newLoadedFileDiffViewer([ item ]).setOptions(options)
 
     # create a new viewer for each modified file found in 'items'
     def createCommitFileTabs(self, items, labels, options):

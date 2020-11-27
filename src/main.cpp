@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
   const auto statepath = Glib::build_path(
       G_DIR_SEPARATOR_S, std::vector<Glib::ustring>{data_dir, "state"});
   if (false == diff.loadState(statepath)) {
-    return false;
+    return 1;
   }
 
   // Process remaining command line arguments
@@ -332,7 +332,7 @@ int main(int argc, char *argv[]) {
   // Create a file diff viewer if the command line arguments haven't implicitly
   // created any
   if (false == had_specs) {
-    diff.newLoadedFileDiffViewer(nullptr);
+    diff.newLoadedFileDiffViewer({});
   } else if (close_on_same) {
     diff.closeOnSame();
   }

@@ -42,6 +42,12 @@ public:
   using Revs = std::vector<std::pair<boost::optional<Glib::ustring>,
                                      boost::optional<Glib::ustring>>>;
   using Specs = std::vector<std::pair<boost::optional<Glib::ustring>, Revs>>;
+  struct Item {
+    boost::optional<Glib::ustring> name;
+    Revs revs;
+    boost::optional<Glib::ustring> label;
+  };
+  using Items = std::vector<Item>;
 
   Window(const Glib::ustring &rc_dir);
 
@@ -50,12 +56,14 @@ public:
                             const Options &);
   void createModifiedFileTabs(const Specs &, const std::vector<Glib::ustring> &,
                               const Options &);
-  void createSeparateTabs(const Specs &, const std::vector<Glib::ustring> &,
-                          const Options &);
-  void createSingleTab(const Specs &, const std::vector<Glib::ustring> &,
-                       const Options &);
+  void createSeparateTabs(const Specs &items,
+                          const std::vector<Glib::ustring> &labels,
+                          const Options &options);
+  void createSingleTab(const Specs &items,
+                       const std::vector<Glib::ustring> &labels,
+                       const Options &options);
   bool loadState(const Glib::ustring &statepath);
-  void newLoadedFileDiffViewer(void *);
+  void newLoadedFileDiffViewer(const Items &items);
   void preferences_updated();
   bool saveState(const Glib::ustring &statepath);
 
