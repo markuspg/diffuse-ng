@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.18.4 FATAL_ERROR)
 
 add_executable(${PROJECT_NAME}
+    diffuse_colour.cpp
     diffuse_globals.cpp
     diffuse_messagedialog.cpp
     diffuse_preferences.cpp
