@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
   subdirs = {"diffuse"};
   if ((false == found) || data_dir.empty()) {
     data_dir = Glib::get_home_dir();
-    subdirs.emplace(subdirs.cbegin(), ".share");
+    subdirs.emplace(subdirs.cbegin(), "share");
     subdirs.emplace(subdirs.cbegin(), ".local");
   }
   if (false == Df::make_subdirs(data_dir, subdirs)) {
