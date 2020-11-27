@@ -23,10 +23,12 @@
 #include "diffuse_globals.h"
 #include "diffuse_messagedialog.h"
 
+#include <glib.h>
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
 
 #include <iostream>
+#include <limits>
 
 namespace Df = Diffuse;
 
@@ -81,4 +83,39 @@ void Df::printMessage(const Glib::ustring &s) {
     std::cout << Glib::locale_from_utf8(s) << "\n";
   } catch (const Glib::ConvertError &) {
   }
+}
+
+boost::optional<std::pair<Glib::ustring, Glib::ustring>>
+Df::run(const std::vector<Glib::ustring> &cmdline) {
+  std::vector<gchar *> argv(cmdline.size() + 1, nullptr);
+  auto i = 0u;
+  for (const auto &elem : cmdline) {
+    argv[i++] = g_strdup(elem.data());
+  }
+  argv[i] = nullptr;
+
+  GError *er = nullptr;
+  gchar *err = nullptr;
+  int exit_status = std::numeric_limits<int>::max();
+  gchar *out = nullptr;
+  const bool res =
+      g_spawn_sync(nullptr, argv.data(), nullptr, G_SPAWN_DEFAULT, nullptr,
+                   nullptr, &out, &err, &exit_status, &er);
+  Glib::ustring err_str{err ? err : ""};
+  g_free(err);
+  Glib::ustring out_str{out ? out : ""};
+  g_free(out);
+  for (const auto &ptr : argv) {
+    g_free(ptr);
+  }
+  if (!res) {
+    return boost::none;
+  }
+
+  if (false == g_spawn_check_exit_status(exit_status, &er)) {
+    return boost::none;
+  }
+
+  return {std::make_pair<Glib::ustring, Glib::ustring>(std::move(err_str),
+                                                       std::move(out_str))};
 }
