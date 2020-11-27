@@ -22,15 +22,45 @@
 #ifndef DIFFUSE_WINDOW_H
 #define DIFFUSE_WINDOW_H
 
-#include <glibmm/ustring.h>
+#include "diffuse_preferences.h"
+
 #include <gtkmm/window.h>
+
+#include <boost/optional.hpp>
+#include <boost/variant.hpp>
+
+#include <map>
+
+namespace Gtk {
+class Notebook;
+} // namespace Gtk
 
 namespace Diffuse {
 class Window : public Gtk::Window {
 public:
+  using Options = std::map<Glib::ustring, boost::variant<Glib::ustring, int>>;
+  using Revs = std::vector<std::pair<boost::optional<Glib::ustring>,
+                                     boost::optional<Glib::ustring>>>;
+  using Specs = std::vector<std::pair<boost::optional<Glib::ustring>, Revs>>;
+
   Window(const Glib::ustring &rc_dir);
 
+  void closeOnSame();
+  void createCommitFileTabs(const Specs &, const std::vector<Glib::ustring> &,
+                            const Options &);
+  void createModifiedFileTabs(const Specs &, const std::vector<Glib::ustring> &,
+                              const Options &);
+  void createSeparateTabs(const Specs &, const std::vector<Glib::ustring> &,
+                          const Options &);
+  void createSingleTab(const Specs &, const std::vector<Glib::ustring> &,
+                       const Options &);
   bool loadState(const Glib::ustring &statepath);
+  void newLoadedFileDiffViewer(void *);
+  void preferences_updated();
+  bool saveState(const Glib::ustring &statepath);
+
+  Gtk::Notebook *notebook = nullptr;
+  Preferences prefs;
 };
 } // namespace Diffuse
 

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.18.4 FATAL_ERROR)
 
 add_executable(${PROJECT_NAME}
     diffuse_globals.cpp
+    diffuse_preferences.cpp
     diffuse_resources.cpp
     diffuse_utils.cpp
     diffuse_vcss.cpp

@@ -21,8 +21,50 @@
 
 #include "diffuse_window.h"
 
+#include <glibmm/miscutils.h>
+#include <gtkmm/box.h>
+#include <gtkmm/notebook.h>
+
 namespace Df = Diffuse;
 
-Df::Window::Window(const Glib::ustring &rc_dir) {}
+Df::Window::Window(const Glib::ustring &rc_dir)
+    : prefs{Glib::build_path(G_DIR_SEPARATOR_S,
+                             std::vector<Glib::ustring>{rc_dir, "prefs"})} {
+  // Create a VBox for our contents
+  const auto vbox = manage(new Gtk::VBox);
+
+  notebook = manage(new Gtk::Notebook);
+  notebook->set_scrollable(true);
+  // TODO: notebook.connect('switch-page', self.switch_page_cb)
+  vbox->pack_start(*notebook, true, true, 0);
+  notebook->show();
+
+  add(*vbox);
+  vbox->show();
+}
+
+void Df::Window::closeOnSame() {}
+
+void Df::Window::createCommitFileTabs(const Specs &,
+                                      const std::vector<Glib::ustring> &,
+                                      const Options &) {}
+
+void Df::Window::createModifiedFileTabs(const Specs &,
+                                        const std::vector<Glib::ustring> &,
+                                        const Options &) {}
+
+void Df::Window::createSeparateTabs(const Specs &,
+                                    const std::vector<Glib::ustring> &,
+                                    const Options &) {}
+
+void Df::Window::createSingleTab(const Specs &,
+                                 const std::vector<Glib::ustring> &,
+                                 const Options &) {}
 
 bool Df::Window::loadState(const Glib::ustring &statepath) { return true; }
+
+void Df::Window::newLoadedFileDiffViewer(void *) {}
+
+void Df::Window::preferences_updated() {}
+
+bool Df::Window::saveState(const Glib::ustring &statepath) {}
