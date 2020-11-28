@@ -26,6 +26,7 @@
 #include <glib.h>
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
+#include <glibmm/regex.h>
 
 #include <iostream>
 #include <limits>
@@ -83,6 +84,20 @@ void Df::printMessage(const Glib::ustring &s) {
     std::cout << Glib::locale_from_utf8(s) << "\n";
   } catch (const Glib::ConvertError &) {
   }
+}
+
+boost::optional<std::vector<Glib::ustring>>
+Df::read_lines_utf8(const Glib::ustring &path) {
+  Glib::ustring content;
+  try {
+    content = Glib::locale_to_utf8(Glib::file_get_contents(path));
+  } catch (const Glib::FileError &) {
+    return boost::none;
+  }
+
+  std::vector<Glib::ustring> lines = Glib::Regex::split_simple("\n", content);
+
+  return lines;
 }
 
 boost::optional<std::pair<Glib::ustring, Glib::ustring>>

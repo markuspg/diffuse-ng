@@ -34,6 +34,8 @@ void logDebug(const Glib::ustring &s);
 void logError(const Glib::ustring &s);
 bool make_subdirs(std::string &p, const std::vector<Glib::ustring> &ss);
 void printMessage(const Glib::ustring &s);
+boost::optional<std::vector<Glib::ustring>>
+read_lines_utf8(const Glib::ustring &path);
 boost::optional<std::pair<Glib::ustring, Glib::ustring>>
 run(const std::vector<Glib::ustring> &cmdline);
 } // namespace Diffuse

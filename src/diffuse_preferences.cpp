@@ -33,7 +33,7 @@ namespace Df = Diffuse;
 
 static std::vector<Glib::ustring> get_encodings();
 
-Df::Preferences::Preferences(const Glib::ustring &path)
+Df::Preferences::Preferences(const Glib::ustring &pth)
     : encodings{get_encodings()},
       disable_when{
           {"display_right_margin", {"display_show_right_margin", false}},
@@ -45,6 +45,7 @@ Df::Preferences::Preferences(const Glib::ustring &path)
            {"align_ignore_whitespace", true}},
           {"align_ignore_blanklines", {"align_ignore_whitespace", true}},
           {"align_ignore_endofline", {"align_ignore_whitespace", true}}},
+      path{pth},
       tmplt{
           {Category{
                _("Display"),
@@ -128,10 +129,11 @@ Df::Preferences::Preferences(const Glib::ustring &path)
     auto_detect_codecs.emplace(auto_detect_codecs.cbegin() + 1,
                                file_sys_enc->second);
   }
-  tmplt.back().list.emplace_back(std::make_shared<StringOpt>(
-      "encoding_auto_detect_codecs",
-      boost::algorithm::join(auto_detect_codecs, " "),
-      _("Order of codecs used to identify encoding")));
+  boost::get<Category>(tmplt.elems.back())
+      .list.emplace_back(std::make_shared<StringOpt>(
+          "encoding_auto_detect_codecs",
+          boost::algorithm::join(auto_detect_codecs, " "),
+          _("Order of codecs used to identify encoding")));
 
   if (isWindows()) {
     bool found = false;
@@ -143,7 +145,7 @@ Df::Preferences::Preferences(const Glib::ustring &path)
                                      (root[root_size - 1] != '\\'))) {
       root.append("\\\\");
     }
-    tmplt.emplace_back(Category{
+    tmplt.elems.emplace_back(Category{
         _("Cygwin"),
         {std::make_shared<FileOpt>(
              Glib::ustring{"cygwin_root"},
@@ -194,7 +196,24 @@ Df::Preferences::Preferences(const Glib::ustring &path)
             vc.key + "_cygwin", false, _("Update paths for Cygwin")));
       }
     }
-    vcs_template.emplace_back(std::move(tmp));
+    vcs_template.elems.emplace_back(std::move(tmp));
+  }
+
+  tmplt.elems.emplace_back(_("Version Control"));
+  tmplt.elems.emplace_back(
+      std::make_shared<FolderSet>(std::move(vcs_template)));
+
+  initFromTemplate(tmplt);
+  default_bool_prefs = bool_prefs;
+  default_int_prefs = int_prefs;
+  default_string_prefs = string_prefs;
+
+  // Load the user's preferences
+  if (g_file_test(path.c_str(), G_FILE_TEST_IS_REGULAR)) {
+    const auto lines = read_lines_utf8(path);
+    if (!lines) {
+      logDebug(Glib::ustring::compose("Error reading %1.", path));
+    }
   }
 }
 
@@ -225,6 +244,54 @@ int Df::Preferences::getInt(const Glib::ustring &name) const {
 
 Glib::ustring Df::Preferences::getString(const Glib::ustring &name) const {
   return string_prefs.at(name);
+}
+
+void Df::Preferences::initFromTemplate(const Category &category) {
+  for (const auto &item : category.list) {
+    const auto bool_opt = std::dynamic_pointer_cast<BoolOpt>(item);
+    if (bool_opt) {
+      bool_prefs[bool_opt->name] = bool_opt->deflt;
+    }
+    const auto enc_opt = std::dynamic_pointer_cast<EncodingOpt>(item);
+    if (enc_opt) {
+      string_prefs[enc_opt->name] = enc_opt->deflt;
+    }
+    const auto file_opt = std::dynamic_pointer_cast<FileOpt>(item);
+    if (file_opt) {
+      string_prefs[file_opt->name] =
+          (file_opt->deflt ? boost::get(file_opt->deflt) : "");
+    }
+    const auto font_opt = std::dynamic_pointer_cast<FontOpt>(item);
+    if (font_opt) {
+      string_prefs[font_opt->name] = font_opt->deflt;
+    }
+    const auto int_opt = std::dynamic_pointer_cast<IntegerOpt>(item);
+    if (int_opt) {
+      int_prefs[int_opt->name] = int_opt->deflt;
+      int_prefs_max[int_opt->name] = int_opt->max;
+      int_prefs_min[int_opt->name] = int_opt->min;
+    }
+    const auto str_opt = std::dynamic_pointer_cast<StringOpt>(item);
+    if (str_opt) {
+      string_prefs[str_opt->name] = str_opt->deflt;
+    }
+  }
+}
+
+void Df::Preferences::initFromTemplate(const FolderSet &folder_set) {
+  for (const auto &elem : folder_set.elems) {
+    switch (elem.which()) {
+    case 0:
+      initFromTemplate(boost::get<Category>(elem));
+      break;
+    case 1:
+      logDebug(boost::get<Glib::ustring>(elem));
+      break;
+    case 2:
+      initFromTemplate(*boost::get<std::shared_ptr<FolderSet>>(elem).get());
+      break;
+    }
+  }
 }
 
 void Df::Preferences::setBool(const Glib::ustring &name, bool value) {

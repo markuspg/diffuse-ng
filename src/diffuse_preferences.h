@@ -49,6 +49,8 @@ public:
   void setBool(const Glib::ustring &name, bool value);
 
 private:
+  struct FolderSet;
+
   struct BaseOpt {
     virtual ~BaseOpt(){};
   };
@@ -113,20 +115,31 @@ private:
     const Glib::ustring label;
     List list;
   };
-  using FolderSet = std::vector<Category>;
+  struct FolderSet {
+    std::vector<
+        boost::variant<Category, Glib::ustring, std::shared_ptr<FolderSet>>>
+        elems;
+  };
 
   std::vector<Glib::ustring> getDefaultEncodings() const;
+  void initFromTemplate(const Category &category);
+  void initFromTemplate(const FolderSet &folder_set);
 
   std::map<Glib::ustring, bool> bool_prefs;
+  std::map<Glib::ustring, bool> default_bool_prefs;
   std::map<Glib::ustring, int> int_prefs;
+  std::map<Glib::ustring, int> default_int_prefs;
   std::map<Glib::ustring, int> int_prefs_min;
   std::map<Glib::ustring, int> int_prefs_max;
   const std::vector<Glib::ustring> encodings;
   std::map<Glib::ustring, Glib::ustring> string_prefs;
+  std::map<Glib::ustring, Glib::ustring> default_string_prefs;
   std::map<void *, void *> string_prefs_enums;
 
   //! Conditions used to determine if a preference should be greyed out
   const std::map<Glib::ustring, std::pair<Glib::ustring, bool>> disable_when;
+
+  const Glib::ustring path;
 
   /*!
    * \brief tmplt describes how preference dialogue layout
