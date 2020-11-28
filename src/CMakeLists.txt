@@ -5,6 +5,7 @@ add_executable(${PROJECT_NAME}
     diffuse_encodingmenu.cpp
     diffuse_globals.cpp
     diffuse_messagedialog.cpp
+    diffuse_notebooktab.cpp
     diffuse_preferences.cpp
     diffuse_resources.cpp
     diffuse_utils.cpp
