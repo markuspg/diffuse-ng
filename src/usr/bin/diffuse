@@ -528,35 +528,6 @@ class Resources:
             #except ValueError:
                 logError(_('Error processing line %(line)d of %(file)s.') % { 'line': i + 1, 'file': file_name })
 
-# map an encoding name to its standard form
-def norm_encoding(e):
-    if e is not None:
-        return e.replace('-', '_').lower()
-
-# widget to help pick an encoding
-class EncodingMenu(gtk.HBox):
-    def __init__(self, prefs, autodetect=False):
-        gtk.HBox.__init__(self)
-        self.combobox = combobox = gtk.combo_box_new_text()
-        self.encodings = prefs.getEncodings()[:]
-        for e in self.encodings:
-            combobox.append_text(e)
-        if autodetect:
-            self.encodings.insert(0, None)
-            combobox.prepend_text(_('Auto Detect'))
-        self.pack_start(combobox, False, False, 0)
-        combobox.show()
-
-    def set_text(self, encoding):
-        encoding = norm_encoding(encoding)
-        if encoding in self.encodings:
-            self.combobox.set_active(self.encodings.index(encoding))
-
-    def get_text(self):
-        i = self.combobox.get_active()
-        if i >= 0:
-            return self.encodings[i]
-
 # text entry widget with a button to help pick file names
 class FileEntry(gtk.HBox):
     def __init__(self, parent, title):
@@ -597,138 +568,8 @@ class FontButton(gtk.FontButton):
     def get_text(self):
         return self.get_font_name()
 
-# class to store preferences and construct a dialogue for manipulating them
 class Preferences:
     def __init__(self, path):
-        self.bool_prefs = {}
-        self.int_prefs = {}
-        self.string_prefs = {}
-        self.int_prefs_min = {}
-        self.int_prefs_max = {}
-        self.string_prefs_enums = {}
-
-        # find available encodings
-        self.encodings = sorted(set(encodings.aliases.aliases.values()))
-
-        if isWindows():
-            svk_bin = 'svk.bat'
-        else:
-            svk_bin = 'svk'
-
-        auto_detect_codecs = [ 'utf_8', 'utf_16', 'latin_1' ]
-        e = norm_encoding(sys.getfilesystemencoding())
-        if e not in auto_detect_codecs:
-            # insert after UTF-8 as the default encoding may prevent UTF-8 from
-            # being tried
-            auto_detect_codecs.insert(2, e)
-
-        # self.template describes how preference dialogue layout
-        #
-        # this will be traversed later to build the preferences dialogue and
-        # discover which preferences exist
-        #
-        # folders are described using:
-        #    [ 'FolderSet', label1, template1, label2, template2, ... ]
-        # lists are described using:
-        #    [ 'List', template1, template2, template3, ... ]
-        # individual preferences are described using one of the following
-        # depending upon its type and the desired widget:
-        #    [ 'Boolean', name, default, label ]
-        #    [ 'Integer', name, default, label ]
-        #    [ 'String', name, default, label ]
-        #    [ 'File', name, default, label ]
-        #    [ 'Font', name, default, label ]
-        self.template = [ 'FolderSet',
-            _('Display'),
-            [ 'List',
-              [ 'Font', 'display_font', 'Monospace 10', _('Font') ],
-              [ 'Integer', 'display_tab_width', 8, _('Tab width'), 1, 1024 ],
-              [ 'Boolean', 'display_show_right_margin', True, _('Show right margin') ],
-              [ 'Integer', 'display_right_margin', 80, _('Right margin'), 1, 8192 ],
-              [ 'Boolean', 'display_show_line_numbers', True, _('Show line numbers') ],
-              [ 'Boolean', 'display_show_whitespace', False, _('Show white space characters') ],
-              [ 'Boolean', 'display_ignore_case', False, _('Ignore case differences') ],
-              [ 'Boolean', 'display_ignore_whitespace', False, _('Ignore white space differences') ],
-              [ 'Boolean', 'display_ignore_whitespace_changes', False, _('Ignore changes to white space') ],
-              [ 'Boolean', 'display_ignore_blanklines', False, _('Ignore blank line differences') ],
-              [ 'Boolean', 'display_ignore_endofline', False, _('Ignore end of line differences') ]
-            ],
-            _('Alignment'),
-            [ 'List',
-              [ 'Boolean', 'align_ignore_case', False, _('Ignore case') ],
-              [ 'Boolean', 'align_ignore_whitespace', True, _('Ignore white space') ],
-              [ 'Boolean', 'align_ignore_whitespace_changes', False, _('Ignore changes to white space') ],
-              [ 'Boolean', 'align_ignore_blanklines', False, _('Ignore blank lines') ],
-              [ 'Boolean', 'align_ignore_endofline', True, _('Ignore end of line characters') ]
-            ],
-            _('Editor'),
-            [ 'List',
-              [ 'Boolean', 'editor_auto_indent', True, _('Auto indent') ],
-              [ 'Boolean', 'editor_expand_tabs', False, _('Expand tabs to spaces') ],
-              [ 'Integer', 'editor_soft_tab_width', 8, _('Soft tab width'), 1, 1024 ]
-            ],
-            _('Tabs'),
-            [ 'List',
-              [ 'Integer', 'tabs_default_panes', 2, _('Default panes'), 2, 16 ],
-              [ 'Boolean', 'tabs_always_show', False, _('Always show the tab bar') ],
-              [ 'Boolean', 'tabs_warn_before_quit', True, _('Warn me when closing a tab will quit %s') % APP_NAME ]
-            ],
-            _('Regional Settings'),
-            [ 'List',
-              [ 'Encoding', 'encoding_default_codec', sys.getfilesystemencoding(), _('Default codec') ],
-              [ 'String', 'encoding_auto_detect_codecs', ' '.join(auto_detect_codecs), _('Order of codecs used to identify encoding') ]
-            ],
-        ]
-        # conditions used to determine if a preference should be greyed out
-        self.disable_when = {
-            'display_right_margin': ('display_show_right_margin', False),
-            'display_ignore_whitespace_changes': ('display_ignore_whitespace', True),
-            'display_ignore_blanklines': ('display_ignore_whitespace', True),
-            'display_ignore_endofline': ('display_ignore_whitespace', True),
-            'align_ignore_whitespace_changes': ('align_ignore_whitespace', True),
-            'align_ignore_blanklines': ('align_ignore_whitespace', True),
-            'align_ignore_endofline': ('align_ignore_whitespace', True)
-        }
-        if isWindows():
-            root = os.environ.get('SYSTEMDRIVE', None)
-            if root is None:
-                root = 'C:\\'
-            elif not root.endswith('\\'):
-                root += '\\'
-            self.template.extend([
-                    _('Cygwin'),
-                    [ 'List',
-                      [ 'File', 'cygwin_root', os.path.join(root, 'cygwin'), _('Root directory') ],
-                      [ 'String', 'cygwin_cygdrive_prefix', '/cygdrive', _('Cygdrive prefix') ]
-                    ]
-                ])
-
-        # create template for Version Control options
-        vcs = [ ('bzr', 'Bazaar', 'bzr'),
-                ('cvs', 'CVS', 'cvs'),
-                ('darcs', 'Darcs', 'darcs'),
-                ('git', 'Git', 'git'),
-                ('hg', 'Mercurial', 'hg'),
-                ('mtn', 'Monotone', 'mtn'),
-                ('rcs', 'RCS', None),
-                ('svn', 'Subversion', 'svn'),
-                ('svk', 'SVK', svk_bin) ]
-
-        vcs_template = [ 'FolderSet' ]
-        for key, name, cmd in vcs:
-            temp = [ 'List' ]
-            if key == 'rcs':
-                # RCS uses multiple commands
-                temp.extend([ [ 'File', key + '_bin_co', 'co', _('"co" command') ],
-                              [ 'File', key + '_bin_rlog', 'rlog', _('"rlog" command') ] ])
-            else:
-                temp.extend([ [ 'File', key + '_bin', cmd, _('Command') ] ])
-            if isWindows():
-                temp.append([ 'Boolean', key + '_bash', False, _('Launch from a Bash login shell') ])
-                if key != 'git':
-                    temp.append([ 'Boolean', key + '_cygwin', False, _('Update paths for Cygwin') ])
-            vcs_template.extend([ name, temp ])
-
         self.template.extend([ _('Version Control'), vcs_template ])
         self._initFromTemplate(self.template)
         self.default_bool_prefs = self.bool_prefs.copy()
@@ -901,28 +742,6 @@ class Preferences:
                     entry.show()
                 table.show()
             return table
-
-    # get/set methods to manipulate the preference values
-    def getBool(self, name):
-        return self.bool_prefs[name]
-
-    def setBool(self, name, value):
-        self.bool_prefs[name] = value
-
-    def getInt(self, name):
-        return self.int_prefs[name]
-
-    def getString(self, name):
-        return self.string_prefs[name]
-
-    def getEncodings(self):
-        return self.encodings
-
-    def _getDefaultEncodings(self):
-        return self.string_prefs['encoding_auto_detect_codecs'].split()
-
-    def getDefaultEncoding(self):
-        return self.string_prefs['encoding_default_codec']
 
     # attempt to convert a string to unicode from an unknown encoding
     def convertToUnicode(self, s):

@@ -29,8 +29,6 @@
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
-#include <map>
-
 namespace Gtk {
 class Notebook;
 } // namespace Gtk
