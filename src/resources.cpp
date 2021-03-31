@@ -23,8 +23,29 @@
 
 namespace Df = Diffuse;
 
-Df::Resources::Resources() {
-  // Default keybindings
+Df::Resources::Resources()
+    : colours{{"alignment", {1.0, 1.0, 0.0}},
+              {"character_selection", {0.7, 0.7, 1.0}},
+              {"cursor", {0.0, 0.0, 0.0}},
+              {"difference_1", {1.0, 0.625, 0.625}},
+              {"difference_2", {0.85, 0.625, 0.775}},
+              {"difference_3", {0.85, 0.775, 0.625}},
+              {"hatch", {0.8, 0.8, 0.8}},
+              {"line_number", {0.0, 0.0, 0.0}},
+              {"line_number_background", {0.75, 0.75, 0.75}},
+              {"line_selection", {0.7, 0.7, 1.0}},
+              {"map_background", {0.6, 0.6, 0.6}},
+              {"margin", {0.8, 0.8, 0.8}},
+              {"edited", {0.5, 1.0, 0.5}},
+              {"preedit", {0.0, 0.0, 0.0}},
+              {"text", {0.0, 0.0, 0.0}},
+              {"text_background", {1.0, 1.0, 1.0}}},
+      floats{{"alignment_opacity", 1.0},
+             {"character_difference_opacity", 0.4},
+             {"character_selection_opacity", 0.4},
+             {"edited_opacity", 0.4},
+             {"line_difference_opacity", 0.3},
+             {"line_selection_opacity", 0.4}} {
   setKeyBinding("menu", "open_file", "Ctrl+o");
   setKeyBinding("menu", "open_file_in_new_tab", "Ctrl+t");
   setKeyBinding("menu", "open_modified_files", "Shift+Ctrl+O");
@@ -149,7 +170,12 @@ Df::Resources::Resources() {
   setKeyBinding("align_mode", "page_down", "Page_Down");
   setKeyBinding("align_mode", "page_down", "Ctrl+d");
   setKeyBinding("character_mode", "enter_line_mode", "Escape");
+
+  // Special string resources
+  setDifferenceColours("difference_1 difference_2 difference_3");
 }
+
+void Df::Resources::setDifferenceColours(const Glib::ustring &s) {}
 
 /*!
  * \brief Keyboard action processing

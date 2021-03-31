@@ -22,9 +22,12 @@
 #ifndef DIFFUSE_RESOURCES_H_
 #define DIFFUSE_RESOURCES_H_
 
+#include "colour.h"
+
 #include <glibmm/ustring.h>
 
 #include <map>
+#include <set>
 
 namespace Diffuse {
 class Resources {
@@ -34,9 +37,29 @@ public:
 private:
   void setKeyBinding(const Glib::ustring &ctx, const Glib::ustring &s,
                      const Glib::ustring &v);
+  void setDifferenceColours(const Glib::ustring &s);
 
-  std::map<void *, void *> keybindings;
-  std::map<void *, void *> keybindings_lookup;
+  // Default colours
+  const std::map<Glib::ustring, Colour> colours;
+
+  // Default floats
+  const std::map<Glib::ustring, float> floats;
+
+  // Default keybindings
+  const std::map<void *, void *> keybindings;
+  const std::map<void *, void *> keybindings_lookup;
+
+  // List of imported resource files (each file is imported once only)
+  const std::set<void *> resource_files;
+
+  // Default strings
+  const std::map<Glib::ustring, Glib::ustring> strings;
+
+  // Syntax highlighting support
+  void *const current_syntax = nullptr;
+  const std::map<void *, void *> syntax_file_patterns;
+  const std::map<void *, void *> syntax_magic_patterns;
+  const std::map<void *, void *> syntaxes;
 };
 } // namespace Diffuse
 
