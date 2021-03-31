@@ -21,9 +21,24 @@
 
 #include "utils.h"
 
+#include <glibmm/convert.h>
+
+#include <iostream>
+
 namespace Df = Diffuse;
 
 /*!
  * \brief Platform test
  */
 bool Df::isWindows() { return false; }
+
+/*!
+ * \brief Print a UTF-8 string using the host's native encoding
+ * \param[in] s The UTF-8 encoded string that shall be printed
+ */
+void Df::printMessage(const Glib::ustring &s) {
+  try {
+    std::cout << Glib::locale_from_utf8(s) << "\n";
+  } catch (const Glib::ConvertError &) {
+  }
+}

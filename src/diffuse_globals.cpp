@@ -25,7 +25,8 @@
 
 namespace Df = Diffuse;
 
-const char *const APP_NAME = "Diffuse";
-const char *const COPYRIGHT = _("Copyright © 2006-2014 Derrick Moser");
-const char *const VERSION = "0.4.9";
-const char *const WEBSITE = "http://diffuse.sourceforge.net";
+const char *const Df::APP_NAME = "Diffuse";
+const char *const Df::COPYRIGHT = _("Copyright © 2006-2014 Derrick Moser"
+                                    "\nCopyright © 2021 Markus Prasser");
+const char *const Df::VERSION = "0.4.9";
+const char *const Df::WEBSITE = "http://diffuse.sourceforge.net";
