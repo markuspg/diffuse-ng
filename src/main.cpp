@@ -19,27 +19,16 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <glibmm/miscutils.h>
+#include <glibmm/ustring.h>
+
 int main(int argc, char *argv[]) {
+    // Use the program's location as a starting place to search for supporting
+    // files such as icons and help documentation
+    const Glib::ustring app_path{Glib::canonicalize_filename(argv[0])};
+    const Glib::ustring bin_dir{Glib::path_get_dirname(app_path)};
 
 /*
-import codecs
-import gettext
-import locale
-import os
-import sys
-
-# use the program's location as a starting place to search for supporting files
-# such as icon and help documentation
-if hasattr(sys, 'frozen'):
-    app_path = sys.executable
-else:
-    app_path = os.path.realpath(sys.argv[0])
-bin_dir = os.path.dirname(app_path)
-
-# platform test
-def isWindows():
-    return os.name == 'nt'
-
 # translation location: '../share/locale/<LANG>/LC_MESSAGES/diffuse.mo'
 # where '<LANG>' is the language key
 lang = locale.getdefaultlocale()[0]
@@ -65,11 +54,6 @@ gettext.bindtextdomain('diffuse', locale_dir)
 
 gettext.textdomain('diffuse')
 _ = gettext.gettext
-
-APP_NAME = 'Diffuse'
-VERSION = '0.4.8'
-COPYRIGHT = _('Copyright © 2006-2014 Derrick Moser')
-WEBSITE = 'http://diffuse.sourceforge.net/'
 
 # print a UTF-8 string using the host's native encoding
 def printMessage(s):
