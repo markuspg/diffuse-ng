@@ -19,12 +19,14 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "diffuse_globals.h"
+#include "utils.h"
+
+#include <gtkmm/window.h>
+
 #include <glibmm/miscutils.h>
 
 #include <glib/gi18n.h>
-
-#include "diffuse_globals.h"
-#include "utils.h"
 
 namespace Df = Diffuse;
 
@@ -151,12 +153,12 @@ def logDebug(s):
 # avoid some dictionary lookups when string.whitespace is used in loops
 # this is sorted based upon frequency to speed up code for stripping whitespace
 whitespace = ' \t\n\r\x0b\x0c'
+ */
 
-# associate our icon with all of our windows
-if __name__ == '__main__':
-    # this is not automatically set on some older version of PyGTK
-    gtk.window_set_default_icon_name('diffuse')
+  // Associate our icon with all of our windows
+  Gtk::Window::set_default_icon_name("diffuse");
 
+/*
 # convenience class for displaying a message dialogue
 class MessageDialog(gtk.MessageDialog):
     def __init__(self, parent, type, s):
