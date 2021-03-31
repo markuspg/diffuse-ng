@@ -19,9 +19,14 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#ifndef DIFFUSE_DIFFUSE_GLOBALS_H_
+#define DIFFUSE_DIFFUSE_GLOBALS_H_
+
 namespace Diffuse {
 extern const char *const APP_NAME;
 extern const char *const COPYRIGHT;
 extern const char *const VERSION;
 extern const char *const WEBSITE;
 } // namespace Diffuse
+
+#endif // DIFFUSE_DIFFUSE_GLOBALS_H_

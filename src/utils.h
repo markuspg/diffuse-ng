@@ -19,9 +19,14 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#ifndef DIFFUSE_UTILS_H_
+#define DIFFUSE_UTILS_H_
+
 #include <glibmm/ustring.h>
 
 namespace Diffuse {
 bool isWindows();
 void printMessage(const Glib::ustring &s);
 } // namespace Diffuse
+
+#endif // DIFFUSE_UTILS_H_
