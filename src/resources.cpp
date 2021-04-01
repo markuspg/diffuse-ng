@@ -175,6 +175,8 @@ Df::Resources::Resources()
   setDifferenceColours("difference_1 difference_2 difference_3");
 }
 
+bool Df::Resources::parse(const Glib::ustring &file_name) { return true; }
+
 void Df::Resources::setDifferenceColours(const Glib::ustring &s) {}
 
 /*!

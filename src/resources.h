@@ -34,6 +34,8 @@ class Resources {
 public:
   Resources();
 
+  bool parse(const Glib::ustring &file_name);
+
 private:
   void setKeyBinding(const Glib::ustring &ctx, const Glib::ustring &s,
                      const Glib::ustring &v);

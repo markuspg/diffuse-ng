@@ -8113,33 +8113,39 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
     exit(1);
   }
 
-/*
-    # load resource files
-    i, rc_files = 1, []
-    if argc == 2 and args[1] == '--no-rcfile':
-        i += 1
-    elif argc == 3 and args[1] == '--rcfile':
-        i += 1
-        rc_files.append(args[i])
-        i += 1
-    else:
-        # parse system wide then personal initialisation files
-        if isWindows():
-            rc_file = os.path.join(bin_dir, 'diffuserc')
-        else:
-            rc_file = os.path.join(bin_dir, '../../etc/diffuserc')
-        for rc_file in rc_file, os.path.join(rc_dir, 'diffuserc'):
-            if os.path.isfile(rc_file):
-                rc_files.append(rc_file)
-    for rc_file in rc_files:
-        # convert to absolute path so the location of any processing errors are
-        # reported with normalised file names
-        rc_file = os.path.abspath(rc_file)
-        try:
-            theResources.parse(rc_file)
-        except IOError:
-            logError(_('Error reading %s.') % (rc_file, ))
+  // Load resource files
+  int i = 0;
+  std::vector<Glib::ustring> rc_files;
+  if ((2 == argc) && ("--no-rcfile" == args[1])) {
+    ++i;
+  } else if ((3 == argc) && ("--rcfile" == args[1])) {
+    ++i;
+    rc_files.emplace_back(args[i]);
+    ++i;
+  } else {
+    // Parse system wide then personal initialisation files
+    Glib::ustring rc_file;
+    if (Df::isWindows()) {
+      rc_file = Glib::build_filename(bin_dir, "diffuserc");
+    } else {
+      rc_file = Glib::build_filename(bin_dir, "../../etc/diffuserc");
+    }
+    for (Glib::ustring &rc_file_i : std::vector<Glib::ustring>{rc_file, Glib::build_filename(rc_dir, "diffuserc")}) {
+      if (Glib::file_test(rc_file_i, Glib::FILE_TEST_IS_REGULAR)) {
+        rc_files.emplace_back(rc_file);
+      }
+    }
+  }
+  for (const auto &rc_file : rc_files) {
+    // Convert to absolute path so the location of any processing errors are
+    // reported with normalised file names
+    const Glib::ustring load_path{Glib::canonicalize_filename(rc_file.c_str())};
+    if (!theResources.parse(rc_file)) {
+      Df::logError(_("Error reading ") + rc_file + ".");
+    }
+  }
 
+/*
     diff = Diffuse(rc_dir)
     # load state
     statepath = os.path.join(data_dir, 'state')

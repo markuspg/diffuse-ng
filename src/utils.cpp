@@ -33,6 +33,8 @@ namespace Df = Diffuse;
  */
 bool Df::isWindows() { return false; }
 
+void Df::logError(const Glib::ustring &s) {}
+
 /*!
  * \brief Create nested subdirectories and return the complete path
  * \param[in,out] p The path within which the subdirectories shall be created.
