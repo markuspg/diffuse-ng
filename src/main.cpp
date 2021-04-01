@@ -8086,32 +8086,34 @@ gobject.signal_new('open', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN
 gobject.signal_new('reload', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+ */
 
-# create nested subdirectories and return the complete path
-def make_subdirs(p, ss):
-    for s in ss:
-        p = os.path.join(p, s)
-        if not os.path.exists(p):
-            try:
-                os.mkdir(p)
-            except IOError:
-                pass
-    return p
+  // Process the command line arguments
+  // Find the config directory and create it if it didn't exist
+  bool found = false;
+  Glib::ustring rc_dir{Glib::getenv("XDG_CONFIG_HOME", found)};
+  std::vector<Glib::ustring> subdirs{"diffuse"};
+  if (!found || rc_dir.empty()) {
+    rc_dir = Glib::get_home_dir();
+    subdirs.emplace(subdirs.cbegin(), ".config");
+  }
+  if (!Df::make_subdirs(rc_dir, subdirs)) {
+    exit(1);
+  }
+  // Find the local data directory and create it if it didn't exist
+  found = false;
+  Glib::ustring data_dir{Glib::getenv("XDG_DATA_HOME", found)};
+  subdirs = {"diffuse"};
+  if (!found || data_dir.empty()) {
+    data_dir = Glib::get_home_dir();
+    subdirs.emplace(subdirs.cbegin(), "share");
+    subdirs.emplace(subdirs.cbegin(), ".local");
+  }
+  if (!Df::make_subdirs(data_dir, subdirs)) {
+    exit(1);
+  }
 
-# process the command line arguments
-if __name__ == '__main__':
-    # find the config directory and create it if it didn't exist
-    rc_dir, subdirs = os.environ.get('XDG_CONFIG_HOME', None), ['diffuse']
-    if rc_dir is None:
-        rc_dir = os.path.expanduser('~')
-        subdirs.insert(0, '.config')
-    rc_dir = make_subdirs(rc_dir, subdirs)
-    # find the local data directory and create it if it didn't exist
-    data_dir, subdirs = os.environ.get('XDG_DATA_HOME', None), ['diffuse']
-    if data_dir is None:
-        data_dir = os.path.expanduser('~')
-        subdirs[:0] = [ '.local', 'share' ]
-    data_dir = make_subdirs(data_dir, subdirs)
+/*
     # load resource files
     i, rc_files = 1, []
     if argc == 2 and args[1] == '--no-rcfile':

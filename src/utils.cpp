@@ -22,6 +22,7 @@
 #include "utils.h"
 
 #include <glibmm/convert.h>
+#include <glibmm/miscutils.h>
 
 #include <iostream>
 
@@ -31,6 +32,26 @@ namespace Df = Diffuse;
  * \brief Platform test
  */
 bool Df::isWindows() { return false; }
+
+/*!
+ * \brief Create nested subdirectories and return the complete path
+ * \param[in,out] p The path within which the subdirectories shall be created.
+ * This will contain the resulting full path on success
+ * \param[in] ss The names of the subdirectory hierarchy which shall be created
+ * \return True on success, false otherwise
+ */
+bool Df::make_subdirs(Glib::ustring &p, const std::vector<Glib::ustring> &ss) {
+  std::vector<Glib::ustring> path_components{ss};
+  path_components.emplace(path_components.cbegin(), p);
+  Glib::ustring path{Glib::build_path(G_DIR_SEPARATOR_S, path_components)};
+
+  if (0 == g_mkdir_with_parents(path.c_str(), 0755)) {
+    p = path;
+    return true;
+  }
+
+  return false;
+}
 
 /*!
  * \brief Print a UTF-8 string using the host's native encoding
