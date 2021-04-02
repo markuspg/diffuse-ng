@@ -27,11 +27,15 @@
 #include "preferences.h"
 #include "spec.h"
 
+#include <gtkmm/notebook.h>
+#include <gtkmm/window.h>
+
 namespace Diffuse {
-class Diffuse {
+class Diffuse : public Gtk::Window {
 public:
   Diffuse(const Glib::ustring &rc_dir);
 
+  void closeOnSame();
   void createCommitFileTabs(const Specs &items, const Labels &labels,
                             const Options &options);
   void createModifiedFileTabs(const Specs &items, const Labels &labels,
@@ -42,7 +46,9 @@ public:
                        const Options &options);
   void loadState(const Glib::ustring &statepath);
   void preferences_updated();
+  void saveState(const Glib::ustring &statepath);
 
+  Gtk::Notebook notebook;
   Preferences prefs;
 };
 } // namespace Diffuse

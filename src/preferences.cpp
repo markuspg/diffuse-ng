@@ -28,4 +28,6 @@ Df::Preferences::convertToNativePath(const Glib::ustring &s) {
   return std::optional<Glib::ustring>{};
 }
 
+bool Df::Preferences::getBool(const Glib::ustring &name) {}
+
 void Df::Preferences::setBool(const Glib::ustring &name, bool value) {}

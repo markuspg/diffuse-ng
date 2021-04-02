@@ -30,6 +30,7 @@ namespace Diffuse {
 class Preferences {
 public:
   std::optional<Glib::ustring> convertToNativePath(const Glib::ustring &s);
+  bool getBool(const Glib::ustring &name);
   void setBool(const Glib::ustring &name, bool value);
 };
 } // namespace Diffuse

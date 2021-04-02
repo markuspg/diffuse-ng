@@ -27,6 +27,7 @@
 #include "spec.h"
 #include "utils.h"
 
+#include <gtkmm/main.h>
 #include <gtkmm/window.h>
 
 #include <glibmm/miscutils.h>
@@ -36,6 +37,8 @@
 namespace Df = Diffuse;
 
 int main(int argc, char *argv[]) {
+  Gtk::Main main(argc, argv);
+
   // Use the program's location as a starting place to search for supporting
   // files such as icons and help documentation
   const Glib::ustring app_path{Glib::canonicalize_filename(argv[0])};
@@ -8277,28 +8280,31 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
     }
     ++i;
   }
-/*
-    if mode in [ 'modified', 'commit' ] and len(specs) == 0:
-        specs.append((os.curdir, [ (None, encoding) ]))
-        had_specs = True
-    funcs[mode](specs, labels, options)
 
-    # create a file diff viewer if the command line arguments haven't
-    # implicitly created any
-    if not had_specs:
-        diff.newLoadedFileDiffViewer([])
-    elif close_on_same:
-        diff.closeOnSame()
-    nb = diff.notebook
-    n = nb.get_n_pages()
-    if n > 0:
-        nb.set_show_tabs(diff.prefs.getBool('tabs_always_show') or n > 1)
-        nb.get_nth_page(0).grab_focus()
-        diff.show()
-        gtk.main()
-        # save state
-        diff.saveState(statepath)
- */
+  if ((("commit" == mode) || ("modified" == mode)) && specs.empty()) {
+    specs.emplace_back(Df::Spec{Glib::get_current_dir(), Df::Revisions{Df::Revision{std::nullopt, encoding}}});
+    had_specs = true;
+  }
+  (diff.*funcs[mode])(specs, labels, options);
+
+  // Create a file diff viewer if the command line arguments haven't implicitly
+  // created any
+  if (!had_specs) {
+    // TODO: diff.newLoadedFileDiffViewer([])
+  } else if (close_on_same) {
+    diff.closeOnSame();
+  }
+
+  Gtk::Notebook &nb = diff.notebook;
+  const auto n = nb.get_n_pages();
+  if (0 < n) {
+    nb.set_show_tabs(diff.prefs.getBool("tabs_always_show") || (1 < n));
+    nb.get_nth_page(0)->grab_focus();
+    diff.show();
+    main.run();
+    // Save state
+    diff.saveState(statepath);
+  }
 
    return 0;
 }
