@@ -19,25 +19,13 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "diffuse.h"
+#include "preferences.h"
 
 namespace Df = Diffuse;
 
-Df::Diffuse::Diffuse(const Glib::ustring &rc_dir) {}
+std::optional<Glib::ustring>
+Df::Preferences::convertToNativePath(const Glib::ustring &s) {
+  return std::optional<Glib::ustring>{};
+}
 
-void Df::Diffuse::createCommitFileTabs(const Specs &items, const Labels &labels,
-                                       const Options &options) {}
-
-void Df::Diffuse::createModifiedFileTabs(const Specs &items,
-                                         const Labels &labels,
-                                         const Options &options) {}
-
-void Df::Diffuse::createSeparateTabs(const Specs &items, const Labels &labels,
-                                     const Options &options) {}
-
-void Df::Diffuse::createSingleTab(const Specs &items, const Labels &labels,
-                                  const Options &options) {}
-
-void Df::Diffuse::preferences_updated() {}
-
-void Df::Diffuse::loadState(const Glib::ustring &statepath) {}
+void Df::Preferences::setBool(const Glib::ustring &name, bool value) {}

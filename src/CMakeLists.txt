@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME}
     labels.cpp
     main.cpp
     option.cpp
+    preferences.cpp
     resources.cpp
     revision.cpp
     spec.cpp

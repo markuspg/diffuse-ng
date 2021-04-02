@@ -24,9 +24,8 @@
 
 #include "labels.h"
 #include "option.h"
+#include "preferences.h"
 #include "spec.h"
-
-#include <glibmm/ustring.h>
 
 namespace Diffuse {
 class Diffuse {
@@ -42,6 +41,9 @@ public:
   void createSingleTab(const Specs &items, const Labels &labels,
                        const Options &options);
   void loadState(const Glib::ustring &statepath);
+  void preferences_updated();
+
+  Preferences prefs;
 };
 } // namespace Diffuse
 
