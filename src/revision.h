@@ -19,30 +19,20 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef DIFFUSE_DIFFUSE_H_
-#define DIFFUSE_DIFFUSE_H_
-
-#include "labels.h"
-#include "option.h"
-#include "spec.h"
+#ifndef DIFFUSE_REVISION_H_
+#define DIFFUSE_REVISION_H_
 
 #include <glibmm/ustring.h>
 
-namespace Diffuse {
-class Diffuse {
-public:
-  Diffuse(const Glib::ustring &rc_dir);
+#include <optional>
+#include <vector>
 
-  void createCommitFileTabs(const Specs &items, const Labels &labels,
-                            const Options &options);
-  void createModifiedFileTabs(const Specs &items, const Labels &labels,
-                              const Options &options);
-  void createSeparateTabs(const Specs &items, const Labels &labels,
-                          const Options &options);
-  void createSingleTab(const Specs &items, const Labels &labels,
-                       const Options &options);
-  void loadState(const Glib::ustring &statepath);
+namespace Diffuse {
+struct Revision {
+  std::optional<Glib::ustring> revision;
+  std::optional<Glib::ustring> encoding;
 };
+using Revisions = std::vector<Revision>;
 } // namespace Diffuse
 
-#endif // DIFFUSE_DIFFUSE_H_
+#endif // DIFFUSE_REVISION_H_

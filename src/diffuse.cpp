@@ -25,4 +25,17 @@ namespace Df = Diffuse;
 
 Df::Diffuse::Diffuse(const Glib::ustring &rc_dir) {}
 
+void Df::Diffuse::createCommitFileTabs(const Specs &items, const Labels &labels,
+                                       const Options &options) {}
+
+void Df::Diffuse::createModifiedFileTabs(const Specs &items,
+                                         const Labels &labels,
+                                         const Options &options) {}
+
+void Df::Diffuse::createSeparateTabs(const Specs &items, const Labels &labels,
+                                     const Options &options) {}
+
+void Df::Diffuse::createSingleTab(const Specs &items, const Labels &labels,
+                                  const Options &options) {}
+
 void Df::Diffuse::loadState(const Glib::ustring &statepath) {}

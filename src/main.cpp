@@ -21,7 +21,10 @@
 
 #include "diffuse.h"
 #include "diffuse_globals.h"
+#include "labels.h"
+#include "option.h"
 #include "resources.h"
+#include "spec.h"
 #include "utils.h"
 
 #include <gtkmm/window.h>
@@ -8151,15 +8154,21 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
   const Glib::ustring statepath{Glib::build_filename(data_dir, "state")};
   diff.loadState(statepath);
 
+  // Process remaining command line arguments
+  bool close_on_same = false;
+  std::optional<Glib::ustring> encoding;
+  std::map<Glib::ustring, void (Df::Diffuse::*)(const Df::Specs&, const Df::Labels&, const Df::Options&)> funcs{
+    {"modified", &Df::Diffuse::createModifiedFileTabs},
+    {"commit", &Df::Diffuse::createCommitFileTabs},
+    {"separate", &Df::Diffuse::createSeparateTabs},
+    {"single", &Df::Diffuse::createSingleTab}};
+  bool had_specs = false;
+  Df::Labels labels;
+  Glib::ustring mode{"single"};
+  Df::Options options;
+  Df::Revision revs;
+  Df::Specs specs;
 /*
-    # process remaining command line arguments
-    encoding, revs, close_on_same = None, [], False
-    specs, had_specs, labels = [], False, []
-    funcs = { 'modified': diff.createModifiedFileTabs,
-              'commit': diff.createCommitFileTabs,
-              'separate': diff.createSeparateTabs,
-              'single': diff.createSingleTab }
-    mode, options = 'single', {}
     while i < argc:
         arg = args[i]
         if len(arg) > 0 and arg[0] == '-':

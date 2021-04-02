@@ -4,8 +4,12 @@ add_executable(${PROJECT_NAME}
     colour.cpp
     diffuse.cpp
     diffuse_globals.cpp
+    labels.cpp
     main.cpp
+    option.cpp
     resources.cpp
+    revision.cpp
+    spec.cpp
     utils.cpp)
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${GTKMM_INCLUDE_DIRS})
