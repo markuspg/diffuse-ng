@@ -19,6 +19,7 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "diffuse.h"
 #include "diffuse_globals.h"
 #include "resources.h"
 #include "utils.h"
@@ -8145,12 +8146,12 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
     }
   }
 
-/*
-    diff = Diffuse(rc_dir)
-    # load state
-    statepath = os.path.join(data_dir, 'state')
-    diff.loadState(statepath)
+  Df::Diffuse diff{rc_dir};
+  // Load state
+  const Glib::ustring statepath{Glib::build_filename(data_dir, "state")};
+  diff.loadState(statepath);
 
+/*
     # process remaining command line arguments
     encoding, revs, close_on_same = None, [], False
     specs, had_specs, labels = [], False, []
