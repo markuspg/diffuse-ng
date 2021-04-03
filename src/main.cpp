@@ -586,16 +586,8 @@ class FontButton(gtk.FontButton):
     def get_text(self):
         return self.get_font_name()
 
-# class to store preferences and construct a dialogue for manipulating them
 class Preferences:
     def __init__(self, path):
-        self.bool_prefs = {}
-        self.int_prefs = {}
-        self.string_prefs = {}
-        self.int_prefs_min = {}
-        self.int_prefs_max = {}
-        self.string_prefs_enums = {}
-
         # find available encodings
         self.encodings = sorted(set(encodings.aliases.aliases.values()))
 
@@ -890,19 +882,6 @@ class Preferences:
                     entry.show()
                 table.show()
             return table
-
-    # get/set methods to manipulate the preference values
-    def getBool(self, name):
-        return self.bool_prefs[name]
-
-    def setBool(self, name, value):
-        self.bool_prefs[name] = value
-
-    def getInt(self, name):
-        return self.int_prefs[name]
-
-    def getString(self, name):
-        return self.string_prefs[name]
 
     def getEncodings(self):
         return self.encodings

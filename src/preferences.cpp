@@ -28,6 +28,41 @@ Df::Preferences::convertToNativePath(const Glib::ustring &s) {
   return std::optional<Glib::ustring>{};
 }
 
-bool Df::Preferences::getBool(const Glib::ustring &name) {}
+/*!
+ * \brief Get method to retrieve the preference value
+ * \param[in] name The name of the preferences whose value shall be retrieved
+ * \return The preference's value
+ * \throws std::out_of_range If there is no preference with name stored
+ */
+bool Df::Preferences::getBool(const Glib::ustring &name) {
+  return bool_prefs.at(name);
+}
 
-void Df::Preferences::setBool(const Glib::ustring &name, bool value) {}
+/*!
+ * \brief Get method to retrieve the preference value
+ * \param[in] name The name of the preferences whose value shall be retrieved
+ * \return The preference's value
+ * \throws std::out_of_range If there is no preference with name stored
+ */
+int Df::Preferences::getInt(const Glib::ustring &name) {
+  return int_prefs.at(name);
+}
+
+/*!
+ * \brief Get method to retrieve the preference value
+ * \param[in] name The name of the preferences whose value shall be retrieved
+ * \return The preference's value
+ * \throws std::out_of_range If there is no preference with name stored
+ */
+Glib::ustring Df::Preferences::getString(const Glib::ustring &name) {
+  return string_prefs.at(name);
+}
+
+/*!
+ * \brief Set method to manipulate the preference value
+ * \param[in] name The name of the preferences whose value shall be manipulated
+ * \param[in] value The preference's new value
+ */
+void Df::Preferences::setBool(const Glib::ustring &name, bool value) {
+  bool_prefs[name] = value;
+}

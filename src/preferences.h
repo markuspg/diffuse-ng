@@ -24,14 +24,29 @@
 
 #include <glibmm/ustring.h>
 
+#include <map>
 #include <optional>
 
 namespace Diffuse {
+/*!
+ * \brief Class to store preferences and construct a dialogue for manipulating
+ * them
+ */
 class Preferences {
 public:
   std::optional<Glib::ustring> convertToNativePath(const Glib::ustring &s);
   bool getBool(const Glib::ustring &name);
+  int getInt(const Glib::ustring &name);
+  Glib::ustring getString(const Glib::ustring &name);
   void setBool(const Glib::ustring &name, bool value);
+
+private:
+  std::map<Glib::ustring, bool> bool_prefs;
+  std::map<Glib::ustring, int> int_prefs;
+  std::map<void *, void *> int_prefs_max;
+  std::map<void *, void *> int_prefs_min;
+  std::map<Glib::ustring, Glib::ustring> string_prefs;
+  std::map<void *, void *> string_prefs_enums;
 };
 } // namespace Diffuse
 
