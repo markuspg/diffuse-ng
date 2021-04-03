@@ -34,7 +34,7 @@ namespace Diffuse {
  */
 class Preferences {
 public:
-  std::optional<Glib::ustring> convertToNativePath(const Glib::ustring &s);
+  Glib::ustring convertToNativePath(const Glib::ustring &s);
   bool getBool(const Glib::ustring &name);
   int getInt(const Glib::ustring &name);
   Glib::ustring getString(const Glib::ustring &name);

@@ -50,6 +50,11 @@ public:
 
   Gtk::Notebook notebook;
   Preferences prefs;
+
+private:
+  std::vector<std::tuple<std::optional<Glib::ustring>, Revisions,
+                         std::optional<Glib::ustring>>>
+  assign_file_labels(const Specs &items, const Labels &labels);
 };
 } // namespace Diffuse
 

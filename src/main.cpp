@@ -6604,18 +6604,6 @@ class FileInfo:
         # to warn about changes to file on disk
         self.last_stat = None
 
-# assign user specified labels to the corresponding files
-def assign_file_labels(items, labels):
-    new_items = []
-    ss = labels[::-1]
-    for name, data in items:
-        if ss:
-            s = ss.pop()
-        else:
-            s = None
-        new_items.append((name, data, s))
-    return new_items
-
 # the main application class containing a set of file viewers
 # this class displays tab for switching between viewers and dispatches menu
 # commands to the current viewer

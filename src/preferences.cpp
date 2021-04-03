@@ -20,12 +20,18 @@
  */
 
 #include "preferences.h"
+#include "utils.h"
+
+#include <glibmm/convert.h>
 
 namespace Df = Diffuse;
 
-std::optional<Glib::ustring>
-Df::Preferences::convertToNativePath(const Glib::ustring &s) {
-  return std::optional<Glib::ustring>{};
+Glib::ustring Df::Preferences::convertToNativePath(const Glib::ustring &s) {
+  Glib::ustring tmp = Glib::locale_to_utf8(s);
+  if (Df::isWindows()) {
+    // TODO
+  }
+  return tmp;
 }
 
 /*!

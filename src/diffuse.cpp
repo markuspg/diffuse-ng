@@ -21,9 +21,36 @@
 
 #include "diffuse.h"
 
+#include <algorithm>
+
 namespace Df = Diffuse;
 
 Df::Diffuse::Diffuse(const Glib::ustring &rc_dir) {}
+
+/*!
+ * \brief Assign user specified labels to the corresponding files
+ * \param[in] items
+ * \param[in] labels
+ * \return
+ */
+std::vector<std::tuple<std::optional<Glib::ustring>, Df::Revisions,
+                       std::optional<Glib::ustring>>>
+Df::Diffuse::assign_file_labels(const Specs &items, const Labels &labels) {
+  std::vector<std::tuple<std::optional<Glib::ustring>, Revisions,
+                         std::optional<Glib::ustring>>>
+      new_items;
+  Labels ss{labels};
+  std::reverse(std::begin(ss), std::end(ss));
+  for (const auto &spec : items) {
+    std::optional<Glib::ustring> s;
+    if (!ss.empty()) {
+      s = ss.back();
+      ss.pop_back();
+    }
+    new_items.emplace_back(spec.filename, spec.revs, s);
+  }
+  return new_items;
+}
 
 void Df::Diffuse::closeOnSame() {}
 
