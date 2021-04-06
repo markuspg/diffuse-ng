@@ -4,6 +4,7 @@ add_executable(${PROJECT_NAME}
     colour.cpp
     diffuse.cpp
     diffuse_globals.cpp
+    fileinfo.cpp
     labels.cpp
     main.cpp
     option.cpp

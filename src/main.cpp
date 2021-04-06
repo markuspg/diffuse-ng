@@ -6584,26 +6584,6 @@ class NotebookTab(gtk.EventBox):
     def set_text(self, s):
         self.label.set_text(s)
 
-# contains information about a file
-class FileInfo:
-    def __init__(self, name=None, encoding=None, vcs=None, revision=None, label=None):
-        # file name
-        self.name = name
-        # name of codec used to translate the file contents to unicode text
-        self.encoding = encoding
-        # the VCS object
-        self.vcs = vcs
-        # revision used to retrieve file from the VCS
-        self.revision = revision
-        # alternate text to display instead of the actual file name
-        self.label = label
-        # 'stat' for files read from disk -- used to warn about changes to the
-        # file on disk before saving
-        self.stat = None
-        # most recent 'stat' for files read from disk -- used on focus change
-        # to warn about changes to file on disk
-        self.last_stat = None
-
 # the main application class containing a set of file viewers
 # this class displays tab for switching between viewers and dispatches menu
 # commands to the current viewer
