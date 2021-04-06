@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME}
     fileinfo.cpp
     labels.cpp
     main.cpp
+    messagedialog.cpp
     option.cpp
     preferences.cpp
     resources.cpp
