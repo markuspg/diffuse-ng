@@ -154,10 +154,6 @@ if not hasattr(__builtins__, 'WindowsError'):
     # define 'WindowsError' so 'except' statements will work on all platforms
     WindowsError = IOError
 
-# convenience function to display debug messages
-def logDebug(s):
-    pass #sys.stderr.write('%s: %s\n', (APP_NAME, s))
-
 # avoid some dictionary lookups when string.whitespace is used in loops
 # this is sorted based upon frequency to speed up code for stripping whitespace
 whitespace = ' \t\n\r\x0b\x0c'

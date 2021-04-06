@@ -20,6 +20,7 @@
  */
 
 #include "utils.h"
+#include "diffuse_globals.h"
 
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
@@ -32,6 +33,20 @@ namespace Df = Diffuse;
  * \brief Platform test
  */
 bool Df::isWindows() { return false; }
+
+/*!
+ * \brief Convenience function to display debug messages
+ *
+ * This method writes the passed string to stderr if DEBUG was defined at
+ * compile time. Otherwise this is a no-op.
+ *
+ * \param[in] s The string which shall be logged to stderr
+ */
+void Df::logDebug(const Glib::ustring &s) {
+#ifdef DEBUG
+  std::cerr << APP_NAME << ": " << s << "\n";
+#endif
+}
 
 void Df::logError(const Glib::ustring &s) {}
 
