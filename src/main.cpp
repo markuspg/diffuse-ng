@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "df_diffuse.h"
 #include "df_resources.h"
 #include "df_utils.h"
 
@@ -8364,12 +8365,17 @@ if __name__ == '__main__':
             theResources.parse(rc_file)
         except IOError:
             logError(_('Error reading %s.') % (rc_file, ))
+ */
 
-    diff = Diffuse(rc_dir)
-    # load state
-    statepath = os.path.join(data_dir, 'state')
-    diff.loadState(statepath)
+  Df::Diffuse diff{rc_dir};
+  // Load state
+  const Glib::ustring statepath = Glib::build_filename(data_dir, "state");
+  if (!diff.loadState(statepath)) {
+    std::cerr << "Failed to load state\n";
+    return 1;
+  }
 
+/*
     # process remaining command line arguments
     encoding, revs, close_on_same = None, [], False
     specs, had_specs, labels = [], False, []
