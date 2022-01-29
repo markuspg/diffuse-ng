@@ -6,4 +6,8 @@ project(Diffuse
     HOMEPAGE_URL "https://github.com/markuspg/diffuse-ng.git"
     LANGUAGES CXX)
 
+find_package(PkgConfig)
+
+pkg_check_modules(GLIBMM2 REQUIRED glibmm-2.4>=2.66.2)
+
 add_subdirectory(src)

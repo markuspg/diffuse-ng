@@ -15,7 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-int main(int argc, char *argv[]) { return 0; }
+#include "df_resources.h"
+#include "df_utils.h"
+
+#include <glibmm/convert.h>
+#include <glibmm/miscutils.h>
+
+#include <iostream>
+
+namespace Df = Diffuse;
+
+int main(int argc, char *argv[]) {
 
 /*
 #!/usr/bin/env python
@@ -715,9 +725,11 @@ class Resources:
             except: # Grr... the 're' module throws weird errors
             #except ValueError:
                 logError(_('Error processing line %(line)d of %(file)s.') % { 'line': i + 1, 'file': file_name })
+ */
 
-theResources = Resources()
+  Df::Resources theResources;
 
+/*
 # map an encoding name to its standard form
 def norm_encoding(e):
     if e is not None:
@@ -8294,33 +8306,40 @@ gobject.signal_new('open', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN
 gobject.signal_new('reload', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+ */
 
-# create nested subdirectories and return the complete path
-def make_subdirs(p, ss):
-    for s in ss:
-        p = os.path.join(p, s)
-        if not os.path.exists(p):
-            try:
-                os.mkdir(p)
-            except IOError:
-                pass
-    return p
+  // Process the commandline arguments
 
-# process the command line arguments
+  // Find the configuration directory and create it if it does not exist
+  bool found = false;
+  Glib::ustring rc_dir{
+      Glib::locale_to_utf8(Glib::getenv("XDG_CONFIG_HOME", found))};
+  std::vector<Glib::ustring> subdirs{"diffuse"};
+  if ((!found) || rc_dir.empty()) {
+    rc_dir = Glib::get_home_dir();
+    subdirs.emplace(subdirs.cbegin(), ".config");
+  }
+  if (!Df::make_subdirs(rc_dir, subdirs)) {
+    std::cerr << "Failed to create configuration directory\n";
+    return 1;
+  }
+  // Find the local data directory and create it if it does not exist
+  Glib::ustring data_dir{
+      Glib::locale_to_utf8(Glib::getenv("XDG_DATA_HOME", found))};
+  subdirs = {"diffuse"};
+  if ((!found) || data_dir.empty()) {
+    data_dir = Glib::get_home_dir();
+    subdirs.emplace(subdirs.cbegin(), "share");
+    subdirs.emplace(subdirs.cbegin(), ".local");
+  }
+  if (!Df::make_subdirs(data_dir, subdirs)) {
+    std::cerr << "Failed to create data directory\n";
+    return 1;
+  }
+
+/*
 if __name__ == '__main__':
-    # find the config directory and create it if it didn't exist
-    rc_dir, subdirs = os.environ.get('XDG_CONFIG_HOME', None), ['diffuse']
-    if rc_dir is None:
-        rc_dir = os.path.expanduser('~')
-        subdirs.insert(0, '.config')
-    rc_dir = make_subdirs(rc_dir, subdirs)
-    # find the local data directory and create it if it didn't exist
-    data_dir, subdirs = os.environ.get('XDG_DATA_HOME', None), ['diffuse']
-    if data_dir is None:
-        data_dir = os.path.expanduser('~')
-        subdirs[:0] = [ '.local', 'share' ]
-    data_dir = make_subdirs(data_dir, subdirs)
-    # load resource files
+	# load resource files
     i, rc_files = 1, []
     if argc == 2 and args[1] == '--no-rcfile':
         i += 1
@@ -8468,3 +8487,6 @@ if __name__ == '__main__':
         # save state
         diff.saveState(statepath)
  */
+
+  return 0;
+}
