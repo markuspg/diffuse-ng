@@ -15,16 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DF_UTILS_H
-#define DF_UTILS_H
-
-#include <glibmm/ustring.h>
-
-#include <vector>
+#ifndef DF_GLOBALS_H
+#define DF_GLOBALS_H
 
 namespace Diffuse {
-bool make_subdirs(Glib::ustring &p, const std::vector<Glib::ustring> &ss);
-void printMessage(const Glib::ustring &s);
+inline constexpr auto APP_NAME = "Diffuse";
+inline constexpr auto COPYRIGHT =
+    "Copyright © 2006-2014 Derrick Moser\nCopyright © 2022      Markus Prasser";
+inline constexpr auto VERSION = "0.4.9";
+inline constexpr auto WEBSITE = "http://diffuse.sourceforge.net";
 } // namespace Diffuse
 
-#endif // DF_UTILS_H
+#endif // DF_GLOBALS_H

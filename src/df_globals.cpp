@@ -15,16 +15,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DF_UTILS_H
-#define DF_UTILS_H
-
-#include <glibmm/ustring.h>
-
-#include <vector>
-
-namespace Diffuse {
-bool make_subdirs(Glib::ustring &p, const std::vector<Glib::ustring> &ss);
-void printMessage(const Glib::ustring &s);
-} // namespace Diffuse
-
-#endif // DF_UTILS_H
+#include "df_globals.h"

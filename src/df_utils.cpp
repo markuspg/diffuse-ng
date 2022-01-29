@@ -17,7 +17,10 @@
 
 #include "df_utils.h"
 
+#include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
+
+#include <iostream>
 
 namespace Df = Diffuse;
 
@@ -41,4 +44,15 @@ bool Df::make_subdirs(Glib::ustring &p, const std::vector<Glib::ustring> &ss) {
   }
 
   return false;
+}
+
+/**
+ * @brief Print a UTF-8 encoded string using the host's native encoding
+ * @param[in] s A UTF-8 encoded string which shall be printed
+ */
+void Df::printMessage(const Glib::ustring &s) {
+  try {
+    std::cout << Glib::locale_from_utf8(s);
+  } catch (const Glib::ConvertError &e) {
+  }
 }

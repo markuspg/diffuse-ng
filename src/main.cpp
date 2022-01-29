@@ -16,6 +16,7 @@
  */
 
 #include "df_diffuse.h"
+#include "df_globals.h"
 #include "df_resources.h"
 #include "df_utils.h"
 
@@ -93,65 +94,73 @@ gettext.bindtextdomain('diffuse', locale_dir)
 
 gettext.textdomain('diffuse')
 _ = gettext.gettext
+ */
 
-APP_NAME = 'Diffuse'
-VERSION = '0.4.8'
-COPYRIGHT = _('Copyright © 2006-2014 Derrick Moser')
-WEBSITE = 'http://diffuse.sourceforge.net/'
+  // Process help options
+  std::vector<Glib::ustring> tmp_args;
+  for (int i = 0; i < argc; ++i) {
+    tmp_args.emplace_back(Glib::locale_to_utf8(argv[i]));
+  }
+  const std::vector<Glib::ustring> args{std::move(tmp_args)};
 
-# print a UTF-8 string using the host's native encoding
-def printMessage(s):
-    try:
-        print codecs.encode(unicode(s, 'utf_8'), sys.getfilesystemencoding())
-    except UnicodeEncodeError:
-        pass
+  if ((2 == argc) && ("-v" == args[1]) || ("--version" == args[1])) {
+    Df::printMessage(Glib::ustring{Df::APP_NAME} + " " + Df::VERSION + "\n" +
+                     Df::COPYRIGHT);
+    return 0;
+  }
+  if ((2 == argc) && ("-h" == args[1]) || ("--help" == args[1])) {
+    Df::printMessage(
+        "Usage:\n"
+        "    diffuse [ [OPTION...] [FILE...] ]...\n"
+        "    diffuse ( -h | -? | --help | -v | --version )\n"
+        "\n"
+        "Diffuse is a graphical tool for merging and comparing text files.  "
+        "Diffuse is\n"
+        "able to compare an arbitrary number of files side-by-side and gives "
+        "users the\n"
+        "ability to manually adjust line matching and directly edit files.  "
+        "Diffuse can\n"
+        "also retrieve revisions of files from Bazaar, CVS, Darcs, Git, "
+        "Mercurial,\n"
+        "Monotone, RCS, Subversion, and SVK repositories for comparison and "
+        "merging.\n"
+        "\n"
+        "Help Options:\n"
+        "  ( -h | -? | --help )             Display this usage information\n"
+        "  ( -v | --version )               Display version and copyright "
+        "information\n"
+        "\n"
+        "Configuration Options:\n"
+        "  --no-rcfile                      Do not read any resource files\n"
+        "  --rcfile <file>                  Specify explicit resource file\n"
+        "\n"
+        "General Options:\n"
+        "  ( -c | --commit ) <rev>          File revisions <rev-1> and <rev>\n"
+        "  ( -D | --close-if-same )         Close all tabs with no "
+        "differences\n"
+        "  ( -e | --encoding ) <codec>      Use <codec> to read and write "
+        "files\n"
+        "  ( -L | --label ) <label>         Display <label> instead of the "
+        "file name\n"
+        "  ( -m | --modified )              Create a new tab for each modified "
+        "file\n"
+        "  ( -r | --revision ) <rev>        File revision <rev>\n"
+        "  ( -s | --separate )              Create a new tab for each file\n"
+        "  ( -t | --tab )                   Start a new tab\n"
+        "  --line <line>                    Start with line <line> selected\n"
+        "  --null-file                      Create a blank file comparison "
+        "pane\n"
+        "\n"
+        "Display Options:\n"
+        "  ( -b | --ignore-space-change )   Ignore changes to white space\n"
+        "  ( -B | --ignore-blank-lines )    Ignore changes in blank lines\n"
+        "  ( -E | --ignore-end-of-line )    Ignore end of line differences\n"
+        "  ( -i | --ignore-case )           Ignore case differences\n"
+        "  ( -w | --ignore-all-space )      Ignore white space differences\n");
+    return 0;
+  }
 
-# process help options
-if __name__ == '__main__':
-    args = sys.argv
-    argc = len(args)
-    if argc == 2 and args[1] in [ '-v', '--version' ]:
-        printMessage('%s %s\n%s' % (APP_NAME, VERSION, COPYRIGHT))
-        sys.exit(0)
-    if argc == 2 and args[1] in [ '-h', '-?', '--help' ]:
-        printMessage(_('''Usage:
-    diffuse [ [OPTION...] [FILE...] ]...
-    diffuse ( -h | -? | --help | -v | --version )
-
-Diffuse is a graphical tool for merging and comparing text files.  Diffuse is
-able to compare an arbitrary number of files side-by-side and gives users the
-ability to manually adjust line matching and directly edit files.  Diffuse can
-also retrieve revisions of files from Bazaar, CVS, Darcs, Git, Mercurial,
-Monotone, RCS, Subversion, and SVK repositories for comparison and merging.
-
-Help Options:
-  ( -h | -? | --help )             Display this usage information
-  ( -v | --version )               Display version and copyright information
-
-Configuration Options:
-  --no-rcfile                      Do not read any resource files
-  --rcfile <file>                  Specify explicit resource file
-
-General Options:
-  ( -c | --commit ) <rev>          File revisions <rev-1> and <rev>
-  ( -D | --close-if-same )         Close all tabs with no differences
-  ( -e | --encoding ) <codec>      Use <codec> to read and write files
-  ( -L | --label ) <label>         Display <label> instead of the file name
-  ( -m | --modified )              Create a new tab for each modified file
-  ( -r | --revision ) <rev>        File revision <rev>
-  ( -s | --separate )              Create a new tab for each file
-  ( -t | --tab )                   Start a new tab
-  --line <line>                    Start with line <line> selected
-  --null-file                      Create a blank file comparison pane
-
-Display Options:
-  ( -b | --ignore-space-change )   Ignore changes to white space
-  ( -B | --ignore-blank-lines )    Ignore changes in blank lines
-  ( -E | --ignore-end-of-line )    Ignore end of line differences
-  ( -i | --ignore-case )           Ignore case differences
-  ( -w | --ignore-all-space )      Ignore white space differences'''))
-        sys.exit(0)
-
+/*
 import pygtk
 pygtk.require('2.0')
 import gtk
