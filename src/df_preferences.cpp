@@ -15,23 +15,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DF_DIFFUSE_H
-#define DF_DIFFUSE_H
-
 #include "df_preferences.h"
-
-#include <gtkmm/window.h>
-
-namespace Diffuse {
-class Diffuse {
-public:
-  Diffuse(const Glib::ustring &rc_dir);
-
-  bool loadState(const Glib::ustring &statepath) { return true; }
-  void preferences_updated() {}
-
-  Preferences prefs;
-};
-} // namespace Diffuse
-
-#endif // DF_DIFFUSE_H

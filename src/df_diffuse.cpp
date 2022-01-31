@@ -16,3 +16,10 @@
  */
 
 #include "df_diffuse.h"
+
+#include <glibmm/miscutils.h>
+
+namespace Df = Diffuse;
+
+Df::Diffuse::Diffuse(const Glib::ustring &rc_dir)
+    : prefs{Glib::build_filename(rc_dir, "prefs")} {}

@@ -24,6 +24,8 @@
 #include <glibmm/miscutils.h>
 
 #include <iostream>
+#include <optional>
+#include <variant>
 
 namespace Df = Diffuse;
 
@@ -1107,9 +1109,6 @@ class Preferences:
     # get/set methods to manipulate the preference values
     def getBool(self, name):
         return self.bool_prefs[name]
-
-    def setBool(self, name, value):
-        self.bool_prefs[name] = value
 
     def getInt(self, name):
         return self.int_prefs[name]
@@ -8337,6 +8336,17 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
     return 1;
   }
 
+  // Load resource files
+  unsigned i = 1;
+  std::vector<Glib::ustring> rc_files;
+  if ((2 == argc) && ("--no-rcfile" == args[1])) {
+    ++i;
+  } else if ((3 == argc) && ("--rcfile" == args[1])) {
+    ++i;
+    rc_files.emplace_back(args[i]);
+    ++i;
+  }
+
 /*
 if __name__ == '__main__':
 	# load resource files
@@ -8374,88 +8384,134 @@ if __name__ == '__main__':
     return 1;
   }
 
+  // Process remaining commandline options
+  bool close_on_same = false;
+  using Encoding = std::optional<Glib::ustring>;
+  Encoding encoding;
+  bool had_specs = false;
+  using Labels = std::vector<Glib::ustring>;
+  Labels labels;
+  Glib::ustring mode{"single"};
+  using Options =
+      std::map<Glib::ustring, std::variant<Glib::ustring, unsigned long>>;
+  Options options;
+  struct Revision {
+    Revision(const std::optional<Glib::ustring> &rev, const Encoding &enc)
+        : revision{rev}, encoding{enc} {}
+    std::optional<Glib::ustring> revision;
+    Encoding encoding;
+  };
+
+  using Revs = std::vector<Revision>;
+  Revs revs;
+  struct Specification {
+    Specification(const std::optional<Glib::ustring> &fn, const Revs &revs)
+        : filename{fn}, revisions{revs} {}
+    std::optional<Glib::ustring> filename;
+    Revs revisions;
+  };
+
+  using Specs = std::vector<Specification>;
+  Specs specs;
+
+  while (i < argc) {
+    const Glib::ustring arg{args[i]};
+    if (!arg.empty() && ('-' == arg[0])) {
+      if ((i + 1 < argc) && (("-c" == arg) || ("--commit" == arg))) {
+        // Specified revision
+        // funcs[mode](specs, labels, options)
+        ++i;
+        const Glib::ustring rev{args[i]};
+        labels.clear();
+        mode = "commit";
+        options.emplace("commit", args[i]);
+        specs.clear();
+      } else if (("-D" == arg) || ("--close-if-same" == arg)) {
+        close_on_same = true;
+      } else if ((i + 1 < argc) && (("-e" == arg) || ("--encoding" == arg))) {
+        ++i;
+        encoding = args[i];
+        // encoding = encodings.aliases.aliases.get(encoding, encoding)
+      } else if (("-m" == arg) || ("--modified" == arg)) {
+        // funcs[mode](specs, labels, options)
+        labels.clear();
+        mode = "modified";
+        options.clear();
+        specs.clear();
+      } else if ((i + 1 < argc) && (("-r" == arg) || ("--revision" == arg))) {
+        // Specified revision
+        ++i;
+        revs.emplace_back(args[i], encoding);
+      } else if (("-s" == arg) || ("--separate" == arg)) {
+        // funcs[mode](specs, labels, options)
+        labels.clear();
+        // Open items in separate tabs
+        mode = "separate";
+        options.clear();
+        specs.clear();
+      } else if (("-t" == arg) || ("--tab" == arg)) {
+        // funcs[mode](specs, labels, options)
+        labels.clear();
+        // Start a new tab
+        mode = "single";
+        options.clear();
+        specs.clear();
+      } else if (("-b" == arg) || ("--ignore-space-change" == arg)) {
+        diff.prefs.setBool("display_ignore_whitespace_changes", true);
+        diff.prefs.setBool("align_ignore_whitespace_changes", true);
+        diff.preferences_updated();
+      } else if (("-B" == arg) || ("--ignore-blank-lines" == arg)) {
+        diff.prefs.setBool("display_ignore_blanklines", true);
+        diff.prefs.setBool("align_ignore_blanklines", true);
+        diff.preferences_updated();
+      } else if (("-E" == arg) || ("--ignore-end-of-line" == arg)) {
+        diff.prefs.setBool("display_ignore_endofline", true);
+        diff.prefs.setBool("align_ignore_endofline", true);
+        diff.preferences_updated();
+      } else if (("-i" == arg) || ("--ignore-case" == arg)) {
+        diff.prefs.setBool("display_ignore_case", true);
+        diff.prefs.setBool("align_ignore_case", true);
+        diff.preferences_updated();
+      } else if (("-w" == arg) || ("--ignore-all-space" == arg)) {
+        diff.prefs.setBool("display_ignore_whitespace", true);
+        diff.prefs.setBool("align_ignore_whitespace", true);
+        diff.preferences_updated();
+      } else if ((i + 1 < argc) && ("-L" == arg)) {
+        ++i;
+        labels.emplace_back(args[i]);
+      } else if ((i + 1 < argc) && ("--line" == arg)) {
+        ++i;
+        try {
+          options["line"] = std::stoul(args[i]);
+        } catch (const std::invalid_argument &e) {
+          std::cerr << "Could not parse passed line number\n";
+        } catch (const std::out_of_range &e) {
+          std::cerr << "Passed line number is out of range\n";
+        }
+      } else if ("--null-file" == arg) {
+        // Add a blank file pane
+        if (("separate" == mode) || ("single" == mode)) {
+          if (revs.empty()) {
+            revs.emplace_back(std::nullopt, encoding);
+          }
+          specs.emplace_back(std::nullopt, revs);
+          revs.clear();
+        }
+        had_specs = true;
+      } else {
+        Df::logError("Skipping unknown argument \"" + args[i] + "\"");
+      }
+    } else {
+    }
+  }
+
 /*
-    # process remaining command line arguments
-    encoding, revs, close_on_same = None, [], False
-    specs, had_specs, labels = [], False, []
     funcs = { 'modified': diff.createModifiedFileTabs,
               'commit': diff.createCommitFileTabs,
               'separate': diff.createSeparateTabs,
               'single': diff.createSingleTab }
-    mode, options = 'single', {}
     while i < argc:
         arg = args[i]
-        if len(arg) > 0 and arg[0] == '-':
-            if i + 1 < argc and arg in [ '-c', '--commit' ]:
-                # specified revision
-                funcs[mode](specs, labels, options)
-                i += 1
-                rev = args[i]
-                specs, labels, options = [], [], { 'commit': args[i] }
-                mode = 'commit'
-            elif arg in [ '-D', '--close-if-same' ]:
-                close_on_same = True
-            elif i + 1 < argc and arg in [ '-e', '--encoding' ]:
-                i += 1
-                encoding = args[i]
-                encoding = encodings.aliases.aliases.get(encoding, encoding)
-            elif arg in [ '-m', '--modified' ]:
-                funcs[mode](specs, labels, options)
-                specs, labels, options = [], [], {}
-                mode = 'modified'
-            elif i + 1 < argc and arg in [ '-r', '--revision' ]:
-                # specified revision
-                i += 1
-                revs.append((unicode(args[i], sys.getfilesystemencoding()), encoding))
-            elif arg in [ '-s', '--separate' ]:
-                funcs[mode](specs, labels, options)
-                specs, labels, options = [], [], {}
-                # open items in separate tabs
-                mode = 'separate'
-            elif arg in [ '-t', '--tab' ]:
-                funcs[mode](specs, labels, options)
-                specs, labels, options = [], [], {}
-                # start a new tab
-                mode = 'single'
-            elif arg in [ '-b', '--ignore-space-change' ]:
-                diff.prefs.setBool('display_ignore_whitespace_changes', True)
-                diff.prefs.setBool('align_ignore_whitespace_changes', True)
-                diff.preferences_updated()
-            elif arg in [ '-B', '--ignore-blank-lines' ]:
-                diff.prefs.setBool('display_ignore_blanklines', True)
-                diff.prefs.setBool('align_ignore_blanklines', True)
-                diff.preferences_updated()
-            elif arg in [ '-E', '--ignore-end-of-line' ]:
-                diff.prefs.setBool('display_ignore_endofline', True)
-                diff.prefs.setBool('align_ignore_endofline', True)
-                diff.preferences_updated()
-            elif arg in [ '-i', '--ignore-case' ]:
-                diff.prefs.setBool('display_ignore_case', True)
-                diff.prefs.setBool('align_ignore_case', True)
-                diff.preferences_updated()
-            elif arg in [ '-w', '--ignore-all-space' ]:
-                diff.prefs.setBool('display_ignore_whitespace', True)
-                diff.prefs.setBool('align_ignore_whitespace', True)
-                diff.preferences_updated()
-            elif i + 1 < argc and arg == '-L':
-                i += 1
-                labels.append(unicode(args[i], sys.getfilesystemencoding()))
-            elif i + 1 < argc and arg == '--line':
-                i += 1
-                try:
-                    options['line'] = int(args[i])
-                except ValueError:
-                    logError(_('Error parsing line number.'))
-            elif arg == '--null-file':
-                # add a blank file pane
-                if mode == 'single' or mode == 'separate':
-                    if len(revs) == 0:
-                        revs.append((None, encoding))
-                    specs.append((None, revs))
-                    revs = []
-                had_specs = True
-            else:
-                logError(_('Skipping unknown argument "%s".') % (args[i], ))
         else:
             filename = diff.prefs.convertToNativePath(args[i])
             if (mode == 'single' or mode == 'separate') and os.path.isdir(filename):

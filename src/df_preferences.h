@@ -15,23 +15,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DF_DIFFUSE_H
-#define DF_DIFFUSE_H
+#ifndef DF_PREFERENCES_H
+#define DF_PREFERENCES_H
 
-#include "df_preferences.h"
+#include <glibmm/ustring.h>
 
-#include <gtkmm/window.h>
+#include <map>
 
 namespace Diffuse {
-class Diffuse {
+class Preferences {
 public:
-  Diffuse(const Glib::ustring &rc_dir);
+  Preferences(const Glib::ustring &path) {}
 
-  bool loadState(const Glib::ustring &statepath) { return true; }
-  void preferences_updated() {}
+  void setBool(const Glib::ustring &name, bool value) {
+    bool_prefs[name] = value;
+  }
 
-  Preferences prefs;
+  std::map<Glib::ustring, bool> bool_prefs;
 };
 } // namespace Diffuse
 
-#endif // DF_DIFFUSE_H
+#endif // DF_PREFERENCES_H
