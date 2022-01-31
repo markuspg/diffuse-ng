@@ -23,6 +23,7 @@
 #include <vector>
 
 namespace Diffuse {
+void logError(const Glib::ustring &s);
 bool make_subdirs(Glib::ustring &p, const std::vector<Glib::ustring> &ss);
 void printMessage(const Glib::ustring &s);
 } // namespace Diffuse

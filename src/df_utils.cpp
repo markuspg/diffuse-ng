@@ -16,6 +16,7 @@
  */
 
 #include "df_utils.h"
+#include "df_message_dialog.h"
 
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
@@ -23,6 +24,15 @@
 #include <iostream>
 
 namespace Df = Diffuse;
+
+/**
+ * @brief Report error messages by means of a user-visible message dialog
+ * @param[in] s The error message to display to the user
+ */
+void Df::logError(const Glib::ustring &s) {
+  MessageDialog m{Gtk::MESSAGE_ERROR, s};
+  m.run();
+}
 
 /**
  * @brief Create nested subdirectories within a particular directory
