@@ -20,6 +20,7 @@
 
 #include "df_preferences.h"
 
+#include <gtkmm/notebook.h>
 #include <gtkmm/window.h>
 
 #include <optional>
@@ -45,10 +46,11 @@ struct Specification {
 };
 using Specs = std::vector<Specification>;
 
-class Diffuse {
+class Diffuse : Gtk::Window {
 public:
   Diffuse(const Glib::ustring &rc_dir);
 
+  void closeOnSame();
   void createCommitFileTabs(const Specs &items, const Labels &labels,
                             const Options &options) {}
   void createModifiedFileTabs(const Specs &items, const Labels &labels,
@@ -59,7 +61,9 @@ public:
                        const Options &options) {}
   bool loadState(const Glib::ustring &statepath) { return true; }
   void preferences_updated() {}
+  void saveState(const Glib::ustring &statepath);
 
+  Gtk::Notebook notebook;
   Preferences prefs;
 };
 } // namespace Diffuse

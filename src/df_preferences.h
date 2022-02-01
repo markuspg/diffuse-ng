@@ -28,6 +28,7 @@ public:
   Preferences(const Glib::ustring &path) {}
 
   Glib::ustring convertToNativePath(const Glib::ustring &s) { return s; };
+  bool getBool(const Glib::ustring &name) { return bool_prefs[name]; }
   void setBool(const Glib::ustring &name, bool value) {
     bool_prefs[name] = value;
   }

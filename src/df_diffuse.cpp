@@ -23,3 +23,7 @@ namespace Df = Diffuse;
 
 Df::Diffuse::Diffuse(const Glib::ustring &rc_dir)
     : prefs{Glib::build_filename(rc_dir, "prefs")} {}
+
+void Df::Diffuse::closeOnSame() {}
+
+void Df::Diffuse::saveState(const Glib::ustring &statepath) {}

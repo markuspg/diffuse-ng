@@ -20,6 +20,8 @@
 #include "df_resources.h"
 #include "df_utils.h"
 
+#include <gtkmm/main.h>
+
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
 
@@ -28,6 +30,7 @@
 namespace Df = Diffuse;
 
 int main(int argc, char *argv[]) {
+  Gtk::Main app{argc, argv};
 
 /*
 #!/usr/bin/env python
@@ -8521,23 +8524,22 @@ if __name__ == '__main__':
   }
   (diff.*(funcs[mode]))(specs, labels, options);
 
-/*
-    # create a file diff viewer if the command line arguments haven't
-    # implicitly created any
-    if not had_specs:
-        diff.newLoadedFileDiffViewer([])
-    elif close_on_same:
-        diff.closeOnSame()
-    nb = diff.notebook
-    n = nb.get_n_pages()
-    if n > 0:
-        nb.set_show_tabs(diff.prefs.getBool('tabs_always_show') or n > 1)
-        nb.get_nth_page(0).grab_focus()
-        diff.show()
-        gtk.main()
-        # save state
-        diff.saveState(statepath)
- */
+  // Create a file diff viewer if the commandline arguments have not created any
+  if (!had_specs) {
+    // diff.newLoadedFileDiffViewer([])
+  } else if (close_on_same) {
+    diff.closeOnSame();
+  }
+  Gtk::Notebook &nb = diff.notebook;
+  const auto n = nb.get_n_pages();
+  if (n > 0) {
+    nb.set_show_tabs(diff.prefs.getBool("tabs_always_show") || (n > 1));
+    nb.get_nth_page(0)->grab_focus();
+    // diff.show();
+    app.run();
+    // Save state
+    diff.saveState(statepath);
+  }
 
   return 0;
 }
