@@ -24,8 +24,6 @@
 #include <glibmm/miscutils.h>
 
 #include <iostream>
-#include <optional>
-#include <variant>
 
 namespace Df = Diffuse;
 
@@ -8386,40 +8384,28 @@ if __name__ == '__main__':
 
   // Process remaining commandline options
   bool close_on_same = false;
-  using Encoding = std::optional<Glib::ustring>;
-  Encoding encoding;
+  Df::Encoding encoding;
+  std::map<Glib::ustring,
+           void (Df::Diffuse::*)(const Df::Specs &, const Df::Labels &,
+                                 const Df::Options &)>
+      funcs{{"commit", &Df::Diffuse::createCommitFileTabs},
+            {"modified", &Df::Diffuse::createModifiedFileTabs},
+            {"separate", &Df::Diffuse::createSeparateTabs},
+            {"single", &Df::Diffuse::createSingleTab}};
   bool had_specs = false;
-  using Labels = std::vector<Glib::ustring>;
-  Labels labels;
+  Df::Labels labels;
   Glib::ustring mode{"single"};
-  using Options =
-      std::map<Glib::ustring, std::variant<Glib::ustring, unsigned long>>;
-  Options options;
-  struct Revision {
-    Revision(const std::optional<Glib::ustring> &rev, const Encoding &enc)
-        : revision{rev}, encoding{enc} {}
-    std::optional<Glib::ustring> revision;
-    Encoding encoding;
-  };
+  Df::Options options;
+  Df::Revs revs;
 
-  using Revs = std::vector<Revision>;
-  Revs revs;
-  struct Specification {
-    Specification(const std::optional<Glib::ustring> &fn, const Revs &revs)
-        : filename{fn}, revisions{revs} {}
-    std::optional<Glib::ustring> filename;
-    Revs revisions;
-  };
-
-  using Specs = std::vector<Specification>;
-  Specs specs;
+  Df::Specs specs;
 
   while (i < argc) {
     const Glib::ustring arg{args[i]};
     if (!arg.empty() && ('-' == arg[0])) {
       if ((i + 1 < argc) && (("-c" == arg) || ("--commit" == arg))) {
         // Specified revision
-        // funcs[mode](specs, labels, options)
+        (diff.*(funcs[mode]))(specs, labels, options);
         ++i;
         const Glib::ustring rev{args[i]};
         labels.clear();
@@ -8433,7 +8419,7 @@ if __name__ == '__main__':
         encoding = args[i];
         // encoding = encodings.aliases.aliases.get(encoding, encoding)
       } else if (("-m" == arg) || ("--modified" == arg)) {
-        // funcs[mode](specs, labels, options)
+        (diff.*(funcs[mode]))(specs, labels, options);
         labels.clear();
         mode = "modified";
         options.clear();
@@ -8443,14 +8429,14 @@ if __name__ == '__main__':
         ++i;
         revs.emplace_back(args[i], encoding);
       } else if (("-s" == arg) || ("--separate" == arg)) {
-        // funcs[mode](specs, labels, options)
+        (diff.*(funcs[mode]))(specs, labels, options);
         labels.clear();
         // Open items in separate tabs
         mode = "separate";
         options.clear();
         specs.clear();
       } else if (("-t" == arg) || ("--tab" == arg)) {
-        // funcs[mode](specs, labels, options)
+        (diff.*(funcs[mode]))(specs, labels, options);
         labels.clear();
         // Start a new tab
         mode = "single";
@@ -8529,17 +8515,13 @@ if __name__ == '__main__':
   }
 
   if ((("commit" == mode) || ("modified" == mode)) && specs.empty()) {
-    specs.emplace_back(Glib::get_current_dir(), Revs{{std::nullopt, encoding}});
+    specs.emplace_back(Glib::get_current_dir(),
+                       Df::Revs{{std::nullopt, encoding}});
     had_specs = true;
   }
-  // funcs[mode](specs, labels, options)
+  (diff.*(funcs[mode]))(specs, labels, options);
 
 /*
-    funcs = { 'modified': diff.createModifiedFileTabs,
-              'commit': diff.createCommitFileTabs,
-              'separate': diff.createSeparateTabs,
-              'single': diff.createSingleTab }
-
     # create a file diff viewer if the command line arguments haven't
     # implicitly created any
     if not had_specs:

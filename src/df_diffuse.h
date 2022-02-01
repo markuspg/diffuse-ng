@@ -22,11 +22,41 @@
 
 #include <gtkmm/window.h>
 
+#include <optional>
+#include <variant>
+
 namespace Diffuse {
+using Encoding = std::optional<Glib::ustring>;
+using Labels = std::vector<Glib::ustring>;
+using Options =
+    std::map<Glib::ustring, std::variant<Glib::ustring, unsigned long>>;
+struct Revision {
+  Revision(const std::optional<Glib::ustring> &rev, const Encoding &enc)
+      : revision{rev}, encoding{enc} {}
+  std::optional<Glib::ustring> revision;
+  Encoding encoding;
+};
+using Revs = std::vector<Revision>;
+struct Specification {
+  Specification(const std::optional<Glib::ustring> &fn, const Revs &revs)
+      : filename{fn}, revisions{revs} {}
+  std::optional<Glib::ustring> filename;
+  Revs revisions;
+};
+using Specs = std::vector<Specification>;
+
 class Diffuse {
 public:
   Diffuse(const Glib::ustring &rc_dir);
 
+  void createCommitFileTabs(const Specs &items, const Labels &labels,
+                            const Options &options) {}
+  void createModifiedFileTabs(const Specs &items, const Labels &labels,
+                              const Options &options) {}
+  void createSeparateTabs(const Specs &items, const Labels &labels,
+                          const Options &options) {}
+  void createSingleTab(const Specs &items, const Labels &labels,
+                       const Options &options) {}
   bool loadState(const Glib::ustring &statepath) { return true; }
   void preferences_updated() {}
 
