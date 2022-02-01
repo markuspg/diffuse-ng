@@ -8502,35 +8502,43 @@ if __name__ == '__main__':
         Df::logError("Skipping unknown argument \"" + args[i] + "\"");
       }
     } else {
+      std::optional<std::string> filename{
+          Glib::locale_from_utf8(diff.prefs.convertToNativePath(args[i]))};
+      if ((("separate" == mode) || ("single" == mode)) &&
+          Glib::file_test(filename.value(), Glib::FILE_TEST_IS_DIR)) {
+        if (!specs.empty()) {
+          filename = Glib::build_filename(
+              filename.value(), Glib::path_get_basename(Glib::locale_from_utf8(
+                                    specs.back().filename.value())));
+        } else {
+          Df::logError("Error processing argument \"" + args[i] +
+                       "\". Directory not expected.");
+          filename.reset();
+        }
+      }
+      if (filename.has_value()) {
+        if (revs.empty()) {
+          revs.emplace_back(std::nullopt, encoding);
+        }
+        specs.emplace_back(filename, revs);
+        revs.clear();
+      }
+      had_specs = true;
     }
+    ++i;
   }
+
+  if ((("commit" == mode) || ("modified" == mode)) && specs.empty()) {
+    specs.emplace_back(Glib::get_current_dir(), Revs{{std::nullopt, encoding}});
+    had_specs = true;
+  }
+  // funcs[mode](specs, labels, options)
 
 /*
     funcs = { 'modified': diff.createModifiedFileTabs,
               'commit': diff.createCommitFileTabs,
               'separate': diff.createSeparateTabs,
               'single': diff.createSingleTab }
-    while i < argc:
-        arg = args[i]
-        else:
-            filename = diff.prefs.convertToNativePath(args[i])
-            if (mode == 'single' or mode == 'separate') and os.path.isdir(filename):
-                if len(specs) > 0:
-                    filename = os.path.join(filename, os.path.basename(specs[-1][0]))
-                else:
-                    logError(_('Error processing argument "%s".  Directory not expected.') % (args[i], ))
-                    filename = None
-            if filename is not None:
-                if len(revs) == 0:
-                    revs.append((None, encoding))
-                specs.append((filename, revs))
-                revs = []
-            had_specs = True
-        i += 1
-    if mode in [ 'modified', 'commit' ] and len(specs) == 0:
-        specs.append((os.curdir, [ (None, encoding) ]))
-        had_specs = True
-    funcs[mode](specs, labels, options)
 
     # create a file diff viewer if the command line arguments haven't
     # implicitly created any
