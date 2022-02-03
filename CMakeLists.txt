@@ -12,5 +12,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 find_package(PkgConfig)
 
 pkg_check_modules(GLIBMM2 REQUIRED glibmm-2.4>=2.64.2)
+pkg_check_modules(GTKMM2 REQUIRED gtkmm-2.4>=2.24.5)
 
 add_subdirectory(src)
