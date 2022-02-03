@@ -18,7 +18,28 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-int main(int argc, char *argv[]) {
+#include "df_globals.h"
+#include "df_utils.h"
+
+#include <glibmm/convert.h>
+
+namespace Df = Diffuse;
+
+static std::vector<Glib::ustring> build_args_vec(const int argc,
+                                                 const char *const argv[]);
+
+static std::vector<Glib::ustring> build_args_vec(const int argc,
+                                                 const char *const argv[]) {
+  std::vector<Glib::ustring> tmp_args_vec;
+
+  for (int i = 0; i < argc; ++i) {
+    tmp_args_vec.emplace_back(Glib::locale_to_utf8(argv[i]));
+  }
+
+  return tmp_args_vec;
+}
+
+int main(const int argc, char *argv[]) {
 
 /*
 import codecs
@@ -64,26 +85,18 @@ gettext.bindtextdomain('diffuse', locale_dir)
 
 gettext.textdomain('diffuse')
 _ = gettext.gettext
+ */
 
-APP_NAME = 'Diffuse'
-VERSION = '0.4.8'
-COPYRIGHT = _('Copyright © 2006-2014 Derrick Moser')
-WEBSITE = 'http://diffuse.sourceforge.net/'
+  const std::vector<Glib::ustring> args{build_args_vec(argc, argv)};
 
-# print a UTF-8 string using the host's native encoding
-def printMessage(s):
-    try:
-        print codecs.encode(unicode(s, 'utf_8'), sys.getfilesystemencoding())
-    except UnicodeEncodeError:
-        pass
+  // Process help options
+  if ((2 == argc) && (("-v" == args[1]) || ("--version" == args[1]))) {
+    Df::printMessage(Glib::ustring{Df::APP_NAME} + " " + Df::VERSION + "\n" +
+                     Df::COPYRIGHT);
+    return 0;
+  }
 
-# process help options
-if __name__ == '__main__':
-    args = sys.argv
-    argc = len(args)
-    if argc == 2 and args[1] in [ '-v', '--version' ]:
-        printMessage('%s %s\n%s' % (APP_NAME, VERSION, COPYRIGHT))
-        sys.exit(0)
+/*
     if argc == 2 and args[1] in [ '-h', '-?', '--help' ]:
         printMessage(_('''Usage:
     diffuse [ [OPTION...] [FILE...] ]...

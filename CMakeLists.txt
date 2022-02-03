@@ -9,4 +9,8 @@ project(Diffuse
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+find_package(PkgConfig)
+
+pkg_check_modules(GLIBMM2 REQUIRED glibmm-2.4>=2.64.2)
+
 add_subdirectory(src)
