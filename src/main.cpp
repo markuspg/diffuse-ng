@@ -27,10 +27,14 @@
 
 #include <gtkmm/window.h>
 
+#include <iostream>
+
 namespace Df = Diffuse;
 
 static std::vector<Glib::ustring> build_args_vec(const int argc,
                                                  const char *const argv[]);
+static bool make_subdirs(Glib::ustring &p,
+                         const std::vector<Glib::ustring> &ss);
 
 static std::vector<Glib::ustring> build_args_vec(const int argc,
                                                  const char *const argv[]) {
@@ -41,6 +45,30 @@ static std::vector<Glib::ustring> build_args_vec(const int argc,
   }
 
   return tmp_args_vec;
+}
+
+/**
+ * @brief Create nested subdirectories and return the complete path
+ * @param[in,out] p The root directory in which the subdirectories shall be
+ *   created (will be set to the new path in case of success or if dir exists)
+ * @param[in] ss The list of nested subdirectories that shall be created
+ * @return true in case of success or if the directory exists or false otherwise
+ */
+static bool make_subdirs(Glib::ustring &p,
+                         const std::vector<Glib::ustring> &ss) {
+  std::vector<Glib::ustring> tmp_vec;
+  for (const auto &s : ss) {
+    tmp_vec.emplace_back(Glib::locale_from_utf8(s));
+  }
+  tmp_vec.emplace(tmp_vec.cbegin(), Glib::locale_from_utf8(p));
+  Glib::ustring path{Glib::build_filename(tmp_vec)};
+
+  if (0 == g_mkdir_with_parents(path.c_str(), 0755)) {
+    p = path;
+    return true;
+  }
+
+  return false;
 }
 
 int main(const int argc, char *argv[]) {
@@ -8257,32 +8285,37 @@ gobject.signal_new('open', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN
 gobject.signal_new('reload', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+ */
 
-# create nested subdirectories and return the complete path
-def make_subdirs(p, ss):
-    for s in ss:
-        p = os.path.join(p, s)
-        if not os.path.exists(p):
-            try:
-                os.mkdir(p)
-            except IOError:
-                pass
-    return p
+  // Process the commandline argument
+  // Find the config directory and create it if it does not exist
+  bool found;
+  Glib::ustring rc_dir = Glib::locale_to_utf8(
+      Glib::getenv(Glib::locale_from_utf8("XDG_CONFIG_HOME"), found));
+  std::vector<Glib::ustring> subdirs{"diffuse"};
+  if (rc_dir.empty() || !found) {
+    rc_dir = Glib::locale_to_utf8(Glib::get_home_dir());
+    subdirs.emplace(subdirs.cbegin(), ".config");
+  }
+  if (!make_subdirs(rc_dir, subdirs)) {
+    std::cerr << "Failed to create configuration directory\n";
+    return 1;
+  }
+  // Find the local data directory and create it if it does not exist
+  Glib::ustring data_dir = Glib::locale_to_utf8(
+      Glib::getenv(Glib::locale_from_utf8("XDG_DATA_HOME"), found));
+  subdirs = {"diffuse"};
+  if (data_dir.empty() || !found) {
+    data_dir = Glib::locale_to_utf8(Glib::get_home_dir());
+    subdirs.emplace(subdirs.cbegin(), "share");
+    subdirs.emplace(subdirs.cbegin(), ".local");
+  }
+  if (!make_subdirs(data_dir, subdirs)) {
+    std::cerr << "Failed to create data directory\n";
+    return 1;
+  }
 
-# process the command line arguments
-if __name__ == '__main__':
-    # find the config directory and create it if it didn't exist
-    rc_dir, subdirs = os.environ.get('XDG_CONFIG_HOME', None), [u'diffuse']
-    if rc_dir is None:
-        rc_dir = os.path.expanduser(u'~')
-        subdirs.insert(0, u'.config')
-    rc_dir = make_subdirs(rc_dir, subdirs)
-    # find the local data directory and create it if it didn't exist
-    data_dir, subdirs = os.environ.get('XDG_DATA_HOME', None), [u'diffuse']
-    if data_dir is None:
-        data_dir = os.path.expanduser(u'~')
-        subdirs[:0] = [ u'.local', u'share' ]
-    data_dir = make_subdirs(data_dir, subdirs)
+/*
     # load resource files
     i, rc_files = 1, []
     if i < argc  and args[i] == '--no-rcfile':
