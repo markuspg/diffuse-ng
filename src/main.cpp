@@ -18,6 +18,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "df_diffuse.h"
 #include "df_globals.h"
 #include "df_resources.h"
 #include "df_utils.h"
@@ -192,10 +193,6 @@ import webbrowser
 if not hasattr(__builtins__, 'WindowsError'):
     # define 'WindowsError' so 'except' statements will work on all platforms
     WindowsError = IOError
-
-# convenience function to display debug messages
-def logDebug(s):
-    pass #sys.stderr.write('%s: %s\n', (APP_NAME, s))
 
 # avoid some dictionary lookups when string.whitespace is used in loops
 # this is sorted based upon frequency to speed up code for stripping whitespace
@@ -8354,12 +8351,15 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
     }
   }
 
+  Df::Diffuse diff{rc_dir};
+  // Load state
+  const std::string statepath{Glib::build_filename(
+      Glib::locale_from_utf8(data_dir), Glib::locale_from_utf8("state"))};
+  // Load state
+  if (!diff.loadState(statepath)) {
+    Df::logDebug("Failed to load state information of previous sessions");
+  }
 /*
-    diff = Diffuse(rc_dir)
-    # load state
-    statepath = os.path.join(data_dir, 'state')
-    diff.loadState(statepath)
-
     # process remaining command line arguments
     encoding, revs, close_on_same = None, [], False
     specs, had_specs, labels = [], False, []

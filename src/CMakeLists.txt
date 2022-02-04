@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.18.4)
 
 add_executable(${PROJECT_NAME}
     df_colour.cpp
+    df_diffuse.cpp
     df_globals.cpp
     df_message_dialog.cpp
     df_resources.cpp

@@ -18,16 +18,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef DF_UTILS_H
-#define DF_UTILS_H
+#ifndef DF_DIFFUSE_H
+#define DF_DIFFUSE_H
 
 #include <glibmm/ustring.h>
 
 namespace Diffuse {
-bool isWindows();
-void logDebug(const Glib::ustring &s);
-void logError(const Glib::ustring &s);
-void printMessage(const Glib::ustring &s);
+class Diffuse {
+public:
+  Diffuse(const Glib::ustring &rc_dir);
+
+  bool loadState(const std::string &statepath);
+};
 } // namespace Diffuse
 
-#endif // DF_UTILS_H
+#endif // DF_DIFFUSE_H

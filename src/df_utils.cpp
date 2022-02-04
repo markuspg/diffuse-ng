@@ -19,6 +19,7 @@
  */
 
 #include "df_utils.h"
+#include "df_globals.h"
 #include "df_message_dialog.h"
 
 #include <glibmm/convert.h>
@@ -28,6 +29,15 @@
 namespace Df = Diffuse;
 
 bool Df::isWindows() { return false; }
+
+/**
+ * @brief Convenience function to write debug messages to stderr
+ * @param[in] s The error message to display to the user
+ */
+void Df::logDebug(const Glib::ustring &s) {
+  // std::cerr << Glib::locale_from_utf8(Glib::ustring{Df::APP_NAME} + ": " + s
+  //                                     "\n");
+}
 
 /**
  * @brief Display an error message to the user
