@@ -8359,15 +8359,23 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
   if (!diff.loadState(statepath)) {
     Df::logDebug("Failed to load state information of previous sessions");
   }
+
+  // Process remaining commandline arguments
+  bool close_on_same = false;
+  Df::Encoding encoding;
+  Df::TabCreationFuncMap funcs{
+      {"commit", &Df::Diffuse::createCommitFileTabs},
+      {"modified", &Df::Diffuse::createModifiedFileTabs},
+      {"separate", &Df::Diffuse::createSeparateTabs},
+      {"single", &Df::Diffuse::createSingleTab}};
+  bool had_specs = false;
+  Df::Labels labels;
+  Glib::ustring mode{"single"};
+  Df::Options options;
+  Df::Revisions revs;
+  Df::Specs specs;
+
 /*
-    # process remaining command line arguments
-    encoding, revs, close_on_same = None, [], False
-    specs, had_specs, labels = [], False, []
-    funcs = { 'modified': diff.createModifiedFileTabs,
-              'commit': diff.createCommitFileTabs,
-              'separate': diff.createSeparateTabs,
-              'single': diff.createSingleTab }
-    mode, options = 'single', {}
     while i < argc:
         arg = args[i]
         if len(arg) > 0 and arg[0] == '-':

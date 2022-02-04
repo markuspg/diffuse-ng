@@ -23,13 +23,38 @@
 
 #include <glibmm/ustring.h>
 
+#include <map>
+#include <optional>
+#include <variant>
+#include <vector>
+
 namespace Diffuse {
+using Encoding = std::optional<Glib::ustring>;
+using Labels = std::vector<Glib::ustring>;
+using Options =
+    std::map<Glib::ustring, std::variant<Glib::ustring, unsigned long>>;
+using Revisions = std::vector<void *>;
+using Specs = std::vector<void *>;
+
 class Diffuse {
 public:
   Diffuse(const Glib::ustring &rc_dir);
 
+  void createCommitFileTabs(const Specs &items, const Labels &labels,
+                            const Options &options);
+  void createModifiedFileTabs(const Specs &items, const Labels &labels,
+                              const Options &options);
+  void createSeparateTabs(const Specs &items, const Labels &labels,
+                          const Options &options);
+  void createSingleTab(const Specs &items, const Labels &labels,
+                       const Options &options);
+
   bool loadState(const std::string &statepath);
 };
+
+using TabCreationFunc = void (Diffuse::*)(const Specs &, const Labels &,
+                                          const Options &);
+using TabCreationFuncMap = std::map<Glib::ustring, TabCreationFunc>;
 } // namespace Diffuse
 
 #endif // DF_DIFFUSE_H
