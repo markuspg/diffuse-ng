@@ -27,6 +27,8 @@
 
 namespace Df = Diffuse;
 
+bool Df::isWindows() { return false; }
+
 /**
  * @brief Display an error message to the user
  * @param[in] s The error message to display to the user

@@ -30,6 +30,8 @@ class Resources {
 public:
   Resources();
 
+  bool parse(const std::string &file_name);
+
 private:
   void set_binding(const Glib::ustring &ctx, const Glib::ustring &s,
                    const Glib::ustring &v);

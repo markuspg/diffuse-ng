@@ -149,6 +149,8 @@ Df::Resources::Resources() {
   set_binding("character_mode", "enter_line_mode", "Escape");
 }
 
+bool Df::Resources::parse(const std::string &file_name) { return true; }
+
 void Df::Resources::set_binding(const Glib::ustring &ctx,
                                 const Glib::ustring &s,
                                 const Glib::ustring &v) {}
