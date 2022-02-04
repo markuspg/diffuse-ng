@@ -18,14 +18,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef DF_UTILS_H
-#define DF_UTILS_H
+#ifndef DF_MESSAGE_DIALOG_H
+#define DF_MESSAGE_DIALOG_H
 
-#include <glibmm/ustring.h>
+#include <gtkmm/messagedialog.h>
 
 namespace Diffuse {
-void logError(const Glib::ustring &s);
-void printMessage(const Glib::ustring &s);
+/**
+ * @brief Convenience class for displaying a message dialogue
+ */
+class MessageDialog : public Gtk::MessageDialog {
+public:
+  MessageDialog(Gtk::MessageType type, const Glib::ustring &s);
+  MessageDialog(Gtk::Window &parent, Gtk::MessageType type,
+                const Glib::ustring &s);
+};
 } // namespace Diffuse
 
-#endif // DF_UTILS_H
+#endif // DF_MESSAGE_DIALOG_H

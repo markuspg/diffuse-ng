@@ -18,31 +18,29 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "df_utils.h"
 #include "df_message_dialog.h"
-
-#include <glibmm/convert.h>
-
-#include <iostream>
+#include "df_globals.h"
 
 namespace Df = Diffuse;
 
-/**
- * @brief Display an error message to the user
- * @param[in] s The error message to display to the user
- */
-void Df::logError(const Glib::ustring &s) {
-  MessageDialog m{Gtk::MESSAGE_ERROR, s};
-  m.run();
+Df::MessageDialog::MessageDialog(const Gtk::MessageType type,
+                                 const Glib::ustring &s)
+    : Gtk::MessageDialog{s, false, type,
+                         Gtk::MESSAGE_ERROR == type ? Gtk::BUTTONS_OK
+                                                    : Gtk::BUTTONS_OK_CANCEL,
+                         true} {
+  set_title(APP_NAME);
 }
 
-/**
- * @brief Print a UTF-8 string using the host's native encoding
- * @param[in] s The message which shall be printed
- */
-void Df::printMessage(const Glib::ustring &s) {
-  try {
-    std::cout << Glib::locale_from_utf8(s) << std::endl;
-  } catch (const Glib::ConvertError &e) {
-  }
+Df::MessageDialog::MessageDialog(Gtk::Window &parent,
+                                 const Gtk::MessageType type,
+                                 const Glib::ustring &s)
+    : Gtk::MessageDialog{parent,
+                         s,
+                         false,
+                         type,
+                         Gtk::MESSAGE_ERROR == type ? Gtk::BUTTONS_OK
+                                                    : Gtk::BUTTONS_OK_CANCEL,
+                         true} {
+  set_title(APP_NAME);
 }
