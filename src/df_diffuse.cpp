@@ -20,9 +20,13 @@
 
 #include "df_diffuse.h"
 
+#include <glibmm/convert.h>
+#include <glibmm/miscutils.h>
+
 namespace Df = Diffuse;
 
-Df::Diffuse::Diffuse(const Glib::ustring &rc_dir) {}
+Df::Diffuse::Diffuse(const Glib::ustring &rc_dir)
+    : prefs{Glib::build_filename(rc_dir, Glib::locale_from_utf8("prefs"))} {}
 
 void Df::Diffuse::createCommitFileTabs(const Specs &items, const Labels &labels,
                                        const Options &options) {}
@@ -38,3 +42,8 @@ void Df::Diffuse::createSingleTab(const Specs &items, const Labels &labels,
                                   const Options &options) {}
 
 bool Df::Diffuse::loadState(const std::string &statepath) { return true; }
+
+/**
+ * @brief Notify all viewers to changes to the preferences
+ */
+void Df::Diffuse::preferences_updated() {}

@@ -21,9 +21,8 @@
 #ifndef DF_DIFFUSE_H
 #define DF_DIFFUSE_H
 
-#include <glibmm/ustring.h>
+#include "df_preferences.h"
 
-#include <map>
 #include <optional>
 #include <variant>
 #include <vector>
@@ -50,6 +49,9 @@ public:
                        const Options &options);
 
   bool loadState(const std::string &statepath);
+  void preferences_updated();
+
+  Preferences prefs;
 };
 
 using TabCreationFunc = void (Diffuse::*)(const Specs &, const Labels &,

@@ -722,7 +722,6 @@ class FontButton(gtk.FontButton):
     def get_text(self):
         return self.get_font_name()
 
-# class to store preferences and construct a dialogue for manipulating them
 class Preferences:
     def __init__(self, path):
         self.bool_prefs = {}
@@ -1031,21 +1030,8 @@ class Preferences:
             return table
 
     # get/set methods to manipulate the preference values
-    def getBool(self, name):
-        return self.bool_prefs[name]
-
-    def setBool(self, name, value):
-        self.bool_prefs[name] = value
-
     def getInt(self, name):
         return self.int_prefs[name]
-
-    def getString(self, name):
-        return self.string_prefs[name]
-
-    def setString(self, name, value):
-        self.string_prefs[name] = value
-
     def getEncodings(self):
         return self.encodings
 
@@ -8170,7 +8156,6 @@ class Diffuse(gtk.Window):
     def go_to_line_cb(self, widget, data):
         self.getCurrentViewer().go_to_line_cb(widget, data)
 
-    # notify all viewers of changes to the preferences
     def preferences_updated(self):
         n = self.notebook.get_n_pages()
         self.notebook.set_show_tabs(self.prefs.getBool('tabs_always_show') or n > 1)
