@@ -32,8 +32,24 @@ using Encoding = std::optional<Glib::ustring>;
 using Labels = std::vector<Glib::ustring>;
 using Options =
     std::map<Glib::ustring, std::variant<Glib::ustring, unsigned long>>;
-using Revisions = std::vector<void *>;
-using Specs = std::vector<void *>;
+struct Revision {
+  Revision(const std::optional<Glib::ustring> &rev,
+           std::optional<Glib::ustring> &enc)
+      : revision{rev}, encoding{enc} {}
+
+  std::optional<Glib::ustring> revision;
+  Encoding encoding;
+};
+using Revisions = std::vector<Revision>;
+struct Specification {
+  Specification(const std::optional<std::string> &fn, const Revisions &revs)
+      : filename{fn}, revisions{revs} {}
+
+  std::optional<std::string> filename;
+  Revisions revisions;
+};
+
+using Specs = std::vector<Specification>;
 
 class Diffuse {
 public:
