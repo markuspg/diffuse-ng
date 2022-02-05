@@ -23,3 +23,7 @@
 namespace Df = Diffuse;
 
 Df::Preferences::Preferences(const std::string &path) {}
+
+Glib::ustring Df::Preferences::convertToNativePath(const Glib::ustring &s) {
+  return s;
+}

@@ -42,6 +42,8 @@ struct Revision {
 };
 using Revisions = std::vector<Revision>;
 struct Specification {
+  Specification(const std::string &fn, const Revisions &revs)
+      : filename{fn}, revisions{revs} {}
   Specification(const std::optional<std::string> &fn, const Revisions &revs)
       : filename{fn}, revisions{revs} {}
 

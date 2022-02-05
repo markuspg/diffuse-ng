@@ -45,6 +45,8 @@ public:
     string_prefs[name] = value;
   }
 
+  Glib::ustring convertToNativePath(const Glib::ustring &s);
+
 private:
   std::map<Glib::ustring, bool> bool_prefs;
   std::map<Glib::ustring, Glib::ustring> string_prefs;

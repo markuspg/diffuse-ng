@@ -8457,32 +8457,41 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
                                             args[i] + "\n")
                   << std::endl;
       }
+    } else {
+      std::optional<std::string> filename{
+          Glib::locale_from_utf8(diff.prefs.convertToNativePath(args[i]))};
+      if ((("separate" == mode) || ("single" == mode)) &&
+          Glib::file_test(filename.value(), Glib::FILE_TEST_IS_DIR)) {
+        if (!specs.empty()) {
+          filename = Glib::build_filename(
+              filename.value(),
+              Glib::path_get_basename(specs.back().filename.value()));
+        } else {
+          std::cerr << Glib::locale_from_utf8("Error processing argument \"" +
+                                              args[i] +
+                                              "\". Directory not expected.");
+          filename.reset();
+        }
+      }
+      if (filename) {
+        if (revs.empty()) {
+          revs.emplace_back(std::nullopt, encoding);
+        }
+        specs.emplace_back(filename, revs);
+        revs.clear();
+      }
+      had_specs = true;
     }
+    ++i;
   }
+  if ((("commit" == mode) || ("modified" == mode)) && specs.empty()) {
+    specs.emplace_back(Glib::get_current_dir(),
+                       Df::Revisions{Df::Revision{std::nullopt, encoding}});
+    had_specs = true;
+  }
+  (diff.*(funcs[mode]))(specs, labels, options);
 
 /*
-    while i < argc:
-        if len(arg) > 0 and arg[0] == '-':
-        else:
-            filename = diff.prefs.convertToNativePath(args[i])
-            if (mode == 'single' or mode == 'separate') and os.path.isdir(filename):
-                if len(specs) > 0:
-                    filename = os.path.join(filename, os.path.basename(specs[-1][0]))
-                else:
-                    logError(_('Error processing argument "%s".  Directory not expected.') % (args[i], ))
-                    filename = None
-            if filename is not None:
-                if len(revs) == 0:
-                    revs.append((None, encoding))
-                specs.append((filename, revs))
-                revs = []
-            had_specs = True
-        i += 1
-    if mode in [ 'modified', 'commit' ] and len(specs) == 0:
-        specs.append((os.curdir, [ (None, encoding) ]))
-        had_specs = True
-    funcs[mode](specs, labels, options)
-
     # create a file diff viewer if the command line arguments haven't
     # implicitly created any
     if not had_specs:
