@@ -26,6 +26,7 @@
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
 
+#include <gtkmm/main.h>
 #include <gtkmm/window.h>
 
 #include <iostream>
@@ -72,7 +73,9 @@ static bool make_subdirs(Glib::ustring &p,
   return false;
 }
 
-int main(const int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
+  Gtk::Main app{argc, argv};
+
   // Use the program's location as a starting place to search for supporting
   // files such as icon and help documentation
   const Glib::ustring app_path{Glib::locale_to_utf8(argv[0])};
@@ -7952,7 +7955,6 @@ class Diffuse(gtk.Window):
                     dialog.run()
                     dialog.destroy()
 
-    # close all tabs without differences
     def closeOnSame(self):
         for i in range(self.notebook.get_n_pages() - 1, -1, -1):
             if not self.notebook.get_nth_page(i).hasDifferences():
@@ -8491,23 +8493,25 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
   }
   (diff.*(funcs[mode]))(specs, labels, options);
 
-/*
-    # create a file diff viewer if the command line arguments haven't
-    # implicitly created any
-    if not had_specs:
-        diff.newLoadedFileDiffViewer([])
-    elif close_on_same:
-        diff.closeOnSame()
-    nb = diff.notebook
-    n = nb.get_n_pages()
-    if n > 0:
-        nb.set_show_tabs(diff.prefs.getBool('tabs_always_show') or n > 1)
-        nb.get_nth_page(0).grab_focus()
-        diff.show()
-        gtk.main()
-        # save state
-        diff.saveState(statepath)
- */
+  // Create a file diff viewer if the commandline arguments have not implicitly
+  // created any
+  if (!had_specs) {
+    diff.newLoadedFileDiffViewer({});
+  } else if (close_on_same) {
+    diff.closeOnSame();
+  }
+
+  Gtk::Notebook &nb = diff.notebook;
+  const auto n = nb.get_n_pages();
+  if (0 < n) {
+    nb.set_show_tabs((true == diff.prefs.getBool("tabs_always_show")) ||
+                     (1 < n));
+    nb.get_nth_page(0)->grab_focus();
+    diff.show();
+    app.run();
+    // Save state
+    diff.saveState(statepath);
+  }
 
   return 0;
 }

@@ -28,6 +28,11 @@ namespace Df = Diffuse;
 Df::Diffuse::Diffuse(const Glib::ustring &rc_dir)
     : prefs{Glib::build_filename(rc_dir, Glib::locale_from_utf8("prefs"))} {}
 
+/**
+ * @brief Close all tabs without differences
+ */
+void Df::Diffuse::closeOnSame() {}
+
 void Df::Diffuse::createCommitFileTabs(const Specs &items, const Labels &labels,
                                        const Options &options) {}
 
@@ -43,7 +48,11 @@ void Df::Diffuse::createSingleTab(const Specs &items, const Labels &labels,
 
 bool Df::Diffuse::loadState(const std::string &statepath) { return true; }
 
+void Df::Diffuse::newLoadedFileDiffViewer(const std::vector<void *> &items) {}
+
 /**
  * @brief Notify all viewers to changes to the preferences
  */
 void Df::Diffuse::preferences_updated() {}
+
+void Df::Diffuse::saveState(const std::string &statepath) {}

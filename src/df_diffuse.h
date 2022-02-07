@@ -23,6 +23,9 @@
 
 #include "df_preferences.h"
 
+#include <gtkmm/notebook.h>
+#include <gtkmm/window.h>
+
 #include <optional>
 #include <variant>
 #include <vector>
@@ -53,7 +56,7 @@ struct Specification {
 
 using Specs = std::vector<Specification>;
 
-class Diffuse {
+class Diffuse : public Gtk::Window {
 public:
   Diffuse(const Glib::ustring &rc_dir);
 
@@ -66,9 +69,13 @@ public:
   void createSingleTab(const Specs &items, const Labels &labels,
                        const Options &options);
 
+  void closeOnSame();
   bool loadState(const std::string &statepath);
+  void newLoadedFileDiffViewer(const std::vector<void *> &items);
   void preferences_updated();
+  void saveState(const std::string &statepath);
 
+  Gtk::Notebook notebook;
   Preferences prefs;
 };
 
