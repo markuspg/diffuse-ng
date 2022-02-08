@@ -21,9 +21,14 @@
 #ifndef DF_RESOURCES_H
 #define DF_RESOURCES_H
 
+#include "df_colour.h"
+
 #include <glibmm/ustring.h>
 
 #include <map>
+#include <optional>
+#include <set>
+#include <vector>
 
 namespace Diffuse {
 class Resources {
@@ -35,10 +40,30 @@ public:
 private:
   void set_binding(const Glib::ustring &ctx, const Glib::ustring &s,
                    const Glib::ustring &v);
+  void setDifferenceColours(const Glib::ustring &s);
+
+  // Default colours
+  std::map<Glib::ustring, Colour> colours;
+  std::vector<Glib::ustring> difference_colours;
+
+  // Default floats
+  std::map<Glib::ustring, float> floats;
+
+  // Default strings
+  std::map<void *, void *> strings;
+
+  // Syntax highlighting support
+  std::optional<void *> current_syntax;
+  std::map<void *, void *> syntaxes;
+  std::map<void *, void *> syntax_file_patterns;
+  std::map<void *, void *> syntax_magic_patterns;
 
   // Default keybindings
   std::map<void *, void *> keybindings;
   std::map<void *, void *> keybindings_lookup;
+
+  // List of imported resource files (each is being imported only once)
+  std::set<void *> resource_files;
 };
 } // namespace Diffuse
 
