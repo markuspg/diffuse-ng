@@ -23,10 +23,14 @@
 
 #include <glibmm/ustring.h>
 
+#include <optional>
+
 namespace Diffuse {
 bool isWindows();
 void logDebug(const Glib::ustring &s);
 void logError(const Glib::ustring &s);
+std::optional<Glib::ustring>
+norm_encoding(const std::optional<Glib::ustring> &e);
 void printMessage(const Glib::ustring &s);
 } // namespace Diffuse
 

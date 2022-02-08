@@ -19,10 +19,29 @@
  */
 
 #include "df_preferences.h"
+#include "df_utils.h"
+
+#include <glibmm/convert.h>
+
+#include <algorithm>
+#include <locale>
+#include <vector>
 
 namespace Df = Diffuse;
 
-Df::Preferences::Preferences(const std::string &path) {}
+Df::Preferences::Preferences(const std::string &path)
+    : svk_bin{Df::isWindows() ? "svk.bat" : "svk"} {
+  // Find available encodings
+  // self.encodings = sorted(set(encodings.aliases.aliases.values()))
+  std::vector<Glib::ustring> auto_detect_codecs{"utf_8", "utf_16", "latin_1"};
+  const auto e{norm_encoding(Glib::locale_to_utf8(std::locale{""}.name()))};
+  if (e && (std::find(auto_detect_codecs.cbegin(), auto_detect_codecs.cend(),
+                      e.value()) == auto_detect_codecs.cend())) {
+    // Insert after UTF-8 as the default encoding may prevent UTF-8 from being
+    // tried
+    auto_detect_codecs.emplace(std::cbegin(auto_detect_codecs) + 2, e.value());
+  }
+}
 
 Glib::ustring Df::Preferences::convertToNativePath(const Glib::ustring &s) {
   return s;

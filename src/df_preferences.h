@@ -49,7 +49,13 @@ public:
 
 private:
   std::map<Glib::ustring, bool> bool_prefs;
+  std::map<Glib::ustring, int> int_prefs;
+  std::map<Glib::ustring, int> int_prefs_max;
+  std::map<Glib::ustring, int> int_prefs_min;
   std::map<Glib::ustring, Glib::ustring> string_prefs;
+  std::map<Glib::ustring, void *> string_prefs_enums;
+
+  const Glib::ustring svk_bin;
 };
 } // namespace Diffuse
 

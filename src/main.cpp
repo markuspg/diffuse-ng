@@ -656,11 +656,6 @@ class Resources:
   Df::Resources theResources{};
 
 /*
-# map an encoding name to its standard form
-def norm_encoding(e):
-    if e is not None:
-        return e.replace('-', '_').lower()
-
 # widget to help pick an encoding
 class EncodingMenu(gtk.HBox):
     def __init__(self, prefs, autodetect=False):
@@ -727,28 +722,6 @@ class FontButton(gtk.FontButton):
 
 class Preferences:
     def __init__(self, path):
-        self.bool_prefs = {}
-        self.int_prefs = {}
-        self.string_prefs = {}
-        self.int_prefs_min = {}
-        self.int_prefs_max = {}
-        self.string_prefs_enums = {}
-
-        # find available encodings
-        self.encodings = sorted(set(encodings.aliases.aliases.values()))
-
-        if isWindows():
-            svk_bin = 'svk.bat'
-        else:
-            svk_bin = 'svk'
-
-        auto_detect_codecs = [ 'utf_8', 'utf_16', 'latin_1' ]
-        e = norm_encoding(sys.getfilesystemencoding())
-        if e not in auto_detect_codecs:
-            # insert after UTF-8 as the default encoding may prevent UTF-8 from
-            # being tried
-            auto_detect_codecs.insert(2, e)
-
         # self.template describes how preference dialogue layout
         #
         # this will be traversed later to build the preferences dialogue and

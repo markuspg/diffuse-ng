@@ -49,6 +49,22 @@ void Df::logError(const Glib::ustring &s) {
 }
 
 /**
+ * @brief Map an encoding name to its standard form
+ * @param[in] e The encoding which shall be mapped
+ * @return A mapped copy of the passed encoding
+ */
+std::optional<Glib::ustring>
+Df::norm_encoding(const std::optional<Glib::ustring> &e) {
+  std::optional<Glib::ustring> ret;
+
+  if (e) {
+    // e.replace('-', '_').lower() TODO
+  }
+
+  return ret;
+}
+
+/**
  * @brief Print a UTF-8 string using the host's native encoding
  * @param[in] s The message which shall be printed
  */
