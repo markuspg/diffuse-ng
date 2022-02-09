@@ -662,14 +662,6 @@ class FileEntry(gtk.HBox):
     def get_text(self):
         return self.entry.get_text()
 
-# adaptor class to allow a gtk.FontButton to be read like a gtk.Entry
-class FontButton(gtk.FontButton):
-    def __init__(self):
-        gtk.FontButton.__init__(self)
-
-    def get_text(self):
-        return self.get_font_name()
-
 class Preferences:
     def __init__(self, path):
         # self.template describes how preference dialogue layout
