@@ -24,6 +24,8 @@
 #include <glibmm/ustring.h>
 
 #include <map>
+#include <variant>
+#include <vector>
 
 namespace Diffuse {
 /**
@@ -48,6 +50,47 @@ public:
   Glib::ustring convertToNativePath(const Glib::ustring &s);
 
 private:
+  struct Pref {
+    const Glib::ustring name;
+  };
+  struct BoolPref : public Pref {
+    const bool dflt;
+    const Glib::ustring label;
+  };
+  struct EncodingPref : public Pref {
+    const Glib::ustring dflt;
+    const Glib::ustring label;
+  };
+  struct FilePref : public Pref {
+    const Glib::ustring dflt;
+    const Glib::ustring label;
+  };
+  struct FontPref : public Pref {
+    const Glib::ustring dflt;
+    const Glib::ustring label;
+  };
+  struct IntPref : public Pref {
+    const int dflt;
+    const Glib::ustring label;
+    const int min;
+    const int max;
+  };
+  struct StringPref : public Pref {
+    const Glib::ustring dflt;
+    const Glib::ustring label;
+  };
+
+  struct Folder {
+    const Glib::ustring label;
+    std::vector<std::variant<BoolPref, EncodingPref, FilePref, FontPref,
+                             IntPref, StringPref>>
+        entries;
+  };
+  struct Template {
+    const Glib::ustring label;
+    std::vector<Folder> folders;
+  };
+
   std::map<Glib::ustring, bool> bool_prefs;
   std::map<Glib::ustring, int> int_prefs;
   std::map<Glib::ustring, int> int_prefs_max;
@@ -56,6 +99,8 @@ private:
   std::map<Glib::ustring, void *> string_prefs_enums;
 
   const Glib::ustring svk_bin;
+
+  Template tmplt;
 };
 } // namespace Diffuse
 

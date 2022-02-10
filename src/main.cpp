@@ -680,47 +680,6 @@ class Preferences:
         #    [ 'String', name, default, label ]
         #    [ 'File', name, default, label ]
         #    [ 'Font', name, default, label ]
-        self.template = [ 'FolderSet',
-            _('Display'),
-            [ 'List',
-              [ 'Font', 'display_font', 'Monospace 10', _('Font') ],
-              [ 'Integer', 'display_tab_width', 8, _('Tab width'), 1, 1024 ],
-              [ 'Boolean', 'display_show_right_margin', True, _('Show right margin') ],
-              [ 'Integer', 'display_right_margin', 80, _('Right margin'), 1, 8192 ],
-              [ 'Boolean', 'display_show_line_numbers', True, _('Show line numbers') ],
-              [ 'Boolean', 'display_show_whitespace', False, _('Show white space characters') ],
-              [ 'Boolean', 'display_ignore_case', False, _('Ignore case differences') ],
-              [ 'Boolean', 'display_ignore_whitespace', False, _('Ignore white space differences') ],
-              [ 'Boolean', 'display_ignore_whitespace_changes', False, _('Ignore changes to white space') ],
-              [ 'Boolean', 'display_ignore_blanklines', False, _('Ignore blank line differences') ],
-              [ 'Boolean', 'display_ignore_endofline', False, _('Ignore end of line differences') ]
-            ],
-            _('Alignment'),
-            [ 'List',
-              [ 'Boolean', 'align_ignore_case', False, _('Ignore case') ],
-              [ 'Boolean', 'align_ignore_whitespace', True, _('Ignore white space') ],
-              [ 'Boolean', 'align_ignore_whitespace_changes', False, _('Ignore changes to white space') ],
-              [ 'Boolean', 'align_ignore_blanklines', False, _('Ignore blank lines') ],
-              [ 'Boolean', 'align_ignore_endofline', True, _('Ignore end of line characters') ]
-            ],
-            _('Editor'),
-            [ 'List',
-              [ 'Boolean', 'editor_auto_indent', True, _('Auto indent') ],
-              [ 'Boolean', 'editor_expand_tabs', False, _('Expand tabs to spaces') ],
-              [ 'Integer', 'editor_soft_tab_width', 8, _('Soft tab width'), 1, 1024 ]
-            ],
-            _('Tabs'),
-            [ 'List',
-              [ 'Integer', 'tabs_default_panes', 2, _('Default panes'), 2, 16 ],
-              [ 'Boolean', 'tabs_always_show', False, _('Always show the tab bar') ],
-              [ 'Boolean', 'tabs_warn_before_quit', True, _('Warn me when closing a tab will quit %s') % APP_NAME ]
-            ],
-            _('Regional Settings'),
-            [ 'List',
-              [ 'Encoding', 'encoding_default_codec', sys.getfilesystemencoding(), _('Default codec') ],
-              [ 'String', 'encoding_auto_detect_codecs', ' '.join(auto_detect_codecs), _('Order of codecs used to identify encoding') ]
-            ],
-        ]
         # conditions used to determine if a preference should be greyed out
         self.disable_when = {
             'display_right_margin': ('display_show_right_margin', False),
