@@ -98,6 +98,8 @@ private:
   std::map<Glib::ustring, Glib::ustring> string_prefs;
   std::map<Glib::ustring, void *> string_prefs_enums;
 
+  const std::map<Glib::ustring, std::pair<Glib::ustring, bool>> disable_when;
+
   const Glib::ustring svk_bin;
 
   Template tmplt;

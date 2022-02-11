@@ -31,7 +31,22 @@
 namespace Df = Diffuse;
 
 Df::Preferences::Preferences(const std::string &path)
-    : svk_bin{Df::isWindows() ? "svk.bat" : "svk"},
+    : disable_when{{"display_right_margin",
+                    {"display_show_right_margin", false}},
+                   {"display_ignore_whitespace_changes",
+                    {"display_ignore_whitespace", true}},
+                   {"display_ignore_blanklines",
+                    {"display_ignore_whitespace", true}},
+                   {"display_ignore_endofline",
+                    {"display_ignore_whitespace", true}},
+                   {"align_ignore_whitespace_changes",
+                    {"align_ignore_whitespace", true}},
+                   {"align_ignore_blanklines",
+                    {"align_ignore_whitespace", true}},
+                   {"align_ignore_endofline",
+                    {"align_ignore_whitespace", true}}},
+      svk_bin{Df::isWindows() ? "svk.bat" : "svk"},
+
       tmplt{
           "FolderSet",
           {{"Display",

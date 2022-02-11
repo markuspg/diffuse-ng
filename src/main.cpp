@@ -681,15 +681,6 @@ class Preferences:
         #    [ 'File', name, default, label ]
         #    [ 'Font', name, default, label ]
         # conditions used to determine if a preference should be greyed out
-        self.disable_when = {
-            'display_right_margin': ('display_show_right_margin', False),
-            'display_ignore_whitespace_changes': ('display_ignore_whitespace', True),
-            'display_ignore_blanklines': ('display_ignore_whitespace', True),
-            'display_ignore_endofline': ('display_ignore_whitespace', True),
-            'align_ignore_whitespace_changes': ('align_ignore_whitespace', True),
-            'align_ignore_blanklines': ('align_ignore_whitespace', True),
-            'align_ignore_endofline': ('align_ignore_whitespace', True)
-        }
         if isWindows():
             root = os.environ.get('SYSTEMDRIVE', None)
             if root is None:
