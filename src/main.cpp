@@ -6495,33 +6495,6 @@ class FileChooserDialog(gtk.FileChooserDialog):
         if s is not None:
             return unicode(s, 'utf_8')
 
-# dialogue used to search for text
-class NumericDialog(gtk.Dialog):
-    def __init__(self, parent, title, text, val, lower, upper, step=1, page=0):
-        gtk.Dialog.__init__(self, title, parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
-
-        vbox = gtk.VBox()
-        vbox.set_border_width(10)
-
-        hbox = gtk.HBox()
-        label = gtk.Label(text)
-        hbox.pack_start(label, False, False, 0)
-        label.show()
-        adj = gtk.Adjustment(val, lower, upper, step, page)
-        self.button = button = gtk.SpinButton(adj, 0)
-        button.connect('activate', self.button_cb)
-        hbox.pack_start(button, True, True, 0)
-        button.show()
-
-        vbox.pack_start(hbox, True, True, 0)
-        hbox.show()
-
-        self.vbox.pack_start(vbox, False, False, 0)
-        vbox.show()
-
-    def button_cb(self, widget):
-        self.response(gtk.RESPONSE_ACCEPT)
-
 # establish callback for the about dialog's link to Diffuse's web site
 def url_hook(dialog, link, userdata):
     webbrowser.open(link)

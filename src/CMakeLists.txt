@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
     df_font_button.cpp
     df_globals.cpp
     df_message_dialog.cpp
+    df_numeric_dialog.cpp
     df_preferences.cpp
     df_resources.cpp
     df_utils.cpp
