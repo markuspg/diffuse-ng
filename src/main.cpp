@@ -630,38 +630,6 @@ class EncodingMenu(gtk.HBox):
         if i >= 0:
             return self.encodings[i]
 
-# text entry widget with a button to help pick file names
-class FileEntry(gtk.HBox):
-    def __init__(self, parent, title):
-        gtk.HBox.__init__(self)
-        self.toplevel = parent
-        self.title = title
-        self.entry = entry = gtk.Entry()
-        self.pack_start(entry, True, True, 0)
-        entry.show()
-        button = gtk.Button()
-        image = gtk.Image()
-        image.set_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
-        button.add(image)
-        image.show()
-        button.connect('clicked', self.chooseFile)
-        self.pack_start(button, False, False, 0)
-        button.show()
-
-    # action performed when the pick file button is pressed
-    def chooseFile(self, widget):
-        dialog = gtk.FileChooserDialog(self.title, self.toplevel, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        dialog.set_current_folder(unicode(os.path.realpath(os.curdir), sys.getfilesystemencoding()))
-        if dialog.run() == gtk.RESPONSE_OK:
-            self.entry.set_text(dialog.get_filename())
-        dialog.destroy()
-
-    def set_text(self, s):
-        self.entry.set_text(s)
-
-    def get_text(self):
-        return self.entry.get_text()
-
 class Preferences:
     def __init__(self, path):
         # self.template describes how preference dialogue layout

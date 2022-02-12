@@ -5,6 +5,7 @@ add_executable(${PROJECT_NAME}
     df_colour.cpp
     df_diffuse.cpp
     df_file_diff_viewer.cpp
+    df_file_entry.cpp
     df_font_button.cpp
     df_globals.cpp
     df_message_dialog.cpp
