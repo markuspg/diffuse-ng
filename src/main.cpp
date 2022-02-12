@@ -681,31 +681,7 @@ class Preferences:
         #    [ 'File', name, default, label ]
         #    [ 'Font', name, default, label ]
         # conditions used to determine if a preference should be greyed out
-        if isWindows():
-            root = os.environ.get('SYSTEMDRIVE', None)
-            if root is None:
-                root = 'C:\\'
-            elif not root.endswith('\\'):
-                root += '\\'
-            self.template.extend([
-                    _('Cygwin'),
-                    [ 'List',
-                      [ 'File', 'cygwin_root', os.path.join(root, 'cygwin'), _('Root directory') ],
-                      [ 'String', 'cygwin_cygdrive_prefix', '/cygdrive', _('Cygdrive prefix') ]
-                    ]
-                ])
-
         # create template for Version Control options
-        vcs = [ ('bzr', 'Bazaar', 'bzr'),
-                ('cvs', 'CVS', 'cvs'),
-                ('darcs', 'Darcs', 'darcs'),
-                ('git', 'Git', 'git'),
-                ('hg', 'Mercurial', 'hg'),
-                ('mtn', 'Monotone', 'mtn'),
-                ('rcs', 'RCS', None),
-                ('svn', 'Subversion', 'svn'),
-                ('svk', 'SVK', svk_bin) ]
-
         vcs_template = [ 'List',
               [ 'String', 'vcs_search_order', 'bzr cvs darcs git hg mtn rcs svn svk', _('Version control system search order') ] ]
         vcs_folders_template = [ 'FolderSet' ]

@@ -23,6 +23,7 @@
 #include "df_utils.h"
 
 #include <glibmm/convert.h>
+#include <glibmm/miscutils.h>
 
 #include <algorithm>
 #include <locale>
@@ -101,6 +102,32 @@ Df::Preferences::Preferences(const std::string &path)
     // tried
     auto_detect_codecs.emplace(std::cbegin(auto_detect_codecs) + 2, e.value());
   }
+
+  if (isWindows()) {
+    bool found;
+    Glib::ustring root = Glib::locale_to_utf8(
+        Glib::getenv(Glib::locale_from_utf8("SYSTEMDRIVE"), found));
+    if (!found) {
+      root = "C:\\\\";
+    } else if (0 != root.compare(root.size() - 2, 2, "\\\\")) {
+      root.append("\\\\");
+    }
+    tmplt.folders.emplace_back(
+        Folder{"Cygwin",
+               {FilePref{"cygwin_root",
+                         Glib::locale_to_utf8(Glib::build_filename(
+                             Glib::locale_from_utf8(root),
+                             Glib::locale_from_utf8("cygwin"))),
+                         "Root directory"},
+                StringPref{"cygwin_cygdrive_prefix", "/cygdrive",
+                           "Cygdrive prefix"}}});
+  }
+  std::vector<std::array<std::optional<Glib::ustring>, 3>> vcs{
+      {"bzr", "Bazaar", "bzr"},     {"cvs", "CVS", "cvs"},
+      {"darcs", "Darcs", "darcs"},  {"git", "Git", "git"},
+      {"hg", "Mercurial", "hg"},    {"mtn", "Monotone", "mtn"},
+      {"rcs", "RCS", std::nullopt}, {"svn", "Subversion", "svn"},
+      {"svk", "SVK", svk_bin}};
 }
 
 Glib::ustring Df::Preferences::convertToNativePath(const Glib::ustring &s) {
