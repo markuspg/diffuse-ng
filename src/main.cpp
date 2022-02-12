@@ -6560,31 +6560,6 @@ def url_hook(dialog, link, userdata):
 
 gtk.about_dialog_set_url_hook(url_hook, None)
 
-# the about dialogue
-class AboutDialog(gtk.AboutDialog):
-    def __init__(self):
-        gtk.AboutDialog.__init__(self)
-        self.set_logo_icon_name('diffuse')
-        if hasattr(self, 'set_program_name'):
-            # only available in pygtk >= 2.12
-            self.set_program_name(APP_NAME)
-        self.set_version(VERSION)
-        self.set_comments(_('Diffuse is a graphical tool for merging and comparing text files.'))
-        self.set_copyright(COPYRIGHT)
-        self.set_website(WEBSITE)
-        self.set_authors([ _('Derrick Moser <derrick_moser@yahoo.com>') ])
-        self.set_translator_credits(_('translator-credits'))
-        ss = [ APP_NAME + ' ' + VERSION + '\n',
-               COPYRIGHT + '\n\n',
-               _("""This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the licence, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program.  You may also obtain a copy of the GNU General Public License from the Free Software Foundation by visiting their web site (http://www.fsf.org/) or by writing to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-""") ]
-        self.set_license(''.join(ss))
-        self.set_wrap_license(True)
-
 # widget classed to create notebook tabs with labels and a close button
 # use notebooktab.button.connect() to be notified when the button is pressed
 # make this a gtk.EventBox so signals can be connected for MMB and RMB button
