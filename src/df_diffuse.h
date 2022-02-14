@@ -23,6 +23,7 @@
 
 #include "df_preferences.h"
 
+#include <gtkmm/box.h>
 #include <gtkmm/notebook.h>
 #include <gtkmm/window.h>
 
@@ -77,6 +78,29 @@ public:
 
   Gtk::Notebook notebook;
   Preferences prefs;
+
+private:
+  bool configure_cb(const GdkEventConfigure *ev);
+  bool confirmQuit();
+  bool delete_cb(const GdkEventAny *ev);
+  bool window_state_cb(const GdkEventWindowState *ev);
+
+  // State information that should persist across sessions
+  std::map<Glib::ustring, bool> bool_state{{"search_backwards", false},
+                                           {"search_matchcase", false},
+                                           {"window_maximized", false}};
+  std::map<Glib::ustring, int> int_state{{"window_height", 768},
+                                         {"window_width", 1024}};
+
+  // Search history is application-wide
+  std::vector<void *> search_history;
+  void *search_pattern = nullptr;
+
+  //! VBox for the contents
+  Gtk::VBox vbox;
+
+  //! Number of created viewers (used to label some tabs)
+  unsigned int viewer_count = 0;
 };
 
 using TabCreationFunc = void (Diffuse::*)(const Specs &, const Labels &,
