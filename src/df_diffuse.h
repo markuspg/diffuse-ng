@@ -21,6 +21,8 @@
 #ifndef DF_DIFFUSE_H
 #define DF_DIFFUSE_H
 
+#include "df_file_diff_viewer.h"
+#include "df_file_info.h"
 #include "df_preferences.h"
 
 #include <gtkmm/box.h>
@@ -59,6 +61,40 @@ using Specs = std::vector<Specification>;
 
 class Diffuse : public Gtk::Window {
 public:
+  /**
+   * @brief Specialization of FileDiffViewer for Diffuse
+   */
+  class FileDiffViewer : public ::Diffuse::FileDiffViewer {
+  public:
+    /**
+     * @brief Pane header
+     */
+    class PaneHeader : public Gtk::HBox {
+    public:
+      PaneHeader();
+
+      void setEdits(bool has_edits);
+
+    private:
+      void button_cb();
+      void updateTitle();
+
+      bool has_edits = false;
+      //! File's name and information about how to retrieve it from a VCS
+      FileInfo info;
+      Gtk::Label label;
+    };
+
+    FileDiffViewer(std::size_t n, Preferences &prefs,
+                   const Glib::ustring &title);
+
+  private:
+    std::vector<void *> footers;
+    std::vector<void *> headers;
+    Glib::ustring status;
+    const Glib::ustring title;
+  };
+
   Diffuse(const Glib::ustring &rc_dir);
 
   void createCommitFileTabs(const Specs &items, const Labels &labels,

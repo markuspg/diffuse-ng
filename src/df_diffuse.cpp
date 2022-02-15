@@ -32,6 +32,9 @@
 
 namespace Df = Diffuse;
 
+static void appendButtons(Gtk::HBox &box, Gtk::BuiltinIconSize size,
+                          const std::vector<void *> &specs);
+
 Df::Diffuse::Diffuse(const Glib::ustring &rc_dir)
     : prefs{Glib::build_filename(rc_dir, Glib::locale_from_utf8("prefs"))} {
   int_state["window_x"] =
@@ -197,3 +200,90 @@ bool Df::Diffuse::window_state_cb(const GdkEventWindowState *const ev) {
 
   return true;
 }
+
+Df::Diffuse::FileDiffViewer::FileDiffViewer(std::size_t n,
+                                            Df::Preferences &prefs,
+                                            const Glib::ustring &title)
+    : ::Diffuse::FileDiffViewer{n, prefs}, title{title} {}
+
+Df::Diffuse::FileDiffViewer::PaneHeader::PaneHeader() {
+  appendButtons(
+      *this, Gtk::ICON_SIZE_MENU,
+      {
+          /*[ gtk.STOCK_OPEN, self.button_cb, 'open', _('Open File...') ],
+                         [ gtk.STOCK_REFRESH, self.button_cb, 'reload',
+             _('Reload File') ], [ gtk.STOCK_SAVE, self.button_cb, 'save',
+             _('Save File') ], [ gtk.STOCK_SAVE_AS, self.button_cb, 'save_as',
+             _('Save File As...') ] */
+      });
+
+  int h, w;
+  label.get_size_request(w, h);
+  label.set_size_request(0, h);
+  label.set_selectable(true);
+  pack_start(label, true, true, 0);
+  label.show();
+
+  updateTitle();
+}
+
+/**
+ * @brief Callback for buttons
+ */
+void Df::Diffuse::FileDiffViewer::PaneHeader::button_cb() {
+  // emit(s)
+}
+
+/**
+ * @brief Set num edits
+ * @param has_edts
+ */
+void Df::Diffuse::FileDiffViewer::PaneHeader::setEdits(const bool has_edts) {
+  if (has_edits != has_edts) {
+    has_edits = has_edts;
+    updateTitle();
+  }
+}
+
+/**
+ * @brief Create an appropriate title for the pane header
+ */
+void Df::Diffuse::FileDiffViewer::PaneHeader::updateTitle() {
+  std::vector<Glib::ustring> ss;
+  if (info.getLabel()) {
+    // Show the provided label instead of the file name
+    ss.emplace_back(info.getLabel().value());
+  } else {
+    if (info.getName()) {
+      ss.emplace_back(info.getName().value());
+    }
+    if (info.getRevision()) {
+      ss.emplace_back("(" + info.getRevision().value() + ")");
+    }
+    if (has_edits) {
+      ss.emplace_back("*");
+    }
+    Glib::ustring s;
+    Glib::ustring::size_type i = 0;
+    while (i < ss.size()) {
+      s += ss[i];
+      ++i;
+      if (i < ss.size()) {
+        s += ' ';
+      }
+    }
+    label.set_text(s);
+    // set_tooltip(self.label, s)
+    // self.emit('title_changed')
+  }
+}
+
+/**
+ * @brief Convenience method for packing buttons into a container according to a
+ *   template
+ * @param box
+ * @param size
+ * @param specs
+ */
+static void appendButtons(Gtk::HBox &box, Gtk::BuiltinIconSize size,
+                          const std::vector<void *> &specs) {}

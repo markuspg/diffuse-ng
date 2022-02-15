@@ -34,8 +34,12 @@ public:
   FileInfo(const std::optional<Glib::ustring> &nm = std::nullopt,
            const std::optional<Glib::ustring> &encodng = std::nullopt,
            const std::optional<void *> &v_c_s = std::nullopt,
-           const std::optional<void *> &rev = std::nullopt,
+           const std::optional<Glib::ustring> &rev = std::nullopt,
            const std::optional<Glib::ustring> &lbl = std::nullopt);
+
+  const std::optional<Glib::ustring> &getLabel() const { return label; }
+  const std::optional<Glib::ustring> &getName() const { return name; }
+  const std::optional<Glib::ustring> &getRevision() const { return revision; }
 
 private:
   //! Name of codec used to translate the file contents to unicode text
@@ -48,7 +52,7 @@ private:
   //! File name
   std::optional<Glib::ustring> name;
   //! Revision used to retrieve file from the VCS
-  std::optional<void *> revision;
+  std::optional<Glib::ustring> revision;
   //! "stat" for files read from disk -- used to warn about changes to the
   //! file on disk before saving
   void *stat = nullptr;

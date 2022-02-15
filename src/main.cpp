@@ -923,8 +923,6 @@ def set_tooltip(widget, tip):
         widget.tooltip = gtk.Tooltips()
         widget.tooltip.set_tip(widget, tip)
 
-# convenience method for packing buttons into a container according to a
-# template
 def appendButtons(box, size, specs):
     for spec in specs:
         if len(spec) > 0:
@@ -6486,59 +6484,7 @@ def assign_file_labels(items, labels):
 # this class displays tab for switching between viewers and dispatches menu
 # commands to the current viewer
 class Diffuse(gtk.Window):
-    # specialisation of FileDiffViewer for Diffuse
     class FileDiffViewer(FileDiffViewer):
-        # pane header
-        class PaneHeader(gtk.HBox):
-            def __init__(self):
-                gtk.HBox.__init__(self)
-                appendButtons(self, gtk.ICON_SIZE_MENU, [
-                   [ gtk.STOCK_OPEN, self.button_cb, 'open', _('Open File...') ],
-                   [ gtk.STOCK_REFRESH, self.button_cb, 'reload', _('Reload File') ],
-                   [ gtk.STOCK_SAVE, self.button_cb, 'save', _('Save File') ],
-                   [ gtk.STOCK_SAVE_AS, self.button_cb, 'save_as', _('Save File As...') ] ])
-
-                self.label = label = gtk.Label()
-                label.set_size_request(0, label.get_size_request()[1])
-                label.set_selectable(True)
-                self.pack_start(label, True, True, 0)
-                label.show()
-
-                # file's name and information about how to retrieve it from a
-                # VCS
-                self.info = FileInfo()
-                self.has_edits = False
-                self.updateTitle()
-
-            # callback for buttons
-            def button_cb(self, widget, s):
-                self.emit(s)
-
-            # creates an appropriate title for the pane header
-            def updateTitle(self):
-                ss = []
-                info = self.info
-                if info.label is not None:
-                    # show the provided label instead of the file name
-                    ss.append(info.label)
-                else:
-                    if info.name is not None:
-                        ss.append(info.name)
-                    if info.revision is not None:
-                        ss.append('(' + info.revision + ')')
-                if self.has_edits:
-                    ss.append('*')
-                s = ' '.join(ss)
-                self.label.set_text(s)
-                set_tooltip(self.label, s)
-                self.emit('title_changed')
-
-            # set num edits
-            def setEdits(self, has_edits):
-                if self.has_edits != has_edits:
-                    self.has_edits = has_edits
-                    self.updateTitle()
-
         # pane footer
         class PaneFooter(gtk.HBox):
             def __init__(self):
@@ -6600,13 +6546,6 @@ class Diffuse(gtk.Window):
                 self.encoding.set_text(s)
 
         def __init__(self, n, prefs, title):
-            FileDiffViewer.__init__(self, n, prefs)
-
-            self.title = title
-            self.status = ''
-
-            self.headers = []
-            self.footers = []
             for i in range(n):
                 # pane header
                 w = Diffuse.FileDiffViewer.PaneHeader()

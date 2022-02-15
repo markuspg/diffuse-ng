@@ -25,6 +25,6 @@ namespace Df = Diffuse;
 Df::FileInfo::FileInfo(const std::optional<Glib::ustring> &nm,
                        const std::optional<Glib::ustring> &encodng,
                        const std::optional<void *> &v_c_s,
-                       const std::optional<void *> &rev,
+                       const std::optional<Glib::ustring> &rev,
                        const std::optional<Glib::ustring> &lbl)
     : encoding{encodng}, label{lbl}, name{nm}, revision{rev}, vcs{v_c_s} {}
