@@ -422,37 +422,6 @@ class Resources:
         except KeyError:
             return []
 
-    def getDifferenceColour(self, i):
-        n = len(self.difference_colours)
-        return self.getColour(self.difference_colours[(i + n - 1) % n])
-
-    # colour resources
-    def getColour(self, symbol):
-        try:
-            return self.colours[symbol]
-        except KeyError:
-            logDebug('Warning: unknown colour "%s"' % (symbol, ))
-            self.colours[symbol] = v = Colour(0.0, 0.0, 0.0)
-            return v
-
-    # float resources
-    def getFloat(self, symbol):
-        try:
-            return self.floats[symbol]
-        except KeyError:
-            logDebug('Warning: unknown float "%s"' % (symbol, ))
-            self.floats[symbol] = v = 0.5
-            return v
-
-    # string resources
-    def getString(self, symbol):
-        try:
-            return self.strings[symbol]
-        except KeyError:
-            logDebug('Warning: unknown string "%s"' % (symbol, ))
-            self.strings[symbol] = v = ''
-            return v
-
     # syntax highlighting
     def getSyntaxNames(self):
         return self.syntaxes.keys()

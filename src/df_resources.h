@@ -35,6 +35,10 @@ class Resources {
 public:
   Resources();
 
+  Colour getColour(const Glib::ustring symbol);
+  Colour getDifferenceColour(unsigned int i);
+  float getFloat(const Glib::ustring symbol);
+  Glib::ustring getString(const Glib::ustring symbol);
   bool parse(const std::string &file_name);
 
 private:
@@ -50,7 +54,7 @@ private:
   std::map<Glib::ustring, float> floats;
 
   // Default strings
-  std::map<void *, void *> strings;
+  std::map<Glib::ustring, Glib::ustring> strings;
 
   // Syntax highlighting support
   std::optional<void *> current_syntax;

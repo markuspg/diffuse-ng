@@ -19,6 +19,7 @@
  */
 
 #include "df_resources.h"
+#include "df_utils.h"
 
 #include <glibmm/regex.h>
 
@@ -174,6 +175,56 @@ Df::Resources::Resources()
 
   // Special string resources
   setDifferenceColours("difference_1 difference_2 difference_3");
+}
+
+/**
+ * @brief Colour resources
+ * @param symbol
+ * @return
+ */
+Df::Colour Df::Resources::getColour(const Glib::ustring symbol) {
+  try {
+    return colours.at(symbol);
+  } catch (const std::out_of_range &) {
+    logDebug("Warning: unknown colour \"" + symbol + "\"");
+    const auto cit = colours.emplace(symbol, Colour{0.0f, 0.0f, 0.0f});
+    return cit.first->second;
+  }
+}
+
+Df::Colour Df::Resources::getDifferenceColour(unsigned int i) {
+  const auto n = difference_colours.size();
+  return getColour(difference_colours[(i + n - 1) % n]);
+}
+
+/**
+ * @brief Float resources
+ * @param symbol
+ * @return
+ */
+float Df::Resources::getFloat(const Glib::ustring symbol) {
+  try {
+    return floats.at(symbol);
+  } catch (const std::out_of_range &) {
+    logDebug("Warning: unknown float \"" + symbol + "\"");
+    const auto cit = floats.emplace(symbol, 0.5f);
+    return cit.first->second;
+  }
+}
+
+/**
+ * @brief String resources
+ * @param symbol
+ * @return
+ */
+Glib::ustring Df::Resources::getString(const Glib::ustring symbol) {
+  try {
+    return strings.at(symbol);
+  } catch (const std::out_of_range &) {
+    logDebug("Warning: unknown string \"" + symbol + "\"");
+    const auto cit = strings.emplace(symbol, "");
+    return cit.first->second;
+  }
 }
 
 bool Df::Resources::parse(const std::string &file_name) { return true; }
