@@ -23,6 +23,7 @@
 // #include <gtkmm/accelgroup.h>
 #include <gtkmm/iconfactory.h>
 #include <gtkmm/main.h>
+#include <gtkmm/separator.h>
 #include <gtkmm/stock.h>
 
 #include <gdkmm/general.h>
@@ -205,6 +206,42 @@ Df::Diffuse::FileDiffViewer::FileDiffViewer(std::size_t n,
                                             Df::Preferences &prefs,
                                             const Glib::ustring &title)
     : ::Diffuse::FileDiffViewer{n, prefs}, title{title} {}
+
+Df::Diffuse::FileDiffViewer::PaneFooter::PaneFooter() {
+  pack_start(cursor, false, false, 0);
+  cursor.show();
+
+  Gtk::VSeparator separator;
+  pack_end(separator, false, false, 10);
+  separator.show();
+
+  pack_end(encoding, false, false, 0);
+  encoding.show();
+
+  Gtk::VSeparator separator_2;
+  pack_end(separator_2, false, false, 10);
+  separator_2.show();
+
+  pack_end(format, false, false, 0);
+  format.show();
+
+  Gtk::VSeparator separator_3;
+  pack_end(separator_3, false, false, 10);
+  separator_3.show();
+
+  int h, w;
+  get_size_request(w, h);
+  set_size_request(0, h);
+}
+
+/**
+ * @brief set the format label
+ * @param s
+ */
+void Df::Diffuse::FileDiffViewer::PaneFooter::setEncoding(
+    const std::optional<Glib::ustring> &s) {
+  encoding.set_text(s.has_value() ? s.value() : "");
+}
 
 Df::Diffuse::FileDiffViewer::PaneHeader::PaneHeader() {
   appendButtons(

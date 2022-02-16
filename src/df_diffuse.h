@@ -67,6 +67,21 @@ public:
   class FileDiffViewer : public ::Diffuse::FileDiffViewer {
   public:
     /**
+     * @brief Pane footer
+     */
+    class PaneFooter : public Gtk::HBox {
+    public:
+      PaneFooter();
+
+      void setEncoding(const std::optional<Glib::ustring> &s);
+
+    private:
+      Gtk::Label cursor;
+      Gtk::Label encoding;
+      Gtk::Label format;
+    };
+
+    /**
      * @brief Pane header
      */
     class PaneHeader : public Gtk::HBox {

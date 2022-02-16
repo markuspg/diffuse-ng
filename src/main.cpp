@@ -6485,37 +6485,7 @@ def assign_file_labels(items, labels):
 # commands to the current viewer
 class Diffuse(gtk.Window):
     class FileDiffViewer(FileDiffViewer):
-        # pane footer
         class PaneFooter(gtk.HBox):
-            def __init__(self):
-                gtk.HBox.__init__(self)
-
-                self.cursor = label = gtk.Label()
-                self.pack_start(label, False, False, 0)
-                label.show()
-
-                separator = gtk.VSeparator()
-                self.pack_end(separator, False, False, 10)
-                separator.show()
-
-                self.encoding = label = gtk.Label()
-                self.pack_end(label, False, False, 0)
-                label.show()
-
-                separator = gtk.VSeparator()
-                self.pack_end(separator, False, False, 10)
-                separator.show()
-
-                self.format = label = gtk.Label()
-                self.pack_end(label, False, False, 0)
-                label.show()
-
-                separator = gtk.VSeparator()
-                self.pack_end(separator, False, False, 10)
-                separator.show()
-
-                self.set_size_request(0, self.get_size_request()[1])
-
             # set the cursor label
             def updateCursor(self, viewer, f):
                 if viewer.mode == CHAR_MODE and viewer.current_pane == f:
@@ -6538,12 +6508,6 @@ class Diffuse(gtk.Window):
                 if s & UNIX_FORMAT:
                     v.append('Unix')
                 self.format.set_text('/'.join(v))
-
-            # set the format label
-            def setEncoding(self, s):
-                if s is None:
-                    s = ''
-                self.encoding.set_text(s)
 
         def __init__(self, n, prefs, title):
             for i in range(n):
