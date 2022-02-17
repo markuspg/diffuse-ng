@@ -131,9 +131,29 @@ public:
   Preferences prefs;
 
 private:
+  void button_cb();
+  void close_tab_cb();
   bool configure_cb(const GdkEventConfigure *ev);
   bool confirmQuit();
   bool delete_cb(const GdkEventAny *ev);
+  void find_cb();
+  void find_next_cb();
+  void find_previous_cb();
+  void go_to_line_cb();
+  void new_2_way_file_merge_cb();
+  void new_3_way_file_merge_cb();
+  void new_n_way_file_merge_cb();
+  void open_commit_cb();
+  void open_file_cb();
+  void open_file_in_new_tab_cb();
+  void open_modified_files_cb();
+  void preferences_cb();
+  void quit_cb();
+  void reload_file_cb();
+  void save_all_cb();
+  void save_file_as_cb();
+  void save_file_cb();
+  void undo_close_tab_cb();
   bool window_state_cb(const GdkEventWindowState *ev);
 
   // State information that should persist across sessions

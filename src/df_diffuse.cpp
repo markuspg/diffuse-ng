@@ -117,7 +117,157 @@ Df::Diffuse::Diffuse(const Glib::ustring &rc_dir)
 
   // Make the icons available for use
   factory->add_default();
+
+  struct MenuSpecBase {};
+  struct MenuSpecEntry {
+    const Glib::ustring label;
+    sigc::mem_functor0<void, Diffuse> callback;
+    std::optional<Glib::ustring> smthng;
+    std::optional<Gtk::StockID> icon;
+    const Glib::ustring action;
+  };
+  struct MenuSpecSeparator : public MenuSpecBase {};
+  struct MenuSpec {
+    const Glib::ustring category;
+    const std::vector<std::variant<MenuSpecEntry, MenuSpecSeparator>> specs;
+  };
+  using MenuSpecs = std::vector<MenuSpec>;
+  MenuSpecs menuspecs{
+      {MenuSpec{
+          "_File",
+          {MenuSpecEntry{
+               "_Open File...",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::open_file_cb),
+               std::nullopt, Gtk::Stock::OPEN, "open_file"},
+           MenuSpecEntry{"Open File In New _Tab...",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::open_file_in_new_tab_cb),
+                         std::nullopt, std::nullopt, "open_file_in_new_tab"},
+           MenuSpecEntry{"Open _Modified Files...",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::open_modified_files_cb),
+                         std::nullopt, std::nullopt, "open_modified_files"},
+           MenuSpecEntry{"Open Commi_t...",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::open_commit_cb),
+                         std::nullopt, std::nullopt, "open_commit"},
+           MenuSpecEntry{"_Reload File",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::reload_file_cb),
+                         std::nullopt, Gtk::Stock::REFRESH, "reload_file"},
+           MenuSpecSeparator{},
+           MenuSpecEntry{
+               "_Save File",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::save_file_cb),
+               std::nullopt, Gtk::Stock::SAVE, "save_file"},
+           MenuSpecEntry{"Save File _As...",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::save_file_as_cb),
+                         std::nullopt, Gtk::Stock::SAVE_AS, "save_file_as"},
+           MenuSpecEntry{
+               "Save A_ll",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::save_all_cb),
+               std::nullopt, std::nullopt, "save_all"},
+           MenuSpecSeparator{},
+           MenuSpecEntry{"New _2-Way File Merge",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::new_2_way_file_merge_cb),
+                         std::nullopt,
+                         Gtk::StockID{DIFFUSE_STOCK_NEW_2WAY_MERGE},
+                         "new_2_way_file_merge"},
+           MenuSpecEntry{"New _3-Way File Merge",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::new_3_way_file_merge_cb),
+                         std::nullopt,
+                         Gtk::StockID{DIFFUSE_STOCK_NEW_3WAY_MERGE},
+                         "new_3_way_file_merge"},
+           MenuSpecEntry{"New _N-Way File Merge...",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::new_n_way_file_merge_cb),
+                         std::nullopt, std::nullopt, "new_n_way_file_merge"},
+           MenuSpecSeparator{},
+           MenuSpecEntry{
+               "_Close Tab",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::close_tab_cb),
+               std::nullopt, Gtk::Stock::CLOSE, "close_tab"},
+           MenuSpecEntry{"_Undo Close Tab",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::undo_close_tab_cb),
+                         std::nullopt, std::nullopt, "undo_close_tab"},
+           MenuSpecEntry{
+               "_Quit",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::quit_cb),
+               nullptr, Gtk::Stock::QUIT, "quit"}}}},
+      MenuSpec{
+          "_Edit",
+          {MenuSpecEntry{
+               "_Undo",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::button_cb),
+               "undo", Gtk::Stock::UNDO, "undo"},
+           MenuSpecEntry{
+               "_Redo",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::button_cb),
+               "redo", Gtk::Stock::REDO, "redo"},
+           MenuSpecSeparator{},
+           MenuSpecEntry{
+               "Cu_t",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::button_cb),
+               "cut", Gtk::Stock::CUT, "cut"},
+           MenuSpecEntry{
+               "_Copy",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::button_cb),
+               "copy", Gtk::Stock::COPY, "copy"},
+           MenuSpecEntry{
+               "_Paste",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::button_cb),
+               "paste", Gtk::Stock::PASTE, "paste"},
+           MenuSpecSeparator{},
+           MenuSpecEntry{
+               "Select _All",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::button_cb),
+               "select_all", std::nullopt, "select_all"},
+           MenuSpecEntry{
+               "C_lear Edits",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::button_cb),
+               "clear_edits", Gtk::Stock::CLEAR, "clear_edits"},
+           MenuSpecEntry{
+               "_Dismiss All Edits",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::button_cb),
+               "dismiss_all_edits", std::nullopt, "dismiss_all_edits"},
+           MenuSpecSeparator{},
+           MenuSpecEntry{
+               "_Find...",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::find_cb),
+               std::nullopt, Gtk::Stock::FIND, "find"},
+           MenuSpecEntry{
+               "Find _Next",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::find_next_cb),
+               std::nullopt, std::nullopt, "find_next"},
+           MenuSpecEntry{"Find Pre_vious",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::find_previous_cb),
+                         std::nullopt, std::nullopt, "find_previous"},
+           MenuSpecEntry{
+               "_Go To Line...",
+               sigc::mem_fun0<void, Df::Diffuse>(this, &Diffuse::go_to_line_cb),
+               std::nullopt, Gtk::Stock::JUMP_TO, "go_to_line"},
+           MenuSpecSeparator{},
+           MenuSpecEntry{"Pr_eferences...",
+                         sigc::mem_fun0<void, Df::Diffuse>(
+                             this, &Diffuse::preferences_cb),
+                         std::nullopt, Gtk::Stock::PREFERENCES,
+                         "preferences"}}}};
 }
+
+/**
+ * @brief Callback for most menu items and buttons
+ */
+void Df::Diffuse::button_cb() {}
+
+/**
+ * @brief Callback for the close tab menu item
+ */
+void Df::Diffuse::close_tab_cb() {}
 
 /**
  * @brief Close all tabs without differences
@@ -179,16 +329,106 @@ bool Df::Diffuse::delete_cb(const GdkEventAny *const ev) {
   return true;
 }
 
+/**
+ * @brief Callback for the find menu item
+ */
+void Df::Diffuse::find_cb() {}
+
+/**
+ * @brief Callback for the find next menu item
+ */
+void Df::Diffuse::find_next_cb() {}
+
+/**
+ * @brief Callback for the find previous menu item
+ */
+void Df::Diffuse::find_previous_cb() {}
+
+/**
+ * @brief Callback for the go to line menu item
+ */
+void Df::Diffuse::go_to_line_cb() {}
+
 bool Df::Diffuse::loadState(const std::string &statepath) { return true; }
 
+/**
+ * @brief Callback for the new 2-way file merge menu item
+ */
+void Df::Diffuse::new_2_way_file_merge_cb() {}
+
+/**
+ * @brief Callback for the new 3-way file merge menu item
+ */
+void Df::Diffuse::new_3_way_file_merge_cb() {}
+
+/**
+ * @brief Callback for the new n-way file merge menu item
+ */
+void Df::Diffuse::new_n_way_file_merge_cb() {}
+
 void Df::Diffuse::newLoadedFileDiffViewer(const std::vector<void *> &items) {}
+
+/**
+ * @brief Callback for the open commit menu item
+ */
+void Df::Diffuse::open_commit_cb() {}
+
+/**
+ * @brief Callback for the open file menu item
+ */
+void Df::Diffuse::open_file_cb() {}
+
+/**
+ * @brief Callback for the open file menu item
+ */
+void Df::Diffuse::open_file_in_new_tab_cb() {}
+
+/**
+ * @brief Callback for the open modified files menu item
+ */
+void Df::Diffuse::open_modified_files_cb() {}
+
+/**
+ * @brief Callback for the preferences menu item
+ */
+void Df::Diffuse::preferences_cb() {}
 
 /**
  * @brief Notify all viewers to changes to the preferences
  */
 void Df::Diffuse::preferences_updated() {}
 
+/**
+ * @brief Callback for the quit menu item
+ */
+void Df::Diffuse::quit_cb() {}
+
+/**
+ * @brief Callback for the reload file menu item
+ */
+void Df::Diffuse::reload_file_cb() {}
+
+/**
+ * @brief Callback for the save all menu item
+ */
+void Df::Diffuse::save_all_cb() {}
+
+/**
+ * @brief Callback for the save file as menu item
+ */
+void Df::Diffuse::save_file_as_cb() {}
+
+/**
+ * @brief Callback for the save file menu item
+ */
+void Df::Diffuse::save_file_cb() {}
+
 void Df::Diffuse::saveState(const std::string &statepath) {}
+
+/**
+ * @brief Callback for the undo close tab menu item
+ */
+void Df::Diffuse::undo_close_tab_cb() {}
 
 /**
  * @brief Record the window's maximised state

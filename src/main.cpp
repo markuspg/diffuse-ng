@@ -6927,43 +6927,6 @@ class Diffuse(gtk.Window):
         accel_group = gtk.AccelGroup()
 
         menuspecs = []
-        menuspecs.append([ _('_File'), [
-                     [_('_Open File...'), self.open_file_cb, None, gtk.STOCK_OPEN, 'open_file'],
-                     [_('Open File In New _Tab...'), self.open_file_in_new_tab_cb, None, None, 'open_file_in_new_tab'],
-                     [_('Open _Modified Files...'), self.open_modified_files_cb, None, None, 'open_modified_files'],
-                     [_('Open Commi_t...'), self.open_commit_cb, None, None, 'open_commit'],
-                     [_('_Reload File'), self.reload_file_cb, None, gtk.STOCK_REFRESH, 'reload_file'],
-                     [],
-                     [_('_Save File'), self.save_file_cb, None, gtk.STOCK_SAVE, 'save_file'],
-                     [_('Save File _As...'), self.save_file_as_cb, None, gtk.STOCK_SAVE_AS, 'save_file_as'],
-                     [_('Save A_ll'), self.save_all_cb, None, None, 'save_all'],
-                     [],
-                     [_('New _2-Way File Merge'), self.new_2_way_file_merge_cb, None, DIFFUSE_STOCK_NEW_2WAY_MERGE, 'new_2_way_file_merge'],
-                     [_('New _3-Way File Merge'), self.new_3_way_file_merge_cb, None, DIFFUSE_STOCK_NEW_3WAY_MERGE, 'new_3_way_file_merge'],
-                     [_('New _N-Way File Merge...'), self.new_n_way_file_merge_cb, None, None, 'new_n_way_file_merge'],
-                     [],
-                     [_('_Close Tab'), self.close_tab_cb, None, gtk.STOCK_CLOSE, 'close_tab'],
-                     [_('_Undo Close Tab'), self.undo_close_tab_cb, None, None, 'undo_close_tab'],
-                     [_('_Quit'), self.quit_cb, None, gtk.STOCK_QUIT, 'quit'] ] ])
-
-        menuspecs.append([ _('_Edit'), [
-                     [_('_Undo'), self.button_cb, 'undo', gtk.STOCK_UNDO, 'undo'],
-                     [_('_Redo'), self.button_cb, 'redo', gtk.STOCK_REDO, 'redo'],
-                     [],
-                     [_('Cu_t'), self.button_cb, 'cut', gtk.STOCK_CUT, 'cut'],
-                     [_('_Copy'), self.button_cb, 'copy', gtk.STOCK_COPY, 'copy'],
-                     [_('_Paste'), self.button_cb, 'paste', gtk.STOCK_PASTE, 'paste'],
-                     [],
-                     [_('Select _All'), self.button_cb, 'select_all', None, 'select_all'],
-                     [_('C_lear Edits'), self.button_cb, 'clear_edits', gtk.STOCK_CLEAR, 'clear_edits'],
-                     [_('_Dismiss All Edits'), self.button_cb, 'dismiss_all_edits', None, 'dismiss_all_edits'],
-                     [],
-                     [_('_Find...'), self.find_cb, None, gtk.STOCK_FIND, 'find'],
-                     [_('Find _Next'), self.find_next_cb, None, None, 'find_next'],
-                     [_('Find Pre_vious'), self.find_previous_cb, None, None, 'find_previous'],
-                     [_('_Go To Line...'), self.go_to_line_cb, None, gtk.STOCK_JUMP_TO, 'go_to_line'],
-                     [],
-                     [_('Pr_eferences...'), self.preferences_cb, None, gtk.STOCK_PREFERENCES, 'preferences'] ] ])
 
         submenudef = [ [_('None'), self.syntax_cb, None, None, 'no_syntax_highlighting', True, None, ('syntax', None) ] ]
         names = theResources.getSyntaxNames()
@@ -7447,11 +7410,9 @@ class Diffuse(gtk.Window):
     def getCurrentViewer(self):
         return self.notebook.get_nth_page(self.notebook.get_current_page())
 
-    # callback for the open file menu item
     def open_file_cb(self, widget, data):
         self.getCurrentViewer().open_file_cb(widget, data)
 
-    # callback for the open file menu item
     def open_file_in_new_tab_cb(self, widget, data):
         specs = None
         dialog = FileChooserDialog(_('Open File In New Tab'), self.get_toplevel(), self.prefs, gtk.FILE_CHOOSER_ACTION_OPEN, gtk.STOCK_OPEN, True)
@@ -7467,7 +7428,6 @@ class Diffuse(gtk.Window):
             self.notebook.set_current_page(self.notebook.get_n_pages() - 1)
             viewer.grab_focus()
 
-    # callback for the open modified files menu item
     def open_modified_files_cb(self, widget, data):
         parent = self.get_toplevel()
         dialog = FileChooserDialog(_('Choose Folder With Modified Files'), parent, self.prefs, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER, gtk.STOCK_OPEN)
@@ -7487,7 +7447,6 @@ class Diffuse(gtk.Window):
                 m.run()
                 m.destroy()
 
-    # callback for the open commit menu item
     def open_commit_cb(self, widget, data):
         parent = self.get_toplevel()
         dialog = FileChooserDialog(_('Choose Folder With Commit'), parent, self.prefs, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER, gtk.STOCK_OPEN, True)
@@ -7507,36 +7466,29 @@ class Diffuse(gtk.Window):
                 m.run()
                 m.destroy()
 
-    # callback for the reload file menu item
     def reload_file_cb(self, widget, data):
         self.getCurrentViewer().reload_file_cb(widget, data)
 
-    # callback for the save file menu item
     def save_file_cb(self, widget, data):
         self.getCurrentViewer().save_file_cb(widget, data)
 
-    # callback for the save file as menu item
     def save_file_as_cb(self, widget, data):
         self.getCurrentViewer().save_file_as_cb(widget, data)
 
-    # callback for the save all menu item
     def save_all_cb(self, widget, data):
         for i in range(self.notebook.get_n_pages()):
             self.notebook.get_nth_page(i).save_all_cb(widget, data)
 
-    # callback for the new 2-way file merge menu item
     def new_2_way_file_merge_cb(self, widget, data):
         viewer = self.newFileDiffViewer(2)
         self.notebook.set_current_page(self.notebook.get_n_pages() - 1)
         viewer.grab_focus()
 
-    # callback for the new 3-way file merge menu item
     def new_3_way_file_merge_cb(self, widget, data):
         viewer = self.newFileDiffViewer(3)
         self.notebook.set_current_page(self.notebook.get_n_pages() - 1)
         viewer.grab_focus()
 
-    # callback for the new n-way file merge menu item
     def new_n_way_file_merge_cb(self, widget, data):
         parent = self.get_toplevel()
         dialog = NumericDialog(parent, _('New N-Way File Merge...'), _('Number of panes: '), 4, 2, 16)
@@ -7548,11 +7500,9 @@ class Diffuse(gtk.Window):
             self.notebook.set_current_page(self.notebook.get_n_pages() - 1)
             viewer.grab_focus()
 
-    # callback for the close tab menu item
     def close_tab_cb(self, widget, data):
         self.remove_tab_cb(widget, self.notebook.get_nth_page(self.notebook.get_current_page()))
 
-    # callback for the undo close tab menu item
     def undo_close_tab_cb(self, widget, data):
         if len(self.closed_tabs) > 0:
             i, tab, tab_label = self.closed_tabs.pop()
@@ -7560,7 +7510,6 @@ class Diffuse(gtk.Window):
             self.notebook.set_current_page(i)
             self.notebook.set_show_tabs(True)
 
-    # callback for the quit menu item
     def quit_cb(self, widget, data):
         if self.confirmQuit():
             gtk.main_quit()
@@ -7613,19 +7562,15 @@ class Diffuse(gtk.Window):
             dialog.destroy()
             from_start = True
 
-    # callback for the find menu item
     def find_cb(self, widget, data):
         self.find(True, False)
 
-    # callback for the find next menu item
     def find_next_cb(self, widget, data):
         self.find(False, False)
 
-    # callback for the find previous menu item
     def find_previous_cb(self, widget, data):
         self.find(False, True)
 
-    # callback for the go to line menu item
     def go_to_line_cb(self, widget, data):
         self.getCurrentViewer().go_to_line_cb(widget, data)
 
@@ -7635,7 +7580,6 @@ class Diffuse(gtk.Window):
         for i in range(n):
             self.notebook.get_nth_page(i).prefsUpdated()
 
-    # callback for the preferences menu item
     def preferences_cb(self, widget, data):
         if self.prefs.runDialog(self.get_toplevel()):
             self.preferences_updated()
@@ -7665,7 +7609,6 @@ class Diffuse(gtk.Window):
     def last_tab_cb(self, widget, data):
         self.notebook.set_current_page(self.notebook.get_n_pages() - 1)
 
-    # callback for most menu items and buttons
     def button_cb(self, widget, data):
         self.getCurrentViewer().button_cb(widget, data)
 
