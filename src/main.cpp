@@ -23,6 +23,8 @@
 #include "df_globals.h"
 #include "df_utils.h"
 
+#include <gtkmm/window.h>
+
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
 
@@ -231,12 +233,13 @@ def shlex_split(s, allow_comments=False):
 def globEscape(s):
     m = dict([ (c, u'[%s]' % (c, )) for c in u'[]?*' ])
     return u''.join([ m.get(c, c) for c in s ])
+ */
 
-# associate our icon with all of our windows
-if __name__ == '__main__':
-    # this is not automatically set on some older version of PyGTK
-    gtk.window_set_default_icon_name('diffuse')
+  // Associate the icon with all windows
+  // (this is not being done automatically with some older (Py)GTK versions
+  Gtk::Window::set_default_icon_name("diffuse");
 
+/*
 # convenience class for displaying a message dialogue
 class MessageDialog(gtk.MessageDialog):
     def __init__(self, parent, type, s):
