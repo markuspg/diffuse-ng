@@ -20,23 +20,18 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <glibmm/convert.h>
+#include <glibmm/miscutils.h>
+
+static std::vector<Glib::ustring> convert_args(int argc, char *argv[]);
+
 int main(int argc, char *argv[]) {
+  // Use the location of the program as a starting place to search for
+  // supporting files such as icons or documentation
+  const std::string app_path{argv[0]};
+  const std::string bin_dir{Glib::path_get_dirname(app_path)};
 
 /*
-import codecs
-import gettext
-import locale
-import os
-import sys
-
-# use the program's location as a starting place to search for supporting files
-# such as icon and help documentation
-if hasattr(sys, 'frozen'):
-    app_path = sys.executable
-else:
-    app_path = os.path.realpath(sys.argv[0])
-bin_dir = os.path.dirname(app_path)
-
 # platform test
 def isWindows():
     return os.name == 'nt'
@@ -78,11 +73,12 @@ def printMessage(s):
         print codecs.encode(unicode(s, 'utf_8'), sys.getfilesystemencoding())
     except UnicodeEncodeError:
         pass
+ */
 
-# process help options
-if __name__ == '__main__':
-    args = sys.argv
-    argc = len(args)
+  // Process help options
+  const auto args{convert_args(argc, argv)};
+
+/*
     if argc == 2 and args[1] in [ '-v', '--version' ]:
         printMessage('%s %s\n%s' % (APP_NAME, VERSION, COPYRIGHT))
         sys.exit(0)
@@ -8581,4 +8577,14 @@ if __name__ == '__main__':
  */
 
   return 0;
+}
+
+static std::vector<Glib::ustring> convert_args(int argc, char *argv[]) {
+  std::vector<Glib::ustring> res;
+
+  for (auto i = 0; i < argc; ++i) {
+    res.emplace_back(Glib::locale_to_utf8(argv[i]));
+  }
+
+  return res;
 }
