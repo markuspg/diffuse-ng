@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.13.4)
 
 add_executable(${PROJECT_NAME_LC}
+    df_utils.cpp
     main.cpp)
 target_include_directories(${PROJECT_NAME_LC} SYSTEM
     PRIVATE ${GLIBMM24_INCLUDE_DIRS}

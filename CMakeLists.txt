@@ -7,6 +7,8 @@ project(Diffuse
     LANGUAGES CXX)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LC)
 
+set(CMAKE_CXX_STANDARD 17)
+
 find_package(PkgConfig)
 
 pkg_check_modules(GLIBMM24 REQUIRED glibmm-2.4>=2.58.0)
