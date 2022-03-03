@@ -257,27 +257,6 @@ def logError(s):
     m.run()
     m.destroy()
 
-# colour resources
-class Colour:
-    def __init__(self, r, g, b, a=1.0):
-        # the individual colour components as floats in the range [0, 1]
-        self.red = r
-        self.green = g
-        self.blue = b
-        self.alpha = a
-
-    # multiply by scalar
-    def __mul__(self, s):
-        return Colour(s * self.red, s * self.green, s * self.blue, s * self.alpha)
-
-    # add colours
-    def __add__(self, other):
-        return Colour(self.red + other.red, self.green + other.green, self.blue + other.blue, self.alpha + other.alpha)
-
-    # over operator
-    def over(self, other):
-        return self + other * (1 - self.alpha)
-
 # class to build and run a finite state machine for identifying syntax tokens
 class SyntaxParser:
     # create a new state machine that begins in initial_state and classifies
