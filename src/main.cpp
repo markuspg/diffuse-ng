@@ -339,57 +339,7 @@ def readlines(fd):
 def readconfiglines(fd):
     return unicode(fd.read(), 'utf_8').replace(u'\r', u'').split(u'\n')
 
-# This class to hold all customisable behaviour not exposed in the preferences
-# dialogue: hotkey assignment, colours, syntax highlighting, etc.
-# Syntax highlighting is implemented in supporting '*.syntax' files normally
-# read from the system wide initialisation file '/etc/diffuserc'.
-# The personal initialisation file '~/diffuse/diffuserc' can be used to change
-# default behaviour.
 class Resources:
-    def __init__(self):
-        # default colours
-        self.colours = {
-            'alignment' : Colour(1.0, 1.0, 0.0),
-            'character_selection' : Colour(0.7, 0.7, 1.0),
-            'cursor' : Colour(0.0, 0.0, 0.0),
-            'difference_1' : Colour(1.0, 0.625, 0.625),
-            'difference_2' : Colour(0.85, 0.625, 0.775),
-            'difference_3' : Colour(0.85, 0.775, 0.625),
-            'hatch' : Colour(0.8, 0.8, 0.8),
-            'line_number' : Colour(0.0, 0.0, 0.0),
-            'line_number_background' : Colour(0.75, 0.75, 0.75),
-            'line_selection' : Colour(0.7, 0.7, 1.0),
-            'map_background' : Colour(0.6, 0.6, 0.6),
-            'margin' : Colour(0.8, 0.8, 0.8),
-            'edited' : Colour(0.5, 1.0, 0.5),
-            'preedit' : Colour(0.0, 0.0, 0.0),
-            'text' : Colour(0.0, 0.0, 0.0),
-            'text_background' : Colour(1.0, 1.0, 1.0) }
-
-        # default floats
-        self.floats = {
-            'alignment_opacity' : 1.0,
-            'character_difference_opacity' : 0.4,
-            'character_selection_opacity' : 0.4,
-            'edited_opacity' : 0.4,
-            'line_difference_opacity' : 0.3,
-            'line_selection_opacity' : 0.4 }
-
-        # default strings
-        self.strings = {}
-
-        # syntax highlighting support
-        self.syntaxes = {}
-        self.syntax_file_patterns = {}
-        self.syntax_magic_patterns = {}
-        self.current_syntax = None
-
-        # list of imported resources files (we only import each file once)
-        self.resource_files = set()
-
-        # special string resources
-        self.setDifferenceColours('difference_1 difference_2 difference_3')
-
     # keyboard action processing
     def setKeyBinding(self, ctx, s, v):
         action_tuple = (ctx, s)

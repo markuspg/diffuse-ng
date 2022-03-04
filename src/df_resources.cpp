@@ -26,7 +26,29 @@
 
 namespace Df = Diffuse;
 
-Df::Resources::Resources() {
+Df::Resources::Resources()
+    : colours{{"alignment", {1.0f, 1.0f, 0.0f}},
+              {"character_selection", {0.7f, 0.7f, 1.0f}},
+              {"cursor", {0.0f, 0.0f, 0.0f}},
+              {"difference_1", {1.0f, 0.625f, 0.625f}},
+              {"difference_2", {0.85f, 0.625f, 0.775f}},
+              {"difference_3", {0.85f, 0.775f, 0.625f}},
+              {"hatch", {0.8f, 0.8f, 0.8f}},
+              {"line_number", {0.0f, 0.0f, 0.0f}},
+              {"line_number_background", {0.75f, 0.75f, 0.75f}},
+              {"line_selection", {0.7f, 0.7f, 1.0f}},
+              {"map_background", {0.6f, 0.6f, 0.6f}},
+              {"margin", {0.8f, 0.8f, 0.8f}},
+              {"edited", {0.5f, 1.0f, 0.5f}},
+              {"preedit", {0.0f, 0.0f, 0.0f}},
+              {"text", {0.0f, 0.0f, 0.0f}},
+              {"text_background", {1.0f, 1.0f, 1.0f}}},
+      floats{{"alignment_opacity", 1.0f},
+             {"character_difference_opacity", 0.4f},
+             {"character_selection_opacity", 0.4f},
+             {"edited_opacity", 0.4f},
+             {"line_difference_opacity", 0.3f},
+             {"line_selection_opacity", 0.4f}} {
   using namespace std::placeholders;
 
   auto set_binding =
@@ -155,7 +177,11 @@ Df::Resources::Resources() {
   set_binding("align_mode", "page_down", "Page_Down");
   set_binding("align_mode", "page_down", "Ctrl+d");
   set_binding("character_mode", "enter_line_mode", "Escape");
+
+  Df::Resources::setDifferenceColours("difference_1 difference_2 difference_3");
 }
+
+void Df::Resources::setDifferenceColours(const Glib::ustring &s) {}
 
 void Df::Resources::setKeyBinding(const Glib::ustring &ctx,
                                   const Glib::ustring &s,

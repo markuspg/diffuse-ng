@@ -23,22 +23,47 @@
 #ifndef DF_RESOURCES_H
 #define DF_RESOURCES_H
 
+#include "df_colour.h"
+
 #include <glibmm/ustring.h>
 
 #include <map>
+#include <optional>
+#include <set>
 
 namespace Diffuse {
+/**
+ * @brief Class for customizable behaviour not exposed by the preferences dialog
+ *
+ * This concerns attributes like hotkey assignments, colours, syntax
+ * highlighting, etc.
+ *
+ * Syntax highlighting is implemented by '*.syntax' files which are normally
+ * being read for the system-wide initialization file '/etc/diffuserc'. A
+ * personal initialization file '~/diffuse/diffuserc' can be use to change the
+ * default behaviour.
+ */
 class Resources {
 public:
   Resources();
 
 private:
+  void setDifferenceColours(const Glib::ustring &s);
   void setKeyBinding(const Glib::ustring &ctx, const Glib::ustring &s,
                      const Glib::ustring &v);
 
-  // Default keybindings
+  std::map<Glib::ustring, Colour> colours;
+  std::map<Glib::ustring, float> floats;
   std::map<void *, void *> keybindings;
   std::map<void *, void *> keybindings_lookup;
+  //! List of imported resource files (each should be imported once only)
+  std::set<void *> resource_files;
+  std::map<Glib::ustring, Glib::ustring> strings;
+  // Syntax highlighting support
+  std::optional<void *> current_syntax;
+  std::map<void *, void *> syntaxes;
+  std::map<void *, void *> syntax_file_patterns;
+  std::map<void *, void *> syntax_magic_patterns;
 };
 } // namespace Diffuse
 
