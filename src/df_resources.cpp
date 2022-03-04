@@ -21,6 +21,9 @@
  */
 
 #include "df_resources.h"
+#include "df_utils.h"
+
+#include <glibmm/regex.h>
 
 #include <functional>
 
@@ -181,7 +184,50 @@ Df::Resources::Resources()
   Df::Resources::setDifferenceColours("difference_1 difference_2 difference_3");
 }
 
-void Df::Resources::setDifferenceColours(const Glib::ustring &s) {}
+Df::Colour Df::Resources::getColour(const Glib::ustring &symbol) {
+  try {
+    return colours.at(symbol);
+  } catch (const std::out_of_range &) {
+    logDebug(Glib::ustring::compose("Warning: unknown colour \"%1\"", symbol));
+    return colours.emplace(symbol, Colour{0.0f, 0.0f, 0.0f}).first->second;
+  }
+}
+
+Df::Colour
+Df::Resources::getDifferenceColour(const std::vector<Colour>::size_type i) {
+  const auto n = difference_colours.size();
+  return getColour(difference_colours[(i + n - 1) % n]);
+}
+
+float Df::Resources::getFloat(const Glib::ustring &symbol) {
+  try {
+    return floats.at(symbol);
+  } catch (const std::out_of_range &) {
+    logDebug(Glib::ustring::compose("Warning: unknown float \"%1\"", symbol));
+    return floats.emplace(symbol, 0.5f).first->second;
+  }
+}
+
+Glib::ustring Df::Resources::getString(const Glib::ustring &symbol) {
+  try {
+    return strings.at(symbol);
+  } catch (const std::out_of_range &) {
+    logDebug(Glib::ustring::compose("Warning: unknown string \"%1\"", symbol));
+    return strings.emplace(symbol, "").first->second;
+  }
+}
+
+void Df::Resources::setDifferenceColours(const Glib::ustring &s) {
+  const auto preWhitespaceRegexp{Glib::Regex::create("^\\s*")};
+  const auto postWhitespaceRegexp{Glib::Regex::create("\\s*$")};
+
+  auto tmp_str{
+      preWhitespaceRegexp->replace(s, 0, "", Glib::REGEX_MATCH_NOTEMPTY)};
+  tmp_str =
+      postWhitespaceRegexp->replace(tmp_str, 0, "", Glib::REGEX_MATCH_NOTEMPTY);
+
+  difference_colours = Glib::Regex::split_simple("\\s+", tmp_str);
+}
 
 void Df::Resources::setKeyBinding(const Glib::ustring &ctx,
                                   const Glib::ustring &s,

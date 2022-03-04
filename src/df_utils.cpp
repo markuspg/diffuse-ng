@@ -21,6 +21,7 @@
  */
 
 #include "df_utils.h"
+#include "df_globals.h"
 
 #include <glibmm/convert.h>
 
@@ -29,6 +30,15 @@
 namespace Df = Diffuse;
 
 bool Df::isWindows() { return false; } // TODO
+
+/**
+ * @brief Convenience function to print debug messages to stderr
+ * @param[in] s The debug message to be printed
+ */
+void Df::logDebug(const Glib::ustring &s) {
+  // std::cerr << Glib::locale_from_utf8(
+  //     Glib::ustring::compose("%1: %2\n", Df::APP_NAME, s));
+}
 
 /**
  * @brief Print a UTF-8 encoded string to stdout in the host's native encoding

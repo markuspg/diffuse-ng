@@ -30,6 +30,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <vector>
 
 namespace Diffuse {
 /**
@@ -47,12 +48,19 @@ class Resources {
 public:
   Resources();
 
+  Colour getColour(const Glib::ustring &symbol);
+  Colour getDifferenceColour(std::vector<Colour>::size_type i);
+  float getFloat(const Glib::ustring &symbol);
+  Glib::ustring getString(const Glib::ustring &symbol);
+
 private:
   void setDifferenceColours(const Glib::ustring &s);
   void setKeyBinding(const Glib::ustring &ctx, const Glib::ustring &s,
                      const Glib::ustring &v);
 
   std::map<Glib::ustring, Colour> colours;
+  //! Colours used for indicating differences
+  std::vector<Glib::ustring> difference_colours;
   std::map<Glib::ustring, float> floats;
   std::map<void *, void *> keybindings;
   std::map<void *, void *> keybindings_lookup;
