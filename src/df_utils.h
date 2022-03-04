@@ -26,6 +26,7 @@
 #include <glibmm/ustring.h>
 
 namespace Diffuse {
+bool isWindows();
 void printMessage(const Glib::ustring &s);
 } // namespace Diffuse
 

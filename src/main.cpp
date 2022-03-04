@@ -29,9 +29,12 @@
 #include <glibmm/convert.h>
 #include <glibmm/miscutils.h>
 
+#include <iostream>
+
 namespace Df = Diffuse;
 
 static std::vector<Glib::ustring> convert_args(int argc, char *argv[]);
+static bool make_subdirs(std::string &p, const std::vector<std::string> &ss);
 
 char *Df::COPYRIGHT = nullptr;
 
@@ -8218,32 +8221,50 @@ gobject.signal_new('open', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN
 gobject.signal_new('reload', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
 gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+ */
 
-# create nested subdirectories and return the complete path
-def make_subdirs(p, ss):
-    for s in ss:
-        p = os.path.join(p, s)
-        if not os.path.exists(p):
-            try:
-                os.mkdir(p)
-            except IOError:
-                pass
-    return p
+  // Find the user's config directory and create it, if it does not exist
+  bool found = false;
+  std::string rc_dir;
+  std::vector<std::string> subdirs{"diffuse"};
+  if (Df::isWindows()) {
+    rc_dir = Glib::locale_from_utf8(
+        Glib::getenv(Glib::locale_from_utf8("XDG_CONFIG_HOME"), found));
+  } else {
+    rc_dir = Glib::getenv(Glib::locale_from_utf8("XDG_CONFIG_HOME"), found);
+  }
+  if (!found || rc_dir.empty()) {
+    rc_dir = Glib::get_home_dir();
+    subdirs.emplace(std::cbegin(subdirs), ".config");
+  }
+  if (!make_subdirs(rc_dir, subdirs)) {
+    std::cerr << "Failed to create user configuration directory\n";
+    return 1;
+  }
+  // Find the user's data directory and create it, if it does not exist
+  found = false;
+  std::string data_dir;
+  subdirs = {"diffuse"};
+  if (Df::isWindows()) {
+    data_dir = Glib::locale_from_utf8(
+        Glib::getenv(Glib::locale_from_utf8("XDG_DATA_HOME"), found));
+  } else {
+    data_dir = Glib::getenv(Glib::locale_from_utf8("XDG_DATA_HOME"), found);
+  }
+  if (!found || data_dir.empty()) {
+    data_dir = Glib::get_home_dir();
+    subdirs.emplace(std::cbegin(subdirs), "share");
+    subdirs.emplace(std::cbegin(subdirs), ".local");
+  }
+  if (!make_subdirs(data_dir, subdirs)) {
+    std::cerr << "Failed to create user data directory\n";
+    return 1;
+  }
 
-# process the command line arguments
+  // Process the commandline arguments
+
+/*
 if __name__ == '__main__':
-    # find the config directory and create it if it didn't exist
-    rc_dir, subdirs = os.environ.get('XDG_CONFIG_HOME', None), [u'diffuse']
-    if rc_dir is None:
-        rc_dir = os.path.expanduser(u'~')
-        subdirs.insert(0, u'.config')
-    rc_dir = make_subdirs(rc_dir, subdirs)
-    # find the local data directory and create it if it didn't exist
-    data_dir, subdirs = os.environ.get('XDG_DATA_HOME', None), [u'diffuse']
-    if data_dir is None:
-        data_dir = os.path.expanduser(u'~')
-        subdirs[:0] = [ u'.local', u'share' ]
-    data_dir = make_subdirs(data_dir, subdirs)
     # load resource files
     i, rc_files = 1, []
     if i < argc  and args[i] == '--no-rcfile':
@@ -8408,4 +8429,27 @@ static std::vector<Glib::ustring> convert_args(int argc, char *argv[]) {
   }
 
   return res;
+}
+
+/**
+ * @brief Create nested sub-directories within a path
+ * @param[in,out] p The path to the directory in which the sub-directories shall
+ *   be created (will contain the new path in case of success or if it exists
+ *   already)
+ * @param[in] ss The hierarchy of sub-directories to be created
+ * @return _true_ in case of success or if the directory hierarchy exists
+ *   already, _false_ otherwise
+ */
+static bool make_subdirs(std::string &p, const std::vector<std::string> &ss) {
+  std::vector<std::string> tmp_path_components{ss};
+  tmp_path_components.emplace(std::cbegin(tmp_path_components), p);
+
+  const auto path{Glib::build_filename(tmp_path_components)};
+
+  if (0 == g_mkdir_with_parents(path.c_str(), 0700)) {
+    p = path;
+    return true;
+  }
+
+  return false;
 }

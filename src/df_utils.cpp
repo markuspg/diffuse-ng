@@ -28,6 +28,8 @@
 
 namespace Df = Diffuse;
 
+bool Df::isWindows() { return false; } // TODO
+
 /**
  * @brief Print a UTF-8 encoded string to stdout in the host's native encoding
  * @param[in] s The string which shall be printed
