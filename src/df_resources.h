@@ -52,6 +52,7 @@ public:
   Colour getDifferenceColour(std::vector<Colour>::size_type i);
   float getFloat(const Glib::ustring &symbol);
   Glib::ustring getString(const Glib::ustring &symbol);
+  bool parse(const std::string &file_name);
 
 private:
   void setDifferenceColours(const Glib::ustring &s);

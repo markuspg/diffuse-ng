@@ -217,6 +217,8 @@ Glib::ustring Df::Resources::getString(const Glib::ustring &symbol) {
   }
 }
 
+bool Df::Resources::parse(const std::string &file_name) { return true; } // TODO
+
 void Df::Resources::setDifferenceColours(const Glib::ustring &s) {
   const auto preWhitespaceRegexp{Glib::Regex::create("^\\s*")};
   const auto postWhitespaceRegexp{Glib::Regex::create("\\s*$")};

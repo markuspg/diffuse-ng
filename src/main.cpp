@@ -8206,34 +8206,52 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
 
   // Process the commandline arguments
 
-/*
-if __name__ == '__main__':
-    # load resource files
-    i, rc_files = 1, []
-    if i < argc  and args[i] == '--no-rcfile':
-        i += 1
-    elif i + 1 < argc and args[i] == '--rcfile':
-        i += 1
-        rc_files.append(args[i])
-        i += 1
-    else:
-        # parse system wide then personal initialisation files
-        if isWindows():
-            rc_file = os.path.join(bin_dir, u'diffuserc')
-        else:
-            rc_file = os.path.join(bin_dir, u'../../etc/diffuserc')
-        for rc_file in rc_file, os.path.join(rc_dir, u'diffuserc'):
-            if os.path.isfile(rc_file):
-                rc_files.append(rc_file)
-    for rc_file in rc_files:
-        # convert to absolute path so the location of any processing errors are
-        # reported with normalised file names
-        rc_file = os.path.abspath(rc_file)
-        try:
-            theResources.parse(rc_file)
-        except IOError:
-            logError(_('Error reading %s.') % (rc_file, ))
+  // Load resource files
+  auto i = 1u;
+  std::vector<std::string> rc_files;
+  if ((i < static_cast<unsigned>(argc)) && ("--no-rcfile" == args[i])) {
+    ++i;
+  } else if ((i + 1 < static_cast<unsigned>(argc)) && ("--rcfile" == args[i])) {
+    ++i;
+    rc_files.emplace_back(Glib::locale_from_utf8(args[i]));
+    ++i;
+  } else {
+    std::string tmp_rc_file;
+    // Parse system-wide, then personal initialization files
+    if (Df::isWindows()) {
+      tmp_rc_file =
+          Glib::build_filename(bin_dir, Glib::locale_from_utf8("diffuserc"));
+    } else {
+      tmp_rc_file = Glib::build_filename(
+          bin_dir, Glib::locale_from_utf8("../../etc/diffuserc"));
+      gchar *canonicalized =
+          g_canonicalize_filename(tmp_rc_file.data(), nullptr);
+      tmp_rc_file = canonicalized;
+      g_free(canonicalized);
+      canonicalized = nullptr;
+    }
+    for (const auto &rc_file : std::vector<std::string>{
+             tmp_rc_file, Glib::build_filename(
+                              rc_dir, Glib::locale_from_utf8("diffuserc"))}) {
+      if (Glib::file_test(rc_file, Glib::FileTest::FILE_TEST_IS_REGULAR)) {
+        rc_files.emplace_back(rc_file);
+      }
+    }
+  }
+  for (const auto &rc_file : rc_files) {
+    // Convert to an absolute path so that the locations of any processing
+    // errors are reported with normalized file names
+    gchar *tmp_rc_file = g_canonicalize_filename(rc_file.data(), nullptr);
+    std::string rc_file_abspath{tmp_rc_file};
+    g_free(tmp_rc_file);
+    tmp_rc_file = nullptr;
+    if (!theResources.parse(rc_file_abspath)) {
+      Df::logError(Glib::ustring::compose(
+          _("Error reading %1."), Glib::locale_to_utf8(rc_file_abspath)));
+    }
+  }
 
+/*
     diff = Diffuse(rc_dir)
     # load state
     statepath = os.path.join(data_dir, 'state')
