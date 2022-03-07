@@ -240,16 +240,6 @@ def globEscape(s):
   Gtk::Window::set_default_icon_name("diffuse");
 
 /*
-# convenience class for displaying a message dialogue
-class MessageDialog(gtk.MessageDialog):
-    def __init__(self, parent, type, s):
-        if type == gtk.MESSAGE_ERROR:
-            buttons = gtk.BUTTONS_OK
-        else:
-            buttons = gtk.BUTTONS_OK_CANCEL
-        gtk.MessageDialog.__init__(self, parent, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, type, buttons, s)
-        self.set_title(APP_NAME)
-
 # report error messages
 def logError(s):
     m = MessageDialog(None, gtk.MESSAGE_ERROR, s)
