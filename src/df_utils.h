@@ -28,6 +28,7 @@
 namespace Diffuse {
 bool isWindows();
 void logDebug(const Glib::ustring &s);
+void logError(const Glib::ustring &s);
 void printMessage(const Glib::ustring &s);
 } // namespace Diffuse
 

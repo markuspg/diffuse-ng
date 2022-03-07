@@ -240,12 +240,6 @@ def globEscape(s):
   Gtk::Window::set_default_icon_name("diffuse");
 
 /*
-# report error messages
-def logError(s):
-    m = MessageDialog(None, gtk.MESSAGE_ERROR, s)
-    m.run()
-    m.destroy()
-
 # class to build and run a finite state machine for identifying syntax tokens
 class SyntaxParser:
     # create a new state machine that begins in initial_state and classifies

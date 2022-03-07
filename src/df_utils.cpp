@@ -22,6 +22,7 @@
 
 #include "df_utils.h"
 #include "df_globals.h"
+#include "df_message_dialog.h"
 
 #include <glibmm/convert.h>
 
@@ -38,6 +39,15 @@ bool Df::isWindows() { return false; } // TODO
 void Df::logDebug(const Glib::ustring &s) {
   // std::cerr << Glib::locale_from_utf8(
   //     Glib::ustring::compose("%1: %2\n", Df::APP_NAME, s));
+}
+
+/**
+ * @brief Report error messages to the user through a message dialog window
+ * @param[in] s The error message to display to the user
+ */
+void Df::logError(const Glib::ustring &s) {
+  MessageDialog m{Gtk::MessageType::MESSAGE_ERROR, s};
+  m.run();
 }
 
 /**
