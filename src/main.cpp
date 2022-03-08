@@ -20,6 +20,7 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "df_diffuse.h"
 #include "df_globals.h"
 #include "df_resources.h"
 #include "df_utils.h"
@@ -6679,9 +6680,6 @@ def assign_file_labels(items, labels):
         new_items.append((name, data, s))
     return new_items
 
-# the main application class containing a set of file viewers
-# this class displays tab for switching between viewers and dispatches menu
-# commands to the current viewer
 class Diffuse(gtk.Window):
     # specialisation of FileDiffViewer for Diffuse
     class FileDiffViewer(FileDiffViewer):
@@ -7218,87 +7216,6 @@ class Diffuse(gtk.Window):
             self.footers[f].setFormat(format)
 
     def __init__(self, rc_dir):
-        gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
-
-        self.prefs = Preferences(os.path.join(rc_dir, 'prefs'))
-        # number of created viewers (used to label some tabs)
-        self.viewer_count = 0
-
-        # state information that should persist across sessions
-        self.bool_state = { 'window_maximized': False, 'search_matchcase': False, 'search_backwards': False }
-        self.int_state = { 'window_width': 1024, 'window_height': 768 }
-        self.int_state['window_x'] = max(0, (gtk.gdk.screen_width() - self.int_state['window_width']) / 2)
-        self.int_state['window_y'] = max(0, (gtk.gdk.screen_height() - self.int_state['window_height']) / 2)
-        self.connect('configure_event', self.configure_cb)
-        self.connect('window_state_event', self.window_state_cb)
-
-        # search history is application wide
-        self.search_pattern = None
-        self.search_history = []
-
-        self.connect('delete-event', self.delete_cb)
-        accel_group = gtk.AccelGroup()
-
-        # create a VBox for our contents
-        vbox = gtk.VBox()
-
-        # create some custom icons for merging
-        DIFFUSE_STOCK_NEW_2WAY_MERGE = 'diffuse-new-2way-merge'
-        DIFFUSE_STOCK_NEW_3WAY_MERGE = 'diffuse-new-3way-merge'
-        DIFFUSE_STOCK_LEFT_RIGHT = 'diffuse-left-right'
-        DIFFUSE_STOCK_RIGHT_LEFT = 'diffuse-right-left'
-
-        factory = gtk.IconFactory()
-        # render the base item used to indicate a new document
-        p0 = self.render_icon(gtk.STOCK_NEW, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        w, h = p0.get_width(), p0.get_height()
-
-        # render new 2-way merge icon
-        s = 0.8
-        sw, sh = int(s * w), int(s * h)
-        w1, h1 = w - sw, h - sh
-        p = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, w, h)
-        p.fill(0)
-        p0.composite(p, 0, 0, sw, sh, 0, 0, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        p0.composite(p, w1, h1, sw, sh, w1, h1, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        factory.add(DIFFUSE_STOCK_NEW_2WAY_MERGE, gtk.IconSet(p))
-
-        # render new 3-way merge icon
-        s = 0.7
-        sw, sh = int(s * w), int(s * h)
-        w1, h1 = (w - sw) / 2, (h - sh) / 2
-        w2, h2 = w - sw, h - sh
-        p = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, w, h)
-        p.fill(0)
-        p0.composite(p, 0, 0, sw, sh, 0, 0, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        p0.composite(p, w1, h1, sw, sh, w1, h1, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        p0.composite(p, w2, h2, sw, sh, w2, h2, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        factory.add(DIFFUSE_STOCK_NEW_3WAY_MERGE, gtk.IconSet(p))
-
-        # render the left and right arrow we will use in our custom icons
-        p0 = self.render_icon(gtk.STOCK_GO_FORWARD, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        p1 = self.render_icon(gtk.STOCK_GO_BACK, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        w, h, s = p0.get_width(), p0.get_height(), 0.65
-        sw, sh = int(s * w), int(s * h)
-        w1, h1 = w - sw, h - sh
-
-        # create merge from left then right icon
-        p = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, w, h)
-        p.fill(0)
-        p1.composite(p, w1, h1, sw, sh, w1, h1, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        p0.composite(p, 0, 0, sw, sh, 0, 0, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        factory.add(DIFFUSE_STOCK_LEFT_RIGHT, gtk.IconSet(p))
-
-        # create merge from right then left icon
-        p = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, w, h)
-        p.fill(0)
-        p0.composite(p, 0, h1, sw, sh, 0, h1, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        p1.composite(p, w1, 0, sw, sh, w1, 0, s, s, gtk.gdk.INTERP_BILINEAR, 255)
-        factory.add(DIFFUSE_STOCK_RIGHT_LEFT, gtk.IconSet(p))
-
-        # make the icons available for use
-        factory.add_default()
-
         menuspecs = []
         menuspecs.append([ _('_File'), [
                      [_('_Open File...'), self.open_file_cb, None, gtk.STOCK_OPEN, 'open_file'],
@@ -7436,43 +7353,11 @@ class Diffuse(gtk.Window):
         vbox.pack_start(hbox, False, False, 0)
         hbox.show()
 
-        self.closed_tabs = []
-        self.notebook = notebook = gtk.Notebook()
-        notebook.set_scrollable(True)
-        notebook.connect('switch-page', self.switch_page_cb)
-        vbox.pack_start(notebook, True, True, 0)
-        notebook.show()
 
-        # Add a status bar to the bottom
-        self.statusbar = statusbar = gtk.Statusbar()
-        vbox.pack_start(statusbar, False, False, 0)
-        statusbar.show()
-
-        self.add_accel_group(accel_group)
-        self.add(vbox)
-        vbox.show()
-        self.connect('focus_in_event', self.focus_in_cb)
-
-    # notifies all viewers on focus changes so they may check for external
-    # changes to files
     def focus_in_cb(self, widget, event):
         for i in range(self.notebook.get_n_pages()):
             self.notebook.get_nth_page(i).focus_in(widget, event)
 
-    # record the window's position and size
-    def configure_cb(self, widget, event):
-        # read the state directly instead of using window_maximized as the order
-        # of configure/window_state events is undefined
-        if (widget.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED) == 0:
-            self.int_state['window_x'], self.int_state['window_y'] = widget.window.get_root_origin()
-            self.int_state['window_width'] = event.width
-            self.int_state['window_height'] = event.height
-
-    # record the window's maximised state
-    def window_state_cb(self, window, event):
-        self.bool_state['window_maximized'] = ((event.new_window_state & gtk.gdk.WINDOW_STATE_MAXIMIZED) != 0)
-
-    # load state information that should persist across sessions
     def loadState(self, statepath):
         if os.path.isfile(statepath):
             try:
@@ -7501,24 +7386,6 @@ class Diffuse(gtk.Window):
         self.resize(self.int_state['window_width'], self.int_state['window_height'])
         if self.bool_state['window_maximized']:
             self.maximize()
-
-    # save state information that should persist across sessions
-    def saveState(self, statepath):
-        try:
-            ss = []
-            for k, v in self.bool_state.items():
-                ss.append('%s %s\n' % (k, v))
-            for k, v in self.int_state.items():
-                ss.append('%s %s\n' % (k, v))
-            ss.sort()
-            f = open(statepath, 'w')
-            f.write("# This state file was generated by %s %s.\n\n" % (APP_NAME, VERSION))
-            for s in ss:
-                f.write(s)
-            f.close()
-        except IOError:
-            # bad $HOME value? -- don't bother the user
-            logDebug('Error writing %s.' % (statepath, ))
 
     # select viewer for a newly selected file in the confirm close dialogue
     def __confirmClose_row_activated_cb(self, tree, path, col, model):
@@ -7653,7 +7520,6 @@ class Diffuse(gtk.Window):
                 t[s].set_active(True)
                 self.menu_update_depth -= 1
 
-    # callback used when switching notebook pages
     def switch_page_cb(self, widget, ptr, page_num):
         viewer = widget.get_nth_page(page_num)
         self.updateTitle(viewer)
@@ -7830,13 +7696,6 @@ class Diffuse(gtk.Window):
     def confirmQuit(self):
         nb = self.notebook
         return self.confirmCloseViewers([ nb.get_nth_page(i) for i in range(nb.get_n_pages()) ])
-
-    # respond to close window request from the window manager
-    def delete_cb(self, widget, event):
-        if self.confirmQuit():
-            gtk.main_quit()
-            return False
-        return True
 
     # returns the currently focused viewer
     def getCurrentViewer(self):
@@ -8223,12 +8082,15 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
     }
   }
 
+  Df::Diffuse diff{rc_dir};
+  // Load state
+  const auto statepath{
+      Glib::build_filename(data_dir, Glib::locale_from_utf8("state"))};
+  if (!diff.loadState(statepath)) {
+    std::cerr << "Failed to load state information\n";
+    return 1;
+  }
 /*
-    diff = Diffuse(rc_dir)
-    # load state
-    statepath = os.path.join(data_dir, 'state')
-    diff.loadState(statepath)
-
     # process remaining command line arguments
     encoding, revs, close_on_same = None, [], False
     specs, had_specs, labels = [], False, []
