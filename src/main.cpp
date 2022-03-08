@@ -604,16 +604,8 @@ class FontButton(gtk.FontButton):
     def get_text(self):
         return self.get_font_name()
 
-# class to store preferences and construct a dialogue for manipulating them
 class Preferences:
     def __init__(self, path):
-        self.bool_prefs = {}
-        self.int_prefs = {}
-        self.string_prefs = {}
-        self.int_prefs_min = {}
-        self.int_prefs_max = {}
-        self.string_prefs_enums = {}
-
         # find available encodings
         self.encodings = sorted(set(encodings.aliases.aliases.values()))
 
@@ -686,16 +678,6 @@ class Preferences:
               [ 'String', 'encoding_auto_detect_codecs', ' '.join(auto_detect_codecs), _('Order of codecs used to identify encoding') ]
             ],
         ]
-        # conditions used to determine if a preference should be greyed out
-        self.disable_when = {
-            'display_right_margin': ('display_show_right_margin', False),
-            'display_ignore_whitespace_changes': ('display_ignore_whitespace', True),
-            'display_ignore_blanklines': ('display_ignore_whitespace', True),
-            'display_ignore_endofline': ('display_ignore_whitespace', True),
-            'align_ignore_whitespace_changes': ('align_ignore_whitespace', True),
-            'align_ignore_blanklines': ('align_ignore_whitespace', True),
-            'align_ignore_endofline': ('align_ignore_whitespace', True)
-        }
         if isWindows():
             root = os.environ.get('SYSTEMDRIVE', None)
             if root is None:
@@ -912,18 +894,8 @@ class Preferences:
                 table.show()
             return table
 
-    # get/set methods to manipulate the preference values
-    def getBool(self, name):
-        return self.bool_prefs[name]
-
     def setBool(self, name, value):
         self.bool_prefs[name] = value
-
-    def getInt(self, name):
-        return self.int_prefs[name]
-
-    def getString(self, name):
-        return self.string_prefs[name]
 
     def setString(self, name, value):
         self.string_prefs[name] = value
