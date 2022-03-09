@@ -8090,15 +8090,30 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
     std::cerr << "Failed to load state information\n";
     return 1;
   }
+
+  // Process remaining commandline arguments
+  using namespace std::placeholders;
+  bool close_on_same = false;
+  std::optional<void *> encoding;
+  std::map<Glib::ustring, std::function<void(const Df::Diffuse::Specs &,
+                                             const Df::Diffuse::Labels &,
+                                             const Df::Diffuse::Options &)>>
+      funcs{{"commit",
+             std::bind(&Df::Diffuse::createCommitFileTabs, &diff, _1, _2, _3)},
+            {"modified", std::bind(&Df::Diffuse::createModifiedFileTabs, &diff,
+                                   _1, _2, _3)},
+            {"separate",
+             std::bind(&Df::Diffuse::createSeparateTabs, &diff, _1, _2, _3)},
+            {"single",
+             std::bind(&Df::Diffuse::createSingleTab, &diff, _1, _2, _3)}};
+  bool had_specs = false;
+  Df::Diffuse::Labels labels;
+  Glib::ustring mode{"single"};
+  Df::Diffuse::Options options;
+  std::vector<void *> revs;
+  Df::Diffuse::Specs specs;
+
 /*
-    # process remaining command line arguments
-    encoding, revs, close_on_same = None, [], False
-    specs, had_specs, labels = [], False, []
-    funcs = { 'modified': diff.createModifiedFileTabs,
-              'commit': diff.createCommitFileTabs,
-              'separate': diff.createSeparateTabs,
-              'single': diff.createSingleTab }
-    mode, options = 'single', {}
     while i < argc:
         arg = args[i]
         if len(arg) > 0 and arg[0] == '-':

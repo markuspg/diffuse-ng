@@ -38,8 +38,20 @@ namespace Diffuse {
  */
 class Diffuse : public Gtk::Window {
 public:
+  using Labels = std::vector<void *>;
+  using Options = std::map<void *, void *>;
+  using Specs = std::vector<void *>;
+
   Diffuse(const std::string &rc_dir);
 
+  void createCommitFileTabs(const Specs &items, const Labels &labels,
+                            const Options &options);
+  void createModifiedFileTabs(const Specs &items, const Labels &labels,
+                              const Options &options);
+  void createSeparateTabs(const Specs &items, const Labels &labels,
+                          const Options &options);
+  void createSingleTab(const Specs &items, const Labels &labels,
+                       const Options &options);
   bool loadState(const std::string &statepath);
   bool saveState(const std::string &statepath);
 

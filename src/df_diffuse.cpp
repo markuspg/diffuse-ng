@@ -169,6 +169,19 @@ bool Df::Diffuse::configure_cb(const GdkEventConfigure *const event) {
  */
 bool Df::Diffuse::confirmQuit() { return true; }
 
+void Df::Diffuse::createCommitFileTabs(const Specs &items, const Labels &labels,
+                                       const Options &options) {}
+
+void Df::Diffuse::createModifiedFileTabs(const Specs &items,
+                                         const Labels &labels,
+                                         const Options &options) {}
+
+void Df::Diffuse::createSeparateTabs(const Specs &items, const Labels &labels,
+                                     const Options &options) {}
+
+void Df::Diffuse::createSingleTab(const Specs &items, const Labels &labels,
+                                  const Options &options) {}
+
 /**
  * @brief Respond to close window request from the window manager
  * @param[in] event The GdkEventAny triggered by the close of a top-level window
