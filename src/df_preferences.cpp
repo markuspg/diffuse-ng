@@ -47,3 +47,12 @@ int Df::Preferences::getInt(const Glib::ustring &name) {
 Glib::ustring Df::Preferences::getString(const Glib::ustring &name) {
   return string_prefs.at(name);
 }
+
+void Df::Preferences::setBool(const Glib::ustring &name, const bool value) {
+  bool_prefs[name] = value;
+}
+
+void Df::Preferences::setString(const Glib::ustring &name,
+                                const Glib::ustring &value) {
+  string_prefs[name] = value;
+}

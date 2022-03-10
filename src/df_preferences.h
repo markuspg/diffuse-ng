@@ -39,6 +39,8 @@ public:
   bool getBool(const Glib::ustring &name);
   int getInt(const Glib::ustring &name);
   Glib::ustring getString(const Glib::ustring &name);
+  void setBool(const Glib::ustring &name, bool value);
+  void setString(const Glib::ustring &name, const Glib::ustring &value);
 
 private:
   struct DisableWhenCondition {

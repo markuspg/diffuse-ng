@@ -895,12 +895,6 @@ class Preferences:
                 table.show()
             return table
 
-    def setBool(self, name, value):
-        self.bool_prefs[name] = value
-
-    def setString(self, name, value):
-        self.string_prefs[name] = value
-
     def getEncodings(self):
         return self.encodings
 
