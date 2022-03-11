@@ -22,6 +22,8 @@
 
 #include "df_preferences.h"
 
+#include <glibmm/convert.h>
+
 namespace Df = Diffuse;
 
 Df::Preferences::Preferences(const std::string &path)
@@ -35,6 +37,10 @@ Df::Preferences::Preferences(const std::string &path)
            {"align_ignore_whitespace", true}},
           {"align_ignore_blanklines", {"align_ignore_whitespace", true}},
           {"align_ignore_endofline", {"align_ignore_whitespace", true}}} {}
+
+std::string Df::Preferences::convertToNativePath(const Glib::ustring &s) {
+  return Glib::locale_from_utf8(s);
+}
 
 bool Df::Preferences::getBool(const Glib::ustring &name) {
   return bool_prefs.at(name);

@@ -216,6 +216,11 @@ bool Df::Diffuse::loadState(const std::string &statepath) {
 } // TODO
 
 /**
+ * @brief Notify all viewers of changes to the preferences
+ */
+void Df::Diffuse::preferences_updated() {}
+
+/**
  * @brief Save state information that should persist across sessions
  * @param[in] statepath Path to the state information file
  * @return _true_ on success, _false_ otherwise

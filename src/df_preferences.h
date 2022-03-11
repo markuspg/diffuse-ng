@@ -36,6 +36,7 @@ class Preferences {
 public:
   Preferences(const std::string &path);
 
+  std::string convertToNativePath(const Glib::ustring &s);
   bool getBool(const Glib::ustring &name);
   int getInt(const Glib::ustring &name);
   Glib::ustring getString(const Glib::ustring &name);

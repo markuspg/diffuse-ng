@@ -8088,7 +8088,7 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
   // Process remaining commandline arguments
   using namespace std::placeholders;
   bool close_on_same = false;
-  std::optional<void *> encoding;
+  Df::Diffuse::Encoding encoding;
   std::map<Glib::ustring, std::function<void(const Df::Diffuse::Specs &,
                                              const Df::Diffuse::Labels &,
                                              const Df::Diffuse::Options &)>>
@@ -8104,102 +8104,133 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
   Df::Diffuse::Labels labels;
   Glib::ustring mode{"single"};
   Df::Diffuse::Options options;
-  std::vector<void *> revs;
+  Df::Diffuse::Revisions revs;
   Df::Diffuse::Specs specs;
 
+  while (i < static_cast<unsigned>(argc)) {
+    const auto arg{args[i]};
+    if ((!arg.empty()) && ('-' == arg[0])) {
+      if ((i + 1 < static_cast<unsigned>(argc)) &&
+          (("-c" == arg) || ("--commit" == arg))) {
+        // Specified revision
+        funcs[mode](specs, labels, options);
+        ++i;
+        const auto rev{args[i]};
+        labels.clear();
+        options = {{"commit", args[i]}};
+        specs.clear();
+        mode = "commit";
+      } else if (("-D" == arg) || ("--close-if-same" == arg)) {
+        close_on_same = true;
+      } else if ((i + 1 < static_cast<unsigned>(argc)) &&
+                 (("-e" == arg) || ("--encoding" == arg))) {
+        ++i;
+        encoding = args[i];
+        // TODO: encoding = encodings.aliases.aliases.get(encoding, encoding)
+      } else if (("-m" == arg) || ("--modified" == arg)) {
+        funcs[mode](specs, labels, options);
+        labels.clear();
+        options.clear();
+        specs.clear();
+        mode = "modified";
+      } else if ((i + 1 < static_cast<unsigned>(argc)) &&
+                 (("-r" == arg) || ("--revision" == arg))) {
+        // Specified revision
+        ++i;
+        revs.emplace_back(Df::Diffuse::Revision{args[i], encoding});
+      } else if (("-s" == arg) || ("--separate" == arg)) {
+        funcs[mode](specs, labels, options);
+        labels.clear();
+        options.clear();
+        specs.clear();
+        // Open items in separate tabs
+        mode = "separate";
+      } else if (("-t" == arg) || ("--tab" == arg)) {
+        funcs[mode](specs, labels, options);
+        labels.clear();
+        options.clear();
+        specs.clear();
+        // Start a new tab
+        mode = "single";
+      } else if ((i + 1 < static_cast<unsigned>(argc)) &&
+                 (("-V" == arg) || ("--vcs" == arg))) {
+        ++i;
+        diff.prefs.setString("vcs_search_order", args[i]);
+        diff.preferences_updated();
+      } else if (("-b" == arg) || ("--ignore-space-change" == arg)) {
+        diff.prefs.setBool("display_ignore_whitespace_changes", true);
+        diff.prefs.setBool("align_ignore_whitespace_changes", true);
+        diff.preferences_updated();
+      } else if (("-B" == arg) || ("--ignore-blank-lines" == arg)) {
+        diff.prefs.setBool("display_ignore_blanklines", true);
+        diff.prefs.setBool("align_ignore_blanklines", true);
+        diff.preferences_updated();
+      } else if (("-E" == arg) || ("--ignore-end-of-line" == arg)) {
+        diff.prefs.setBool("display_ignore_endofline", true);
+        diff.prefs.setBool("align_ignore_endofline", true);
+        diff.preferences_updated();
+      } else if (("-i" == arg) || ("--ignore-case" == arg)) {
+        diff.prefs.setBool("display_ignore_case", true);
+        diff.prefs.setBool("align_ignore_case", true);
+        diff.preferences_updated();
+      } else if (("-w" == arg) || ("--ignore-all-space" == arg)) {
+        diff.prefs.setBool("display_ignore_whitespace", true);
+        diff.prefs.setBool("align_ignore_whitespace", true);
+        diff.preferences_updated();
+      } else if ((i + 1 < static_cast<unsigned>(argc)) && ("-L" == arg)) {
+        ++i;
+        labels.emplace_back(args[i]);
+      } else if ((i + 1 < static_cast<unsigned>(argc)) && ("--line" == arg)) {
+        ++i;
+        try {
+          options["line"] = std::stoul(args[i]);
+        } catch (const std::invalid_argument &) {
+          Df::logError("Could not convert line argument to number");
+        } catch (const std::out_of_range &) {
+          Df::logError("Given line number is out of range");
+        }
+      } else if ("--null-file" == arg) {
+        // Add a blank file pane
+        if (("separate" == mode) || ("single" == mode)) {
+          if (revs.empty()) {
+            revs.emplace_back(Df::Diffuse::Revision{std::nullopt, encoding});
+          }
+          specs.emplace_back(Df::Diffuse::Specification{std::nullopt, revs});
+          revs.clear();
+        }
+        had_specs = true;
+      } else {
+        Df::logError(Glib::ustring::compose(
+            _("Skipping unknown argument \"%1\"."), args[i]));
+      }
+    } else {
+      std::optional<std::string> filename{
+          diff.prefs.convertToNativePath(args[i])};
+      if ((("separate" == mode) || ("single" == mode)) &&
+          Glib::file_test(filename.value(), Glib::FileTest::FILE_TEST_IS_DIR)) {
+        if (!specs.empty()) {
+          filename = Glib::build_filename(
+              filename.value(),
+              Glib::path_get_basename(specs.back().path.value()));
+        } else {
+          Df::logError(Glib::ustring::compose(
+              _("Error processing argument \"%2\".  Directory not expected."),
+              args[i]));
+          filename.reset();
+        }
+      }
+      if (filename) {
+        if (revs.empty()) {
+          revs.emplace_back(Df::Diffuse::Revision{std::nullopt, encoding});
+        }
+        specs.emplace_back(Df::Diffuse::Specification{filename, revs});
+        revs.clear();
+      }
+      had_specs = true;
+    }
+    ++i;
+  }
 /*
-    while i < argc:
-        arg = args[i]
-        if len(arg) > 0 and arg[0] == '-':
-            if i + 1 < argc and arg in [ '-c', '--commit' ]:
-                # specified revision
-                funcs[mode](specs, labels, options)
-                i += 1
-                rev = args[i]
-                specs, labels, options = [], [], { 'commit': args[i] }
-                mode = 'commit'
-            elif arg in [ '-D', '--close-if-same' ]:
-                close_on_same = True
-            elif i + 1 < argc and arg in [ '-e', '--encoding' ]:
-                i += 1
-                encoding = args[i]
-                encoding = encodings.aliases.aliases.get(encoding, encoding)
-            elif arg in [ '-m', '--modified' ]:
-                funcs[mode](specs, labels, options)
-                specs, labels, options = [], [], {}
-                mode = 'modified'
-            elif i + 1 < argc and arg in [ '-r', '--revision' ]:
-                # specified revision
-                i += 1
-                revs.append((unicode(args[i], sys.getfilesystemencoding()), encoding))
-            elif arg in [ '-s', '--separate' ]:
-                funcs[mode](specs, labels, options)
-                specs, labels, options = [], [], {}
-                # open items in separate tabs
-                mode = 'separate'
-            elif arg in [ '-t', '--tab' ]:
-                funcs[mode](specs, labels, options)
-                specs, labels, options = [], [], {}
-                # start a new tab
-                mode = 'single'
-            elif i + 1 < argc and arg in [ '-V', '--vcs' ]:
-                i += 1
-                diff.prefs.setString('vcs_search_order', unicode(args[i], sys.getfilesystemencoding()))
-                diff.preferences_updated()
-            elif arg in [ '-b', '--ignore-space-change' ]:
-                diff.prefs.setBool('display_ignore_whitespace_changes', True)
-                diff.prefs.setBool('align_ignore_whitespace_changes', True)
-                diff.preferences_updated()
-            elif arg in [ '-B', '--ignore-blank-lines' ]:
-                diff.prefs.setBool('display_ignore_blanklines', True)
-                diff.prefs.setBool('align_ignore_blanklines', True)
-                diff.preferences_updated()
-            elif arg in [ '-E', '--ignore-end-of-line' ]:
-                diff.prefs.setBool('display_ignore_endofline', True)
-                diff.prefs.setBool('align_ignore_endofline', True)
-                diff.preferences_updated()
-            elif arg in [ '-i', '--ignore-case' ]:
-                diff.prefs.setBool('display_ignore_case', True)
-                diff.prefs.setBool('align_ignore_case', True)
-                diff.preferences_updated()
-            elif arg in [ '-w', '--ignore-all-space' ]:
-                diff.prefs.setBool('display_ignore_whitespace', True)
-                diff.prefs.setBool('align_ignore_whitespace', True)
-                diff.preferences_updated()
-            elif i + 1 < argc and arg == '-L':
-                i += 1
-                labels.append(unicode(args[i], sys.getfilesystemencoding()))
-            elif i + 1 < argc and arg == '--line':
-                i += 1
-                try:
-                    options['line'] = int(args[i])
-                except ValueError:
-                    logError(_('Error parsing line number.'))
-            elif arg == '--null-file':
-                # add a blank file pane
-                if mode == 'single' or mode == 'separate':
-                    if len(revs) == 0:
-                        revs.append((None, encoding))
-                    specs.append((None, revs))
-                    revs = []
-                had_specs = True
-            else:
-                logError(_('Skipping unknown argument "%s".') % (args[i], ))
-        else:
-            filename = diff.prefs.convertToNativePath(args[i])
-            if (mode == 'single' or mode == 'separate') and os.path.isdir(filename):
-                if len(specs) > 0:
-                    filename = os.path.join(filename, os.path.basename(specs[-1][0]))
-                else:
-                    logError(_('Error processing argument "%s".  Directory not expected.') % (args[i], ))
-                    filename = None
-            if filename is not None:
-                if len(revs) == 0:
-                    revs.append((None, encoding))
-                specs.append((filename, revs))
-                revs = []
-            had_specs = True
-        i += 1
     if mode in [ 'modified', 'commit' ] and len(specs) == 0:
         specs.append((os.curdir, [ (None, encoding) ]))
         had_specs = True

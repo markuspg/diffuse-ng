@@ -29,6 +29,8 @@
 #include <gtkmm/statusbar.h>
 #include <gtkmm/window.h>
 
+#include <variant>
+
 namespace Diffuse {
 /**
  * @brief Main application class containing a set of file viewers
@@ -38,9 +40,20 @@ namespace Diffuse {
  */
 class Diffuse : public Gtk::Window {
 public:
-  using Labels = std::vector<void *>;
-  using Options = std::map<void *, void *>;
-  using Specs = std::vector<void *>;
+  using Encoding = std::optional<Glib::ustring>;
+  using Labels = std::vector<Glib::ustring>;
+  using Options =
+      std::map<Glib::ustring, std::variant<unsigned long, Glib::ustring>>;
+  struct Revision {
+    std::optional<Glib::ustring> revision;
+    Encoding encoding;
+  };
+  using Revisions = std::vector<Revision>;
+  struct Specification {
+    std::optional<std::string> path;
+    Revisions revs;
+  };
+  using Specs = std::vector<Specification>;
 
   Diffuse(const std::string &rc_dir);
 
@@ -53,6 +66,7 @@ public:
   void createSingleTab(const Specs &items, const Labels &labels,
                        const Options &options);
   bool loadState(const std::string &statepath);
+  void preferences_updated();
   bool saveState(const std::string &statepath);
 
   Gtk::Notebook notebook;
