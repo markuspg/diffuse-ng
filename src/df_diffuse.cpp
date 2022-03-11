@@ -143,6 +143,11 @@ Df::Diffuse::Diffuse(const std::string &rc_dir)
 }
 
 /**
+ * @brief Close all tabs without differences
+ */
+void Df::Diffuse::closeOnSame() {}
+
+/**
  * @brief Record the window's position and size
  * @param[in] event The GdkEventConfigure triggered by a window resizing
  * @return _false_ in any case

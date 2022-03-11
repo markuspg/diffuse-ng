@@ -25,6 +25,7 @@
 #include "df_resources.h"
 #include "df_utils.h"
 
+#include <gtkmm/main.h>
 #include <gtkmm/window.h>
 
 #include <glibmm/convert.h>
@@ -42,6 +43,8 @@ char *Df::COPYRIGHT = nullptr;
 int main(int argc, char *argv[]) {
   Df::COPYRIGHT =
       _("Copyright © 2006-2014 Derrick Moser\nCopyright © 2022 Markus Prasser");
+
+  Gtk::Main app{argc, argv};
 
   // Use the location of the program as a starting place to search for
   // supporting files such as icons or documentation
@@ -8230,28 +8233,32 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
     }
     ++i;
   }
-/*
-    if mode in [ 'modified', 'commit' ] and len(specs) == 0:
-        specs.append((os.curdir, [ (None, encoding) ]))
-        had_specs = True
-    funcs[mode](specs, labels, options)
+  if ((("commit" == mode) || ("modified" == mode)) && specs.empty()) {
+    specs.emplace_back(Df::Diffuse::Specification{
+        Glib::get_current_dir(),
+        Df::Diffuse::Revisions{{std::nullopt, encoding}}});
+    had_specs = true;
+  }
+  funcs[mode](specs, labels, options);
 
-    # create a file diff viewer if the command line arguments haven't
-    # implicitly created any
-    if not had_specs:
-        diff.newLoadedFileDiffViewer([])
-    elif close_on_same:
-        diff.closeOnSame()
-    nb = diff.notebook
-    n = nb.get_n_pages()
-    if n > 0:
-        nb.set_show_tabs(diff.prefs.getBool('tabs_always_show') or n > 1)
-        nb.get_nth_page(0).grab_focus()
-        diff.show()
-        gtk.main()
-        # save state
-        diff.saveState(statepath)
- */
+  // Create a file diff viewer if the commandline arguments have not created any
+  // implicitly
+  if (!had_specs) {
+    // TODO: diff.newLoadedFileDiffViewer([])
+  } else if (close_on_same) {
+    diff.closeOnSame();
+  }
+
+  auto &nb{diff.notebook};
+  const auto n = nb.get_n_pages();
+  if (0 < n) {
+    nb.set_show_tabs(diff.prefs.getBool("tabs_always_show") || (1 < n));
+    nb.get_nth_page(0)->grab_focus();
+    diff.show();
+    app.run();
+    // Save state
+    diff.saveState(statepath);
+  }
 
   return 0;
 }

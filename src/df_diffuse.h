@@ -57,6 +57,7 @@ public:
 
   Diffuse(const std::string &rc_dir);
 
+  void closeOnSame();
   void createCommitFileTabs(const Specs &items, const Labels &labels,
                             const Options &options);
   void createModifiedFileTabs(const Specs &items, const Labels &labels,
