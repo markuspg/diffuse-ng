@@ -6665,18 +6665,6 @@ class FileInfo:
         # to warn about changes to file on disk
         self.last_stat = None
 
-# assign user specified labels to the corresponding files
-def assign_file_labels(items, labels):
-    new_items = []
-    ss = labels[::-1]
-    for name, data in items:
-        if ss:
-            s = ss.pop()
-        else:
-            s = None
-        new_items.append((name, data, s))
-    return new_items
-
 class Diffuse(gtk.Window):
     # specialisation of FileDiffViewer for Diffuse
     class FileDiffViewer(FileDiffViewer):
@@ -7562,7 +7550,6 @@ class Diffuse(gtk.Window):
         viewer.connect('syntax_changed', self.syntax_changed_cb)
         return viewer
 
-    # create a new viewer to display 'items'
     def newLoadedFileDiffViewer(self, items):
         specs = []
         if len(items) == 0:
@@ -8244,7 +8231,7 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
   // Create a file diff viewer if the commandline arguments have not created any
   // implicitly
   if (!had_specs) {
-    // TODO: diff.newLoadedFileDiffViewer([])
+    diff.newLoadedFileDiffViewer({});
   } else if (close_on_same) {
     diff.closeOnSame();
   }

@@ -54,6 +54,8 @@ public:
     Revisions revs;
   };
   using Specs = std::vector<Specification>;
+  using LabelledSpecs =
+      std::vector<std::pair<Specification, std::optional<Glib::ustring>>>;
 
   Diffuse(const std::string &rc_dir);
 
@@ -67,6 +69,7 @@ public:
   void createSingleTab(const Specs &items, const Labels &labels,
                        const Options &options);
   bool loadState(const std::string &statepath);
+  void newLoadedFileDiffViewer(const LabelledSpecs &items);
   void preferences_updated();
   bool saveState(const std::string &statepath);
 

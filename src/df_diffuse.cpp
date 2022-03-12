@@ -34,6 +34,10 @@
 
 namespace Df = Diffuse;
 
+static Df::Diffuse::LabelledSpecs
+assign_file_labels(const Df::Diffuse::Specs &items,
+                   const Df::Diffuse::Labels &labels);
+
 Df::Diffuse::Diffuse(const std::string &rc_dir)
     : prefs{Glib::build_filename(rc_dir, Glib::locale_from_utf8("prefs"))},
       bool_state{{"search_backwards", false},
@@ -184,8 +188,17 @@ void Df::Diffuse::createModifiedFileTabs(const Specs &items,
 void Df::Diffuse::createSeparateTabs(const Specs &items, const Labels &labels,
                                      const Options &options) {}
 
+/**
+ * @brief Create a new viewer for 'items'
+ * @param items
+ * @param labels
+ * @param options
+ */
 void Df::Diffuse::createSingleTab(const Specs &items, const Labels &labels,
-                                  const Options &options) {}
+                                  const Options &options) {
+  if (!items.empty()) {
+  }
+}
 
 /**
  * @brief Respond to close window request from the window manager
@@ -219,6 +232,12 @@ bool Df::Diffuse::focus_in_cb(GdkEventFocus *event) {
 bool Df::Diffuse::loadState(const std::string &statepath) {
   return true;
 } // TODO
+
+/**
+ * @brief Create a new viewer to display 'items'
+ * @param items
+ */
+void Df::Diffuse::newLoadedFileDiffViewer(const LabelledSpecs &items) {}
 
 /**
  * @brief Notify all viewers of changes to the preferences
@@ -286,4 +305,25 @@ bool Df::Diffuse::window_state_cb(const GdkEventWindowState *const event) {
       0 != (event->new_window_state & Gdk::WindowState::WINDOW_STATE_MAXIMIZED);
 
   return false;
+}
+
+/**
+ * @brief Assign user specified labels to the corresponding files
+ * @param items
+ * @param labels
+ */
+static Df::Diffuse::LabelledSpecs
+assign_file_labels(const Df::Diffuse::Specs &items,
+                   const Df::Diffuse::Labels &labels) {
+  Df::Diffuse::LabelledSpecs new_items;
+  Df::Diffuse::Labels ss{labels.crbegin(), labels.crend()};
+  for (const auto &item : items) {
+    std::optional<Glib::ustring> s;
+    if (!ss.empty()) {
+      s = ss.back();
+      ss.pop_back();
+    }
+    new_items.emplace_back(item, s);
+  }
+  return new_items;
 }
