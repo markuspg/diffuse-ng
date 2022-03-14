@@ -23,7 +23,7 @@
 #ifndef DF_DIFFUSE_H
 #define DF_DIFFUSE_H
 
-#include "df_preferences.h"
+#include "df_file_diff_viewer.h"
 
 #include <gtkmm/notebook.h>
 #include <gtkmm/statusbar.h>

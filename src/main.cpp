@@ -2967,7 +2967,6 @@ def patience_diff(a, b):
     matches.append((len_a, len_b, 0))
     return matches
 
-# widget used to compare and merge text files
 class FileDiffViewer(gtk.Table):
     # class describing a text pane
     class Pane:
