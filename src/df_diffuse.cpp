@@ -22,6 +22,7 @@
 
 #include "df_diffuse.h"
 #include "df_globals.h"
+#include "df_vcss.h"
 
 #include <gtkmm/accelgroup.h>
 #include <gtkmm/iconfactory.h>
@@ -37,6 +38,8 @@ namespace Df = Diffuse;
 static Df::Diffuse::LabelledSpecs
 assign_file_labels(const Df::Diffuse::Specs &items,
                    const Df::Diffuse::Labels &labels);
+
+static Df::VCSs theVCSs;
 
 Df::Diffuse::Diffuse(const std::string &rc_dir)
     : prefs{Glib::build_filename(rc_dir, Glib::locale_from_utf8("prefs"))},

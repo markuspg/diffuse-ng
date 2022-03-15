@@ -1223,41 +1223,7 @@ class _VcsFolderSet:
                 return True
         return False
 
-# utility method to help find folders used by version control systems
-def _find_parent_dir_with(path, dir_name):
-    while True:
-        name = os.path.join(path, dir_name)
-        if os.path.isdir(name):
-            return path
-        newpath = os.path.dirname(path)
-        if newpath == path:
-            break
-        path = newpath
-
-# These class implement the set of supported version control systems.  Each
-# version control system should implement:
-#
-#   __init__():
-#       the object will initialised with the repository's root folder
-#
-#   getFileTemplate():
-#       indicates which revisions to display for a file when none were
-#       explicitly requested
-#
-#   getCommitTemplate():
-#       indicates which file revisions to display for a commit
-#
-#   getFolderTemplate():
-#       indicates which file revisions to display for a set of folders
-#
-#   getRevision():
-#       returns the contents of the specified file revision
-
-# Bazaar support
 class _Bzr:
-    def __init__(self, root):
-        self.root = root
-
     def getFileTemplate(self, prefs, name):
         # merge conflict
         left = name + '.OTHER'
@@ -1420,11 +1386,7 @@ def _get_bzr_repo(path, prefs):
     if p:
         return _Bzr(p)
 
-# CVS support
 class _Cvs:
-    def __init__(self, root):
-        self.root = root
-
     def getFileTemplate(self, prefs, name):
         return [ (name, 'BASE'), (name, None) ]
 
@@ -1495,11 +1457,7 @@ def _get_cvs_repo(path, prefs):
     if os.path.isdir(os.path.join(path, 'CVS')):
         return _Cvs(path)
 
-# Darcs support
 class _Darcs:
-    def __init__(self, root):
-        self.root = root
-
     def getFileTemplate(self, prefs, name):
         return [ (name, ''), (name, None) ]
 
@@ -1623,11 +1581,7 @@ def _get_darcs_repo(path, prefs):
     if p:
         return _Darcs(p)
 
-# Git support
 class _Git:
-    def __init__(self, root):
-        self.root = root
-
     def getFileTemplate(self, prefs, name):
         return [ (name, 'HEAD'), (name, None) ]
 
@@ -1779,12 +1733,7 @@ def _get_git_repo(path, prefs):
             break
         path = newpath
 
-# Mercurial support
 class _Hg:
-    def __init__(self, root):
-        self.root = root
-        self.working_rev = None
-
     def _getPreviousRevision(self, prefs, rev):
         if rev is None:
             if self.working_rev is None:
@@ -1850,11 +1799,7 @@ def _get_hg_repo(path, prefs):
     if p:
         return _Hg(p)
 
-# Monotone support
 class _Mtn:
-    def __init__(self, root):
-        self.root = root
-
     def getFileTemplate(self, prefs, name):
         # FIXME: merge conflicts?
         return [ (name, 'h:'), (name, None) ]
@@ -2032,11 +1977,7 @@ def _get_mtn_repo(path, prefs):
     if p:
         return _Mtn(p)
 
-# RCS support
 class _Rcs:
-    def __init__(self, root):
-        self.root = root
-
     def getFileTemplate(self, prefs, name):
         args = [ prefs.getString('rcs_bin_rlog'), '-L', '-h', safeRelativePath(self.root, name, prefs, 'rcs_cygwin') ]
         rev = ''
@@ -2140,13 +2081,7 @@ def _get_rcs_repo(path, prefs):
         # the user specified an invalid folder name
         pass
 
-# Subversion support
-# SVK support subclasses from this
 class _Svn:
-    def __init__(self, root):
-        self.root = root
-        self.url = None
-
     def _getVcs(self):
         return 'svn'
 
@@ -2359,9 +2294,6 @@ def _get_svn_repo(path, prefs):
         return _Svn(p)
 
 class _Svk(_Svn):
-    def __init__(self, root):
-        _Svn.__init__(self, root)
-
     def _getVcs(self):
         return 'svk'
 
@@ -2453,7 +2385,6 @@ class VCSs:
     def setSearchOrder(self, ordering):
         self._search_order = ordering
 
-    # determines which VCS to use for files in the named folder
     def findByFolder(self, path, prefs):
         path = os.path.abspath(path)
         for vcs in prefs.getString('vcs_search_order').split():
@@ -2461,13 +2392,6 @@ class VCSs:
                 repo = self._get_repo[vcs](path, prefs)
                 if repo:
                     return repo
-
-    # determines which VCS to use for the named file
-    def findByFilename(self, name, prefs):
-        if name is not None:
-            return self.findByFolder(os.path.dirname(name), prefs)
-
-theVCSs = VCSs()
 
 # utility method to step advance an adjustment
 def step_adjustment(adj, delta):

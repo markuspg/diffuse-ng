@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME_LC}
     df_preferences.cpp
     df_resources.cpp
     df_utils.cpp
+    df_vcss.cpp
     main.cpp)
 target_include_directories(${PROJECT_NAME_LC} SYSTEM
     PRIVATE ${GLIBMM24_INCLUDE_DIRS}
