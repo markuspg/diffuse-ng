@@ -36,6 +36,22 @@ static std::optional<std::string>
 find_parent_dir_with(const std::string &path, const std::string &dir_name);
 static std::unique_ptr<VcsSupp> get_bzr_repo(const std::string &path,
                                              const Df::Preferences &prefs);
+static std::unique_ptr<VcsSupp> get_cvs_repo(const std::string &path,
+                                             const Df::Preferences &prefs);
+static std::unique_ptr<VcsSupp> get_darcs_repo(const std::string &path,
+                                               const Df::Preferences &prefs);
+static std::unique_ptr<VcsSupp> get_git_repo(const std::string &path,
+                                             const Df::Preferences &prefs);
+static std::unique_ptr<VcsSupp> get_hg_repo(const std::string &path,
+                                            const Df::Preferences &prefs);
+static std::unique_ptr<VcsSupp> get_mtn_repo(const std::string &path,
+                                             const Df::Preferences &prefs);
+static std::unique_ptr<VcsSupp> get_rcs_repo(const std::string &path,
+                                             const Df::Preferences &prefs);
+static std::unique_ptr<VcsSupp> get_svk_repo(const std::string &path,
+                                             const Df::Preferences &prefs);
+static std::unique_ptr<VcsSupp> get_svn_repo(const std::string &path,
+                                             const Df::Preferences &prefs);
 
 /**
  * @brief Class representing base functionality to be supported by all version
@@ -102,6 +118,11 @@ class Cvs : public VcsSupp {
 public:
   explicit Cvs(const std::string &root);
   ~Cvs() override;
+
+  void getCommitTemplate() override;
+  void getFileTemplate() override;
+  void getFolderTemplate() override;
+  void getRevision() override;
 };
 
 /**
@@ -111,6 +132,11 @@ class Darcs : public VcsSupp {
 public:
   explicit Darcs(const std::string &root);
   ~Darcs() override;
+
+  void getCommitTemplate() override;
+  void getFileTemplate() override;
+  void getFolderTemplate() override;
+  void getRevision() override;
 };
 
 /**
@@ -130,6 +156,11 @@ public:
   explicit Hg(const std::string &root);
   ~Hg() override;
 
+  void getCommitTemplate() override;
+  void getFileTemplate() override;
+  void getFolderTemplate() override;
+  void getRevision() override;
+
 private:
   std::optional<void *> working_rev;
 };
@@ -141,6 +172,11 @@ class Mtn : public VcsSupp {
 public:
   explicit Mtn(const std::string &root);
   ~Mtn() override;
+
+  void getCommitTemplate() override;
+  void getFileTemplate() override;
+  void getFolderTemplate() override;
+  void getRevision() override;
 };
 
 /**
@@ -162,6 +198,11 @@ public:
   explicit Svn(const std::string &root);
   ~Svn() override;
 
+  void getCommitTemplate() override;
+  void getFileTemplate() override;
+  void getFolderTemplate() override;
+  void getRevision() override;
+
 private:
   std::optional<void *> url;
 };
@@ -176,9 +217,11 @@ public:
 
 Df::VCSs::VCSs()
     : // Initialize the VCS objects
-      get_repo{{"bzr", nullptr}, {"cvs", nullptr}, {"darcs", nullptr},
-               {"git", nullptr}, {"hg", nullptr},  {"mtn", nullptr},
-               {"rcs", nullptr}, {"svk", nullptr}, {"svn", nullptr}} {}
+      get_repo{{"bzr", &get_bzr_repo},     {"cvs", &get_cvs_repo},
+               {"darcs", &get_darcs_repo}, {"git", &get_git_repo},
+               {"hg", &get_hg_repo},       {"mtn", &get_mtn_repo},
+               {"rcs", &get_rcs_repo},     {"svk", &get_svk_repo},
+               {"svn", &get_svn_repo}} {}
 
 /**
  * @brief Determines which VCS to use for the named file
@@ -236,9 +279,25 @@ Df::Cvs::Cvs(const std::string &rt) : VcsSupp{rt} {}
 
 Df::Cvs::~Cvs() {}
 
+void Df::Cvs::getCommitTemplate() {}
+
+void Df::Cvs::getFileTemplate() {}
+
+void Df::Cvs::getFolderTemplate() {}
+
+void Df::Cvs::getRevision() {}
+
 Df::Darcs::Darcs(const std::string &rt) : VcsSupp{rt} {}
 
 Df::Darcs::~Darcs() {}
+
+void Df::Darcs::getCommitTemplate() {}
+
+void Df::Darcs::getFileTemplate() {}
+
+void Df::Darcs::getFolderTemplate() {}
+
+void Df::Darcs::getRevision() {}
 
 Df::Git::Git(const std::string &rt) : VcsSupp{rt} {}
 
@@ -248,9 +307,25 @@ Df::Hg::Hg(const std::string &rt) : VcsSupp{rt} {}
 
 Df::Hg::~Hg() {}
 
+void Df::Hg::getCommitTemplate() {}
+
+void Df::Hg::getFileTemplate() {}
+
+void Df::Hg::getFolderTemplate() {}
+
+void Df::Hg::getRevision() {}
+
 Df::Mtn::Mtn(const std::string &rt) : VcsSupp{rt} {}
 
 Df::Mtn::~Mtn() {}
+
+void Df::Mtn::getCommitTemplate() {}
+
+void Df::Mtn::getFileTemplate() {}
+
+void Df::Mtn::getFolderTemplate() {}
+
+void Df::Mtn::getRevision() {}
 
 Df::Rcs::Rcs(const std::string &rt) : VcsSupp{rt} {}
 
@@ -263,6 +338,14 @@ Df::Svk::~Svk() {}
 Df::Svn::Svn(const std::string &rt) : VcsSupp{rt} {}
 
 Df::Svn::~Svn() {}
+
+void Df::Svn::getCommitTemplate() {}
+
+void Df::Svn::getFileTemplate() {}
+
+void Df::Svn::getFolderTemplate() {}
+
+void Df::Svn::getRevision() {}
 
 Df::VcsSupp::VcsSupp(const std::string &rt) : root{rt} {}
 
@@ -293,10 +376,80 @@ Df::find_parent_dir_with(const std::string &path, const std::string &dir_name) {
 }
 
 static std::unique_ptr<Df::VcsSupp>
-Df::get_bzr_repo(const std::string &path, const Df::Preferences &prefs) {
+Df::get_bzr_repo(const std::string &path,
+                 [[maybe_unused]] const Df::Preferences &prefs) {
   const auto p{find_parent_dir_with(path, "bzr")};
   if (p) {
     return std::make_unique<Df::Bzr>(p.value());
+  }
+
+  return nullptr;
+}
+static std::unique_ptr<Df::VcsSupp>
+Df::get_cvs_repo(const std::string &path,
+                 [[maybe_unused]] const Df::Preferences &prefs) {
+  const auto p{find_parent_dir_with(path, "CVS")};
+  if (p) {
+    return std::make_unique<Df::Cvs>(p.value());
+  }
+
+  return nullptr;
+}
+
+static std::unique_ptr<Df::VcsSupp>
+Df::get_darcs_repo(const std::string &path,
+                   [[maybe_unused]] const Df::Preferences &prefs) {
+  const auto p{find_parent_dir_with(path, "_darcs")};
+  if (p) {
+    return std::make_unique<Df::Darcs>(p.value());
+  }
+
+  return nullptr;
+}
+
+static std::unique_ptr<Df::VcsSupp>
+Df::get_git_repo(const std::string &path, const Df::Preferences &prefs) {
+  return nullptr;
+}
+
+static std::unique_ptr<Df::VcsSupp>
+Df::get_hg_repo(const std::string &path,
+                [[maybe_unused]] const Df::Preferences &prefs) {
+  const auto p{find_parent_dir_with(path, ".hg")};
+  if (p) {
+    return std::make_unique<Df::Hg>(p.value());
+  }
+
+  return nullptr;
+}
+
+static std::unique_ptr<Df::VcsSupp>
+Df::get_mtn_repo(const std::string &path,
+                 [[maybe_unused]] const Df::Preferences &prefs) {
+  const auto p{find_parent_dir_with(path, "_MTN")};
+  if (p) {
+    return std::make_unique<Df::Mtn>(p.value());
+  }
+
+  return nullptr;
+}
+
+static std::unique_ptr<Df::VcsSupp>
+Df::get_rcs_repo(const std::string &path, const Df::Preferences &prefs) {
+  return nullptr;
+}
+
+static std::unique_ptr<Df::VcsSupp>
+Df::get_svk_repo(const std::string &path, const Df::Preferences &prefs) {
+  return nullptr;
+}
+
+static std::unique_ptr<Df::VcsSupp>
+Df::get_svn_repo(const std::string &path,
+                 [[maybe_unused]] const Df::Preferences &prefs) {
+  const auto p{find_parent_dir_with(path, ".svn")};
+  if (p) {
+    return std::make_unique<Df::Svn>(p.value());
   }
 
   return nullptr;

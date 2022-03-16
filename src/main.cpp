@@ -1381,11 +1381,6 @@ class _Bzr:
     def getRevision(self, prefs, name, rev):
         return popenRead(self.root, [ prefs.getString('bzr_bin'), 'cat', '--name-from-revision', '-r', rev, safeRelativePath(self.root, name, prefs, 'bzr_cygwin') ], prefs, 'bzr_bash')
 
-def _get_bzr_repo(path, prefs):
-    p = _find_parent_dir_with(path, '.bzr')
-    if p:
-        return _Bzr(p)
-
 class _Cvs:
     def getFileTemplate(self, prefs, name):
         return [ (name, 'BASE'), (name, None) ]
@@ -1452,10 +1447,6 @@ class _Cvs:
                 if s.startswith('   Working revision:\t-'):
                     rev = s.split('\t')[1][1:]
         return popenRead(self.root, [ prefs.getString('cvs_bin'), '-Q', 'update', '-p', '-r', rev, safeRelativePath(self.root, name, prefs, 'cvs_cygwin') ], prefs, 'cvs_bash')
-
-def _get_cvs_repo(path, prefs):
-    if os.path.isdir(os.path.join(path, 'CVS')):
-        return _Cvs(path)
 
 class _Darcs:
     def getFileTemplate(self, prefs, name):
@@ -1575,11 +1566,6 @@ class _Darcs:
             args.extend([ '-h', rev ])
         args.append(safeRelativePath(self.root, name, prefs, 'darcs_cygwin'))
         return popenRead(self.root, args, prefs, 'darcs_bash')
-
-def _get_darcs_repo(path, prefs):
-    p = _find_parent_dir_with(path, '_darcs')
-    if p:
-        return _Darcs(p)
 
 class _Git:
     def getFileTemplate(self, prefs, name):
@@ -1794,11 +1780,6 @@ class _Hg:
     def getRevision(self, prefs, name, rev):
         return popenRead(self.root, [ prefs.getString('hg_bin'), 'cat', '-r', rev, safeRelativePath(self.root, name, prefs, 'hg_cygwin') ], prefs, 'hg_bash')
 
-def _get_hg_repo(path, prefs):
-    p = _find_parent_dir_with(path, '.hg')
-    if p:
-        return _Hg(p)
-
 class _Mtn:
     def getFileTemplate(self, prefs, name):
         # FIXME: merge conflicts?
@@ -1971,11 +1952,6 @@ class _Mtn:
 
     def getRevision(self, prefs, name, rev):
         return popenRead(self.root, [ prefs.getString('mtn_bin'), 'automate', 'get_file_of', '-q', '-r', rev, safeRelativePath(self.root, name, prefs, 'mtn_cygwin') ], prefs, 'mtn_bash')
-
-def _get_mtn_repo(path, prefs):
-    p = _find_parent_dir_with(path, '_MTN')
-    if p:
-        return _Mtn(p)
 
 class _Rcs:
     def getFileTemplate(self, prefs, name):
@@ -2287,11 +2263,6 @@ class _Svn:
         if rev in [ 'BASE', 'COMMITTED', 'PREV' ]:
             return popenRead(self.root, [ vcs_bin, 'cat', '%s@%s' % (safeRelativePath(self.root, name, prefs, 'svn_cygwin'), rev) ], prefs, 'svn_bash')
         return popenRead(self.root, [ vcs_bin, 'cat', '%s/%s@%s' % (self._getURL(prefs), relpath(self.root, os.path.abspath(name)).replace(os.sep, '/'), rev) ], prefs, 'svn_bash')
-
-def _get_svn_repo(path, prefs):
-    p = _find_parent_dir_with(path, '.svn')
-    if p:
-        return _Svn(p)
 
 class _Svk(_Svn):
     def _getVcs(self):

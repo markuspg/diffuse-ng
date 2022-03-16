@@ -25,9 +25,12 @@
 
 #include "df_preferences.h"
 
+#include <memory>
 #include <optional>
 
 namespace Diffuse {
+class VcsSupp;
+
 class VCSs {
 public:
   VCSs();
@@ -37,7 +40,9 @@ public:
   void findByFolder(const std::string &path, Preferences &prefs);
 
 private:
-  std::map<Glib::ustring, void *> get_repo;
+  std::map<Glib::ustring, std::unique_ptr<VcsSupp> (*)(const std::string &,
+                                                       const Preferences &)>
+      get_repo;
 };
 } // namespace Diffuse
 
