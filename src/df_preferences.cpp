@@ -21,6 +21,7 @@
  */
 
 #include "df_preferences.h"
+#include "df_font_button.h"
 
 #include <glibmm/convert.h>
 
