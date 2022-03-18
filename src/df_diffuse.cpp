@@ -21,6 +21,7 @@
  */
 
 #include "df_diffuse.h"
+#include "df_about_dialog.h"
 #include "df_globals.h"
 #include "df_vcss.h"
 
