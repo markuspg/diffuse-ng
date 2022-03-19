@@ -6469,43 +6469,6 @@ def url_hook(dialog, link, userdata):
 
 gtk.about_dialog_set_url_hook(url_hook, None)
 
-# widget classed to create notebook tabs with labels and a close button
-# use notebooktab.button.connect() to be notified when the button is pressed
-# make this a gtk.EventBox so signals can be connected for MMB and RMB button
-# presses.
-class NotebookTab(gtk.EventBox):
-    def __init__(self, name, stock):
-        gtk.EventBox.__init__(self)
-        self.set_visible_window(False)
-        hbox = gtk.HBox()
-        if stock is not None:
-            image = gtk.Image()
-            image.set_from_stock(stock, gtk.ICON_SIZE_MENU)
-            hbox.pack_start(image, False, False, 5)
-            image.show()
-        self.label = label = gtk.Label(name)
-        # left justify the widget
-        label.set_alignment(0, 0.5)
-        hbox.pack_start(label, True, True, 0)
-        label.show()
-        self.button = button = gtk.Button()
-        button.set_relief(gtk.RELIEF_NONE)
-        image = gtk.Image()
-        image.set_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_MENU)
-        button.add(image)
-        image.show()
-        set_tooltip(button, _('Close Tab'))
-        hbox.pack_start(button, False, False, 0)
-        button.show()
-        self.add(hbox)
-        hbox.show()
-
-    def get_text(self):
-        return self.label.get_text()
-
-    def set_text(self, s):
-        self.label.set_text(s)
-
 # contains information about a file
 class FileInfo:
     def __init__(self, name=None, encoding=None, vcs=None, revision=None, label=None):
