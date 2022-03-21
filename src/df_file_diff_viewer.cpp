@@ -26,3 +26,15 @@ namespace Df = Diffuse;
 
 Df::FileDiffViewer::FileDiffViewer(guint n, Preferences &prefs)
     : Gtk::Table{3, n + 1} {}
+
+Df::FileDiffViewer::Line::Line(std::optional<unsigned> &line_no,
+                               std::optional<Glib::ustring> &txt)
+    : line_number{line_no}, text{txt} {}
+
+std::optional<Glib::ustring> Df::FileDiffViewer::Line::getText() const {
+  if (is_modified) {
+    return modified_text;
+  }
+
+  return text;
+}

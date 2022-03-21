@@ -2847,21 +2847,6 @@ class FileDiffViewer(gtk.Table):
             # number of lines with edits
             self.num_edits = 0
 
-    # class describing a single line of a pane
-    class Line:
-        def __init__(self, line_number = None, text = None):
-            # line number
-            self.line_number = line_number
-            # original text for the line
-            self.text = text
-            # flag indicating modifications are present
-            self.is_modified = False
-            # actual modified text
-            self.modified_text = None
-            # cache used to speed up comparison of strings
-            # this should be cleared whenever the comparison preferences change
-            self.compare_string = None
-
         # returns the current text for this line
         def getText(self):
             if self.is_modified:

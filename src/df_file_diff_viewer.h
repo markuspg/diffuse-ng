@@ -33,6 +33,34 @@ namespace Diffuse {
  */
 class FileDiffViewer : public Gtk::Table {
 public:
+  /**
+   * @brief Class describing a single line of a pane
+   */
+  class Line {
+  public:
+    Line(std::optional<unsigned> &line_number,
+         std::optional<Glib::ustring> &text);
+
+    /**
+     * @brief Returns the current text for this line
+     * @return The current text of this line
+     */
+    std::optional<Glib::ustring> getText() const;
+
+  private:
+    //! Cache used to speed up the comparison of strings (this should be cleared
+    //! whenever the comparison preferences change)
+    std::optional<void *> compare_string;
+    //! Flag indicating if modifications are present
+    bool is_modified = false;
+    //! Line number
+    std::optional<unsigned> line_number;
+    //! Actual modified text
+    std::optional<Glib::ustring> modified_text;
+    //! Original text of the line
+    std::optional<Glib::ustring> text;
+  };
+
   FileDiffViewer(guint n, Preferences &prefs);
 };
 } // namespace Diffuse
