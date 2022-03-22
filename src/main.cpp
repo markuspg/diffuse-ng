@@ -167,10 +167,6 @@ if not hasattr(__builtins__, 'WindowsError'):
     # define 'WindowsError' so 'except' statements will work on all platforms
     WindowsError = IOError
 
-# avoid some dictionary lookups when string.whitespace is used in loops
-# this is sorted based upon frequency to speed up code for stripping whitespace
-whitespace = ' \t\n\r\x0b\x0c'
-
 # unfortunately some Python implementations of shlex.split do not support
 # unicode
 def shlex_split(s, allow_comments=False):

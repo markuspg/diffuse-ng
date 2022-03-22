@@ -6,6 +6,7 @@ add_executable(${PROJECT_NAME_LC}
     df_file_diff_viewer.cpp
     df_file_entry.cpp
     df_font_button.cpp
+    df_globals.cpp
     df_message_dialog.cpp
     df_notebook_tab.cpp
     df_preferences.cpp

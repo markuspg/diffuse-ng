@@ -20,21 +20,8 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef DF_GLOBALS_H
-#define DF_GLOBALS_H
+#include "df_globals.h"
 
-#include <glibmm/ustring.h>
+namespace Df = Diffuse;
 
-#include <glib/gi18n.h>
-
-namespace Diffuse {
-inline constexpr auto APP_NAME = "Diffuse";
-extern char *COPYRIGHT;
-inline constexpr auto VERSION = "0.4.9";
-//! Avoid some dictionary look-ups when string.whitespace is used in loops (this
-//! is sorted based upon frequency to speed up code for stripping whitespace
-extern const Glib::ustring whitespace;
-inline constexpr auto WEBSITE = "http://diffuse.sourceforge.net";
-} // namespace Diffuse
-
-#endif // DF_GLOBALS_H
+const Glib::ustring Df::whitespace{" \t\n\r\v\f"};
