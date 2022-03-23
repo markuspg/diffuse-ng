@@ -36,7 +36,7 @@ namespace Diffuse {
  * Use button.connect() to be notified when the button is pressed. This is made
  * a Gtk::EventBox so signals can be connected for MMB and RMB button presses.
  */
-class NotebookTab : Gtk::EventBox {
+class NotebookTab : public Gtk::EventBox {
 public:
   NotebookTab(const Glib::ustring &name,
               const std::optional<Gtk::StockID> &stock);
