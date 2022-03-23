@@ -5743,7 +5743,6 @@ class FileDiffViewer(gtk.Table):
         text = self.getCompareString(f, i)
         return (f > 0 and self.getCompareString(f - 1, i) != text) or (f + 1 < len(self.panes) and text != self.getCompareString(f + 1, i))
 
-    # returns True if there are any differences
     def hasDifferences(self):
         n = len(self.panes)
         nlines = len(self.panes[0].lines)
@@ -7442,12 +7441,6 @@ class Diffuse(gtk.Window):
                     dialog = MessageDialog(self.get_toplevel(), gtk.MESSAGE_ERROR, _('Error retrieving modifications for %s.') % (dn, ))
                     dialog.run()
                     dialog.destroy()
-
-    # close all tabs without differences
-    def closeOnSame(self):
-        for i in range(self.notebook.get_n_pages() - 1, -1, -1):
-            if not self.notebook.get_nth_page(i).hasDifferences():
-                self.notebook.remove_page(i)
 
     # returns True if the application can safely quit
     def confirmQuit(self):

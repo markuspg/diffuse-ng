@@ -62,6 +62,8 @@ public:
   };
 
   FileDiffViewer(guint n, Preferences &prefs);
+
+  bool hasDifferences() const;
 };
 } // namespace Diffuse
 

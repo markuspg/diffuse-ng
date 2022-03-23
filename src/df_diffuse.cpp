@@ -153,7 +153,16 @@ Df::Diffuse::Diffuse(const std::string &rc_dir)
 /**
  * @brief Close all tabs without differences
  */
-void Df::Diffuse::closeOnSame() {}
+void Df::Diffuse::closeOnSame() {
+  const auto n{notebook.get_n_pages()};
+  for (auto i{0}; i < n; ++i) {
+    const auto fdv{
+        dynamic_cast<::Df::FileDiffViewer *>(notebook.get_nth_page(i))};
+    if ((fdv) && !fdv->hasDifferences()) {
+      notebook.remove_page(i);
+    }
+  }
+}
 
 /**
  * @brief Record the window's position and size

@@ -27,6 +27,12 @@ namespace Df = Diffuse;
 Df::FileDiffViewer::FileDiffViewer(guint n, Preferences &prefs)
     : Gtk::Table{3, n + 1} {}
 
+/**
+ * @brief Returns True if there are any differences
+ * @return _true_ if there are any differences, _false_ otherwise
+ */
+bool Df::FileDiffViewer::hasDifferences() const { return false; }
+
 Df::FileDiffViewer::Line::Line(std::optional<unsigned> &line_no,
                                std::optional<Glib::ustring> &txt)
     : line_number{line_no}, text{txt} {}
