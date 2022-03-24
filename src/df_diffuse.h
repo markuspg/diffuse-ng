@@ -40,6 +40,23 @@ namespace Diffuse {
  */
 class Diffuse : public Gtk::Window {
 public:
+  class FileDiffViewer : public ::Diffuse::FileDiffViewer {
+  public:
+    using type_signal_status_changed = sigc::signal<void()>;
+    using type_signal_syntax_changed = sigc::signal<void()>;
+    using type_signal_title_changed = sigc::signal<void()>;
+    type_signal_status_changed signal_status_changed();
+    type_signal_syntax_changed signal_syntax_changed();
+    type_signal_title_changed signal_title_changed();
+
+    FileDiffViewer(guint n, Preferences &prefs, const Glib::ustring &title);
+
+  protected:
+    type_signal_status_changed m_status_changed;
+    type_signal_syntax_changed m_syntax_changed;
+    type_signal_title_changed m_title_changed;
+  };
+
   using Encoding = std::optional<Glib::ustring>;
   using Labels = std::vector<Glib::ustring>;
   using Options =
@@ -81,7 +98,14 @@ private:
   bool confirmQuit();
   bool delete_cb(const GdkEventAny *event);
   bool focus_in_cb(GdkEventFocus *event);
+  std::unique_ptr<FileDiffViewer> newFileDiffViewer(guint n);
+  bool notebooktab_button_press_cb(GdkEventButton *event,
+                                   FileDiffViewer *viewer);
+  void remove_tab_cb(FileDiffViewer *viewer);
+  void status_changed_cb();
+  void syntax_changed_cb();
   void switch_page_cb(Gtk::Widget *ptr, guint page_num);
+  void title_changed_cb();
   bool window_state_cb(const GdkEventWindowState *event);
 
   // State information that should persist across sessions

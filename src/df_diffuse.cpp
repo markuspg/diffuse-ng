@@ -23,6 +23,7 @@
 #include "df_diffuse.h"
 #include "df_about_dialog.h"
 #include "df_globals.h"
+#include "df_notebook_tab.h"
 #include "df_vcss.h"
 
 #include <gtkmm/accelgroup.h>
@@ -247,15 +248,63 @@ bool Df::Diffuse::loadState(const std::string &statepath) {
 } // TODO
 
 /**
+ * @brief Create an empty viewer with "n" panes
+ * @param[in] n The number of panes the viewer shall have
+ */
+std::unique_ptr<Df::Diffuse::FileDiffViewer>
+Df::Diffuse::newFileDiffViewer(const guint n) {
+  ++viewer_count;
+  const Glib::ustring tabname{_("File Merge %1"), viewer_count};
+  NotebookTab tab{tabname, Gtk::Stock::FILE};
+  auto viewer{std::make_unique<Df::Diffuse::FileDiffViewer>(n, prefs, tabname)};
+  tab.button.signal_clicked().connect(
+      sigc::bind(sigc::mem_fun(*this, &Diffuse::remove_tab_cb), viewer.get()));
+  tab.signal_button_press_event().connect(
+      sigc::bind(sigc::mem_fun(*this, &Diffuse::notebooktab_button_press_cb),
+                 viewer.get()));
+  notebook.append_page(*viewer.get(), tab);
+  notebook.set_tab_reorderable(*viewer.get(), true);
+  tab.show();
+  viewer->show();
+  notebook.set_show_tabs(prefs.getBool("tabs_always_show") ||
+                         (1 < notebook.get_n_pages()));
+  viewer->signal_status_changed().connect(
+      sigc::mem_fun(*this, &Diffuse::status_changed_cb));
+  viewer->signal_syntax_changed().connect(
+      sigc::mem_fun(*this, &Diffuse::syntax_changed_cb));
+  viewer->signal_title_changed().connect(
+      sigc::mem_fun(*this, &Diffuse::title_changed_cb));
+
+  return viewer;
+}
+
+/**
  * @brief Create a new viewer to display 'items'
  * @param items
  */
 void Df::Diffuse::newLoadedFileDiffViewer(const LabelledSpecs &items) {}
 
 /**
+ * @brief Callback used when a mouse button is pressed on a notebook tab
+ * @param event
+ * @param viewer
+ * @return
+ */
+bool Df::Diffuse::notebooktab_button_press_cb(GdkEventButton *event,
+                                              FileDiffViewer *viewer) {
+  return false;
+}
+
+/**
  * @brief Notify all viewers of changes to the preferences
  */
 void Df::Diffuse::preferences_updated() {}
+
+/**
+ * @brief Callback for the close button on each tab
+ * @param viewer
+ */
+void Df::Diffuse::remove_tab_cb(FileDiffViewer *const viewer) {}
 
 /**
  * @brief Save state information that should persist across sessions
@@ -299,6 +348,21 @@ bool Df::Diffuse::saveState(const std::string &statepath) {
 }
 
 /**
+ * @brief Callback used when a viewer's status changes
+ */
+void Df::Diffuse::status_changed_cb() {}
+
+/**
+ * @brief Callback used when a viewer's syntax changes
+ */
+void Df::Diffuse::syntax_changed_cb() {}
+
+/**
+ * @brief Callback used when a viewer's title changes
+ */
+void Df::Diffuse::title_changed_cb() {}
+
+/**
  * @brief Callback used when switching notebook pages
  * @param[in] ptr Pointer to the new current page
  * @param[in] page_num The index of the page
@@ -318,6 +382,25 @@ bool Df::Diffuse::window_state_cb(const GdkEventWindowState *const event) {
       0 != (event->new_window_state & Gdk::WindowState::WINDOW_STATE_MAXIMIZED);
 
   return false;
+}
+
+Df::Diffuse::FileDiffViewer::FileDiffViewer(const guint n, Preferences &prefs,
+                                            const Glib::ustring &title)
+    : Df::FileDiffViewer{n, prefs} {}
+
+Df::Diffuse::FileDiffViewer::type_signal_status_changed
+Df::Diffuse::FileDiffViewer::signal_status_changed() {
+  return m_status_changed;
+}
+
+Df::Diffuse::FileDiffViewer::type_signal_syntax_changed
+Df::Diffuse::FileDiffViewer::signal_syntax_changed() {
+  return m_syntax_changed;
+}
+
+Df::Diffuse::FileDiffViewer::type_signal_title_changed
+Df::Diffuse::FileDiffViewer::signal_title_changed() {
+  return m_title_changed;
 }
 
 /**

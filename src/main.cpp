@@ -7217,7 +7217,6 @@ class Diffuse(gtk.Window):
         # cancel if the user did not choose 'Close Without Saving' or 'Save'
         return response == gtk.RESPONSE_REJECT
 
-    # callback for the close button on each tab
     def remove_tab_cb(self, widget, data):
         nb = self.notebook
         if nb.get_n_pages() > 1:
@@ -7233,7 +7232,6 @@ class Diffuse(gtk.Window):
     def notebooktab_pick_cb(self, widget, data):
         self.notebook.set_current_page(data)
 
-    # callback used when a mouse button is pressed on a notebook tab
     def notebooktab_button_press_cb(self, widget, event, data):
         if event.button == 2:
             # remove the tab on MMB
@@ -7283,44 +7281,21 @@ class Diffuse(gtk.Window):
         self.setStatus(viewer.getStatus())
         self.setSyntax(viewer.getSyntax())
 
-    # callback used when a viewer's title changes
     def title_changed_cb(self, widget, title):
         # update the label in the notebook's tab
         self.notebook.get_tab_label(widget).set_text(title)
         if widget is self.getCurrentViewer():
             self.updateTitle(widget)
 
-    # callback used when a viewer's status changes
     def status_changed_cb(self, widget, s):
         # update the label in the notebook's tab
         if widget is self.getCurrentViewer():
             self.setStatus(s)
 
-    # callback used when a viewer's syntax changes
     def syntax_changed_cb(self, widget, s):
         # update the label
         if widget is self.getCurrentViewer():
             self.setSyntax(s)
-
-    # create an empty viewer with 'n' panes
-    def newFileDiffViewer(self, n):
-        self.viewer_count += 1
-        tabname = _('File Merge %d') % (self.viewer_count, )
-        tab = NotebookTab(tabname, gtk.STOCK_FILE)
-        viewer = Diffuse.FileDiffViewer(n, self.prefs, tabname)
-        tab.button.connect('clicked', self.remove_tab_cb, viewer)
-        tab.connect('button_press_event', self.notebooktab_button_press_cb, viewer)
-        self.notebook.append_page(viewer, tab)
-        if hasattr(self.notebook, 'set_tab_reorderable'):
-            # some PyGTK packages incorrectly omit this method
-            self.notebook.set_tab_reorderable(viewer, True)
-        tab.show()
-        viewer.show()
-        self.notebook.set_show_tabs(self.prefs.getBool('tabs_always_show') or self.notebook.get_n_pages() > 1)
-        viewer.connect('title_changed', self.title_changed_cb)
-        viewer.connect('status_changed', self.status_changed_cb)
-        viewer.connect('syntax_changed', self.syntax_changed_cb)
-        return viewer
 
     def newLoadedFileDiffViewer(self, items):
         specs = []
