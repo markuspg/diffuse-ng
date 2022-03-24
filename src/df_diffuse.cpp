@@ -244,15 +244,6 @@ bool Df::Diffuse::saveState(const std::string &statepath) {
 }
 
 /**
- * @brief Callback used when switching notebook pages
- * @param[in] ptr Pointer to the new current page
- * @param[in] page_num The index of the page
- */
-void switch_page_cb(Gtk::Widget *const ptr, const guint page_num) {
-  // TODO
-}
-
-/**
  * @brief Record the window's maximised state
  * @param[in] event The GdkEventWindowState triggered by a top-level window
  *   state change
@@ -263,4 +254,13 @@ bool Df::Diffuse::window_state_cb(const GdkEventWindowState *const event) {
       0 != (event->new_window_state & Gdk::WindowState::WINDOW_STATE_MAXIMIZED);
 
   return false;
+}
+
+/**
+ * @brief Callback used when switching notebook pages
+ * @param[in] ptr Pointer to the new current page
+ * @param[in] page_num The index of the page
+ */
+void switch_page_cb(Gtk::Widget *const ptr, const guint page_num) {
+  // TODO
 }
