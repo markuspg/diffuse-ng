@@ -363,15 +363,6 @@ void Df::Diffuse::syntax_changed_cb() {}
 void Df::Diffuse::title_changed_cb() {}
 
 /**
- * @brief Callback used when switching notebook pages
- * @param[in] ptr Pointer to the new current page
- * @param[in] page_num The index of the page
- */
-void switch_page_cb(Gtk::Widget *const ptr, const guint page_num) {
-  // TODO
-}
-
-/**
  * @brief Record the window's maximised state
  * @param[in] event The GdkEventWindowState triggered by a top-level window
  *   state change
@@ -422,4 +413,13 @@ assign_file_labels(const Df::Diffuse::Specs &items,
     new_items.emplace_back(item, s);
   }
   return new_items;
+}
+
+/**
+ * @brief Callback used when switching notebook pages
+ * @param[in] ptr Pointer to the new current page
+ * @param[in] page_num The index of the page
+ */
+void switch_page_cb(Gtk::Widget *const ptr, const guint page_num) {
+  // TODO
 }
