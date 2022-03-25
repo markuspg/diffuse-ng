@@ -24,14 +24,72 @@
 
 namespace Df = Diffuse;
 
-Df::FileDiffViewer::FileDiffViewer(guint n, Preferences &prefs)
-    : Gtk::Table{3, n + 1} {}
+Df::FileDiffViewer::FileDiffViewer(guint n, Preferences &prfs)
+    : Gtk::Table{3, n + 1},
+      line_mode_actions{
+          {"enter_align_mode", &FileDiffViewer::line_mode_enter_align_mode},
+          {"enter_character_mode", &FileDiffViewer::setCharMode},
+          {"first_line", &FileDiffViewer::first_line},
+          {"extend_first_line", &FileDiffViewer::extend_first_line},
+          {"last_line", &FileDiffViewer::last_line},
+          {"extend_last_line", &FileDiffViewer::extend_last_line},
+          // {"up", &FileDiffViewer::line_mode_up},
+          {"extend_up", &FileDiffViewer::line_mode_extend_up}},
+      prefs{prfs} {
+  // Verify that there is a valid number of panes
+  if (2 > n) {
+    throw std::runtime_error{"Invalid number of panes"};
+  }
+
+  set_flags(Gtk::WidgetFlags::CAN_FOCUS);
+}
+
+/**
+ * @brief "extend_first_line" keybinding action
+ */
+void Df::FileDiffViewer::extend_first_line() {}
+
+/**
+ * @brief "extend_last_line" keybinding action
+ */
+void Df::FileDiffViewer::extend_last_line() {}
+
+/**
+ * @brief "extend_up" keybinding action
+ */
+void Df::FileDiffViewer::line_mode_extend_up() {}
+
+/**
+ * @brief "first_line" keybinding action
+ */
+void Df::FileDiffViewer::first_line() {}
 
 /**
  * @brief Returns True if there are any differences
  * @return _true_ if there are any differences, _false_ otherwise
  */
 bool Df::FileDiffViewer::hasDifferences() const { return false; }
+
+/**
+ * @brief "last_line" keybinding action
+ */
+void Df::FileDiffViewer::last_line(){};
+
+/**
+ * @brief "enter_align_mode" keybinding action
+ */
+void Df::FileDiffViewer::line_mode_enter_align_mode() {}
+
+/**
+ * @brief "up" keybinding action
+ * @param selection
+ */
+void Df::FileDiffViewer::line_mode_up(void *selection) {}
+
+/**
+ * @brief Changes the viewer's mode to CHAR_MODE
+ */
+void Df::FileDiffViewer::setCharMode() {}
 
 Df::FileDiffViewer::Line::Line(std::optional<unsigned> &line_no,
                                std::optional<Glib::ustring> &txt)

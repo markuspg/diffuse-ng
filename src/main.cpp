@@ -2590,12 +2590,6 @@ def url2path(s):
         s = ''.join(ss)
         return s.replace('/', os.sep)
 
-# the file diff viewer is always in one of these modes defining the cursor,
-# and hotkey behaviour
-LINE_MODE = 0
-CHAR_MODE = 1
-ALIGN_MODE = 2
-
 # mapping to column width of a character (tab will never be in this map)
 char_width_cache = {}
 
@@ -2850,49 +2844,8 @@ class FileDiffViewer(gtk.Table):
             return self.text
 
     def __init__(self, n, prefs):
-        # verify we have a valid number of panes
-        if n < 2:
-            raise ValueError('Invalid number of panes')
-
-        gtk.Table.__init__(self, 3, n + 1)
-        self.set_flags(gtk.CAN_FOCUS)
-        self.prefs = prefs
-        self.string_width_cache = {}
-        self.options = {}
-
-        # diff blocks
-        self.blocks = []
-
-        # undos
-        self.undos = []
-        self.redos = []
-        self.undoblock = None
-
-        # cached data
-        self.syntax = None
-        self.map_cache = None
-
-        # editing mode
-        self.mode = LINE_MODE
-        self.current_pane = 1
-        self.current_line = 0
-        self.current_char = 0
-        self.selection_line = 0
-        self.selection_char = 0
-        self.align_pane = 0
-        self.align_line = 0
-        self.cursor_column = -1
-
         # keybindings
         self._line_mode_actions = {
-            'enter_align_mode': self._line_mode_enter_align_mode,
-            'enter_character_mode': self.setCharMode,
-            'first_line': self._first_line,
-            'extend_first_line': self._extend_first_line,
-            'last_line': self._last_line,
-            'extend_last_line': self._extend_last_line,
-            'up': self._line_mode_up,
-            'extend_up': self._line_mode_extend_up,
             'down': self._line_mode_down,
             'extend_down': self._line_mode_extend_down,
             'left': self._line_mode_left,
@@ -3158,7 +3111,6 @@ class FileDiffViewer(gtk.Table):
             self.emit('cursor_changed')
             self.emit('mode_changed')
 
-    # changes the viewer's mode to CHAR_MODE
     def setCharMode(self):
         if self.mode != CHAR_MODE:
             if self.mode == LINE_MODE:
@@ -5067,7 +5019,6 @@ class FileDiffViewer(gtk.Table):
     def getMaxCharPosition(self, i):
         return len_minus_line_ending(self.getLineText(self.current_pane, i))
 
-    # 'enter_align_mode' keybinding action
     def _line_mode_enter_align_mode(self):
         if self.mode == CHAR_MODE:
             self._im_focus_out()
@@ -5080,29 +5031,23 @@ class FileDiffViewer(gtk.Table):
         self.emit('mode_changed')
         self.dareas[self.align_pane].queue_draw()
 
-    # 'first_line' keybinding action
     def _first_line(self):
         self.setCurrentLine(self.current_pane, 0)
 
-    # 'extend_first_line' keybinding action
     def _extend_first_line(self):
         self.setCurrentLine(self.current_pane, 0, self.selection_line)
 
-    # 'last_line' keybinding action
     def _last_line(self):
         f = self.current_pane
         self.setCurrentLine(f, len(self.panes[f].lines))
 
-    # 'extend_last_line' keybinding action
     def _extend_last_line(self):
         f = self.current_pane
         self.setCurrentLine(f, len(self.panes[f].lines), self.selection_line)
 
-    # 'up' keybinding action
     def _line_mode_up(self, selection=None):
         self.setCurrentLine(self.current_pane, self.current_line - 1, selection)
 
-    # 'extend_up' keybinding action
     def _line_mode_extend_up(self):
         self._line_mode_up(self.selection_line)
 
