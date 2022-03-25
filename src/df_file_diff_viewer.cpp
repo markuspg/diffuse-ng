@@ -26,6 +26,19 @@ namespace Df = Diffuse;
 
 Df::FileDiffViewer::FileDiffViewer(guint n, Preferences &prfs)
     : Gtk::Table{3, n + 1},
+      align_mode_actions{
+          {"enter_line_mode", &FileDiffViewer::align_mode_enter_line_mode},
+          {"enter_character_mode", &FileDiffViewer::setCharMode},
+          {"first_line", &FileDiffViewer::first_line},
+          {"last_line", &FileDiffViewer::last_line},
+          // {"up", &FileDiffViewer::line_mode_up},
+          // {"down", &FileDiffViewer::line_mode_down},
+          // {"left", &FileDiffViewer::line_mode_left},
+          // {"right", &FileDiffViewer::line_mode_right},
+          // {"page_up", &FileDiffViewer::line_mode_page_up},
+          // {"page_down", &FileDiffViewer::line_mode_page_down},
+          {"align", &FileDiffViewer::align_text}},
+      character_mode_actions{{"enter_line_mode", &FileDiffViewer::setLineMode}},
       line_mode_actions{
           {"enter_align_mode", &FileDiffViewer::line_mode_enter_align_mode},
           {"enter_character_mode", &FileDiffViewer::setCharMode},
@@ -45,6 +58,16 @@ Df::FileDiffViewer::FileDiffViewer(guint n, Preferences &prfs)
 }
 
 /**
+ * @brief "enter_line_mode" keybinding action
+ */
+void Df::FileDiffViewer::align_mode_enter_line_mode() {}
+
+/**
+ * @brief "align" keybinding action
+ */
+void Df::FileDiffViewer::align_text() {}
+
+/**
  * @brief "extend_first_line" keybinding action
  */
 void Df::FileDiffViewer::extend_first_line() {}
@@ -53,11 +76,6 @@ void Df::FileDiffViewer::extend_first_line() {}
  * @brief "extend_last_line" keybinding action
  */
 void Df::FileDiffViewer::extend_last_line() {}
-
-/**
- * @brief "extend_up" keybinding action
- */
-void Df::FileDiffViewer::line_mode_extend_up() {}
 
 /**
  * @brief "first_line" keybinding action
@@ -76,9 +94,44 @@ bool Df::FileDiffViewer::hasDifferences() const { return false; }
 void Df::FileDiffViewer::last_line(){};
 
 /**
+ * @brief "down" keybinding action
+ * @param selection
+ */
+void Df::FileDiffViewer::line_mode_down(void *selection) {}
+
+/**
  * @brief "enter_align_mode" keybinding action
  */
 void Df::FileDiffViewer::line_mode_enter_align_mode() {}
+
+/**
+ * @brief "extend_up" keybinding action
+ */
+void Df::FileDiffViewer::line_mode_extend_up() {}
+
+/**
+ * @brief "left" keybinding action
+ * @param selection
+ */
+void Df::FileDiffViewer::line_mode_left(void *selection) {}
+
+/**
+ * @brief "page_down" keybinding action
+ * @param selection
+ */
+void Df::FileDiffViewer::line_mode_page_down(void *selection) {}
+
+/**
+ * @brief "page_up" keybinding action
+ * @param selection
+ */
+void Df::FileDiffViewer::line_mode_page_up(void *selection) {}
+
+/**
+ * @brief "right" keybinding action
+ * @param selection
+ */
+void Df::FileDiffViewer::line_mode_right(void *selection) {}
 
 /**
  * @brief "up" keybinding action
@@ -90,6 +143,11 @@ void Df::FileDiffViewer::line_mode_up(void *selection) {}
  * @brief Changes the viewer's mode to CHAR_MODE
  */
 void Df::FileDiffViewer::setCharMode() {}
+
+/**
+ * @brief Changes the viewer's mode to LINE_MODE
+ */
+void Df::FileDiffViewer::setLineMode() {}
 
 Df::FileDiffViewer::Line::Line(std::optional<unsigned> &line_no,
                                std::optional<Glib::ustring> &txt)

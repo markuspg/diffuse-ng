@@ -76,14 +76,22 @@ public:
   bool hasDifferences() const;
 
 private:
+  void align_mode_enter_line_mode();
+  void align_text();
   void extend_first_line();
   void extend_last_line();
   void first_line();
   void last_line();
+  void line_mode_down(void *selection = nullptr);
   void line_mode_enter_align_mode();
   void line_mode_extend_up();
+  void line_mode_left(void *selection = nullptr);
+  void line_mode_page_down(void *selection = nullptr);
+  void line_mode_page_up(void *selection = nullptr);
+  void line_mode_right(void *selection = nullptr);
   void line_mode_up(void *selection = nullptr);
   void setCharMode();
+  void setLineMode();
 
   //! Diff blocks
   std::vector<void *> blocks;
@@ -93,6 +101,8 @@ private:
   std::optional<void *> syntax;
 
   // Keybindings
+  std::map<Glib::ustring, void (FileDiffViewer::*)()> align_mode_actions;
+  std::map<Glib::ustring, void (FileDiffViewer::*)()> character_mode_actions;
   std::map<Glib::ustring, void (FileDiffViewer::*)()> line_mode_actions;
 
   //! Editing mode

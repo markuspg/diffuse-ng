@@ -2870,19 +2870,7 @@ class FileDiffViewer(gtk.Table):
             'merge_from_left_then_right': self.merge_from_left_then_right,
             'merge_from_right_then_left': self.merge_from_right_then_left }
         self._align_mode_actions = {
-            'enter_line_mode': self._align_mode_enter_line_mode,
-            'enter_character_mode': self.setCharMode,
-            'first_line': self._first_line,
-            'last_line': self._last_line,
-            'up': self._line_mode_up,
-            'down': self._line_mode_down,
-            'left': self._line_mode_left,
-            'right': self._line_mode_right,
-            'page_up': self._line_mode_page_up,
-            'page_down': self._line_mode_page_down,
-            'align': self._align_text }
-        self._character_mode_actions = {
-            'enter_line_mode': self.setLineMode }
+             }
         self._button_actions = {
             'undo': self.undo,
             'redo': self.redo,
@@ -3092,7 +3080,6 @@ class FileDiffViewer(gtk.Table):
             col += self.characterWidth(col, c)
         return result
 
-    # changes the viewer's mode to LINE_MODE
     def setLineMode(self):
         if self.mode != LINE_MODE:
             if self.mode == CHAR_MODE:
@@ -5051,7 +5038,6 @@ class FileDiffViewer(gtk.Table):
     def _line_mode_extend_up(self):
         self._line_mode_up(self.selection_line)
 
-    # 'down' keybinding action
     def _line_mode_down(self, selection=None):
         self.setCurrentLine(self.current_pane, self.current_line + 1, selection)
 
@@ -5059,7 +5045,6 @@ class FileDiffViewer(gtk.Table):
     def _line_mode_extend_down(self):
         self._line_mode_down(self.selection_line)
 
-    # 'left' keybinding action
     def _line_mode_left(self, selection=None):
         self.setCurrentLine(self.current_pane - 1, self.current_line, selection)
 
@@ -5067,7 +5052,6 @@ class FileDiffViewer(gtk.Table):
     def _line_mode_extend_left(self):
         self._line_mode_left(self.selection_line)
 
-    # 'right' keybinding action
     def _line_mode_right(self, selection=None):
         self.setCurrentLine(self.current_pane + 1, self.current_line, selection)
 
@@ -5075,7 +5059,6 @@ class FileDiffViewer(gtk.Table):
     def _line_mode_extend_right(self):
         self._line_mode_right(self.selection_line)
 
-    # 'page_up' keybinding action
     def _line_mode_page_up(self, selection=None):
         delta = int(self.vadj.page_size // self.font_height)
         self.setCurrentLine(self.current_pane, self.current_line - delta, selection)
@@ -5084,7 +5067,6 @@ class FileDiffViewer(gtk.Table):
     def _line_mode_extend_page_up(self):
         self._line_mode_page_up(self.selection_line)
 
-    # 'page_down' keybinding action
     def _line_mode_page_down(self, selection=None):
         delta = int(self.vadj.page_size // self.font_height)
         self.setCurrentLine(self.current_pane, self.current_line + delta, selection)
@@ -5097,12 +5079,10 @@ class FileDiffViewer(gtk.Table):
     def _delete_text(self):
         self.replaceText('')
 
-    # 'enter_line_mode' keybinding action
     def _align_mode_enter_line_mode(self):
         self.selection_line = self.current_line
         self.setLineMode()
 
-    # 'align' keybinding action
     def _align_text(self):
         f1 = self.align_pane
         line1 = self.align_line
