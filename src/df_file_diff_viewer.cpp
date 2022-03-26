@@ -153,6 +153,10 @@ Df::FileDiffViewer::Line::Line(std::optional<unsigned> &line_no,
                                std::optional<Glib::ustring> &txt)
     : line_number{line_no}, text{txt} {}
 
+/**
+ * @brief Returns the current text for this line
+ * @return
+ */
 std::optional<Glib::ustring> Df::FileDiffViewer::Line::getText() const {
   if (is_modified) {
     return modified_text;

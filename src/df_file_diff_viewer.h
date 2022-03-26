@@ -71,6 +71,31 @@ public:
     std::optional<Glib::ustring> text;
   };
 
+  /**
+   * @brief Class describing a text pane
+   */
+  class Pane {
+    //! Cache of character differences for each line; diff_cache[i] corresponds
+    //! to lines[i]; portion of the cache are cleared by settings entries to
+    //! nullptr
+    std::vector<void *> diff_cache;
+    //! Mask indicating the type of line endings present
+    unsigned int format{0};
+    //! High water mark for line length in pango units (used to determine the
+    //! required horizontal scroll range)
+    unsigned line_lengths{0};
+    //! List of lines displayed in this pane (including spacing lines)
+    std::vector<void *> lines;
+    //! Highest line number
+    unsigned int max_line_number{0};
+    //! Number of lines with edits
+    unsigned int num_edits{0};
+    //! Cache of syntax highlighting information for each line; syntax_cache[i]
+    //! corresponds to lines[i]; the list is truncated when a change to a line
+    //! invalidates a portion of the cache
+    std::vector<void *> syntax_cache;
+  };
+
   FileDiffViewer(guint n, Preferences &prefs);
 
   bool hasDifferences() const;

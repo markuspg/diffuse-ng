@@ -2813,36 +2813,6 @@ def patience_diff(a, b):
     return matches
 
 class FileDiffViewer(gtk.Table):
-    # class describing a text pane
-    class Pane:
-        def __init__(self):
-            # list of lines displayed in this pane (including spacing lines)
-            self.lines = []
-            # high water mark for line length in pango units (used to determine
-            # the required horizontal scroll range)
-            self.line_lengths = 0
-            # highest line number
-            self.max_line_number = 0
-            # cache of syntax highlighting information for each line
-            # self.syntax_cache[i] corresponds to self.lines[i]
-            # the list is truncated when a change to a line invalidates a
-            # portion of the cache
-            self.syntax_cache = []
-            # cache of character differences for each line
-            # self.diff_cache[i] corresponds to self.lines[i]
-            # portion of the cache are cleared by setting entries to None
-            self.diff_cache = []
-            # mask indicating the type of line endings present
-            self.format = 0
-            # number of lines with edits
-            self.num_edits = 0
-
-        # returns the current text for this line
-        def getText(self):
-            if self.is_modified:
-                return self.modified_text
-            return self.text
-
     def __init__(self, n, prefs):
         # keybindings
         self._line_mode_actions = {
@@ -2869,8 +2839,6 @@ class FileDiffViewer(gtk.Table):
             'copy_right_into_selection': self.copy_right_into_selection,
             'merge_from_left_then_right': self.merge_from_left_then_right,
             'merge_from_right_then_left': self.merge_from_right_then_left }
-        self._align_mode_actions = {
-             }
         self._button_actions = {
             'undo': self.undo,
             'redo': self.redo,
