@@ -84,3 +84,87 @@ Df::readconfiglines(std::ifstream &fd) {
   const auto lf_regex{Glib::Regex::create("\\n")};
   return lf_regex->split(file_content);
 }
+
+/**
+ * @brief Split a string replicating the behaviour of shlex.split of Python 2
+ * @param[in] s The string which shall be split
+ * @param[in] allow_comments if comments shall be treated as such an be skipped
+ */
+std::vector<Glib::ustring> Df::shlex_split(const Glib::ustring &s,
+                                           const bool allow_comments) {
+  std::vector<Glib::ustring> r;
+  Glib::ustring::size_type idx{0};
+  const auto n{s.size()};
+
+  while (n > idx) {
+    // Skip whitespace
+    while ((idx < n) && (Glib::ustring::npos != whitespace.find(s[idx]))) {
+      ++idx;
+    }
+
+    // Skip comments
+    if ((n == idx) || (allow_comments && ('#' == s[idx]))) {
+      break;
+    }
+
+    Glib::ustring v;
+    while ((n > idx) && (Glib::ustring::npos == whitespace.find(s[idx]))) {
+      const auto c{s[idx]};
+      if ('\\' == c) {
+        // Parse escaped character
+        ++idx;
+        if (n > idx) {
+          v.push_back(s[idx]);
+          ++idx;
+        }
+      } else if ('\'' == c) {
+        // Parse '-quoted string
+        ++idx;
+        const auto end{s.find('\'', idx)};
+        if (Glib::ustring::npos == end) {
+          v.append(Glib::ustring{s, idx});
+          idx = n;
+        } else {
+          v.append(Glib::ustring{s, idx, end - idx});
+          idx = end + 1;
+        }
+      } else if ('"' == c) {
+        // Parse "-quoted string
+        ++idx;
+        while (n > idx) {
+          if ('"' == s[idx]) {
+            ++idx;
+            break;
+          }
+          const auto end{s.find('"', idx)};
+          auto end1{end};
+          if (Glib::ustring::npos == end1) {
+            end1 = n;
+          }
+          while (idx < end1) {
+            auto tmp_b{Glib::ustring{s, idx, end1 - idx}.find('\\')};
+            const auto b{tmp_b + idx};
+            if (Glib::ustring::npos == tmp_b) {
+              v.append(Glib::ustring{s, idx, end1 - idx});
+              idx = end1;
+              break;
+            }
+            v.append(Glib::ustring{s, idx, b - idx});
+            idx = b + 1;
+            if (n > idx) {
+              v.append(Glib::ustring{s, idx, 1});
+              ++idx;
+            }
+          }
+        }
+      } else {
+        // Parse unescaped character
+        v.push_back(s[idx]);
+        ++idx;
+      }
+    }
+    r.emplace_back(v);
+  }
+
+  return r;
+}

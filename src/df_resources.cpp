@@ -250,6 +250,17 @@ bool Df::Resources::parse(const std::string &file_name) {
 
   const auto ss{tmp_res.value()};
 
+  auto i = 0;
+  // FIXME: improve validation
+  for (const auto &s : ss) {
+    ++i;
+
+    const auto args{shlex_split(s, true)};
+    if (args.empty()) {
+      continue;
+    }
+  }
+
   return true;
 } // TODO
 

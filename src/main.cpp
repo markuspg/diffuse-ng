@@ -167,68 +167,6 @@ if not hasattr(__builtins__, 'WindowsError'):
     # define 'WindowsError' so 'except' statements will work on all platforms
     WindowsError = IOError
 
-# unfortunately some Python implementations of shlex.split do not support
-# unicode
-def shlex_split(s, allow_comments=False):
-    r = []
-    idx, n = 0, len(s)
-    while idx < n:
-        # skip whitespace
-        while idx < n and s[idx] in whitespace:
-            idx += 1
-
-        # skip comments
-        if idx == n or (allow_comments and s[idx] == u'#'):
-            break
-
-        v = []
-        while idx < n and s[idx] not in whitespace:
-            c = s[idx]
-            if c == u'\\':
-                # parse escaped character
-                idx += 1
-                if idx < n:
-                    v.append(s[idx])
-                    idx += 1
-            elif c == u"'":
-                # parse '-quoted string
-                idx += 1
-                end = s.find(u"'", idx)
-                if end < 0:
-                    v.append(s[idx:])
-                    idx = n
-                else:
-                    v.append(s[idx:end])
-                    idx = end + 1
-            elif c == u'"':
-                # parse "-quoted string
-                idx += 1
-                while idx < n:
-                    if s[idx] == u'"':
-                        idx += 1
-                        break
-                    end = s.find(u'"', idx)
-                    end1 = end
-                    if end1 < 0:
-                        end1 = n
-                    while idx < end1:
-                        b = s.find(u'\\', idx, end1)
-                        if b < 0:
-                            v.append(s[idx:end1])
-                            idx = end1
-                            break
-                        v.append(s[idx:b])
-                        idx = b + 1
-                        if idx < n:
-                            v.append(s[idx:idx + 1])
-                            idx += 1
-            else:
-                # parse unescaped character
-                v.append(s[idx])
-                idx += 1
-        r.append(u''.join(v))
-    return r
-
 # escape special glob characters
 def globEscape(s):
     m = dict([ (c, u'[%s]' % (c, )) for c in u'[]?*' ])
@@ -399,12 +337,7 @@ class Resources:
                     return key
 
     def parse(self, file_name):
-        # FIXME: improve validation
         for i, s in enumerate(ss):
-            args = shlex_split(s, True)
-            if len(args) == 0:
-                continue
-
             try:
                 # eg. add Python syntax highlighting:
                 #    import /usr/share/diffuse/syntax/python.syntax

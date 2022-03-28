@@ -35,6 +35,8 @@ void logDebug(const Glib::ustring &s);
 void logError(const Glib::ustring &s);
 void printMessage(const Glib::ustring &s);
 std::optional<std::vector<Glib::ustring>> readconfiglines(std::ifstream &fd);
+std::vector<Glib::ustring> shlex_split(const Glib::ustring &s,
+                                       bool allow_comments = false);
 } // namespace Diffuse
 
 #endif // DF_UTILS_H
