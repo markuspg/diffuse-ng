@@ -66,7 +66,7 @@ private:
   std::map<void *, void *> keybindings;
   std::map<void *, void *> keybindings_lookup;
   //! List of imported resource files (each should be imported once only)
-  std::set<void *> resource_files;
+  std::set<std::string> resource_files;
   std::map<Glib::ustring, Glib::ustring> strings;
   // Syntax highlighting support
   std::optional<void *> current_syntax;

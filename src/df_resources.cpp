@@ -26,6 +26,7 @@
 #include <glibmm/regex.h>
 
 #include <functional>
+#include <iostream>
 
 namespace Df = Diffuse;
 
@@ -217,7 +218,40 @@ Glib::ustring Df::Resources::getString(const Glib::ustring &symbol) {
   }
 }
 
-bool Df::Resources::parse(const std::string &file_name) { return true; } // TODO
+/**
+ * @brief Parse resource files
+ * @param[in] file_name The path of the file which shall be parsed
+ * @return _true_ on success or if the file was parsed already, _false_
+ *   otherwise
+ */
+bool Df::Resources::parse(const std::string &file_name) {
+  // Only process files once
+  if (resource_files.cend() != resource_files.find(file_name)) {
+    return true;
+  }
+  // TODO: Wouldn't this be better at the end of this function?
+  resource_files.emplace(file_name);
+
+  std::ifstream f{file_name};
+  if (f.fail()) {
+    std::cerr << "Failed to open resource file\n";
+    return false;
+  }
+  const auto tmp_res{readconfiglines(f)};
+  f.close();
+  if (f.fail()) {
+    std::cerr << "Failed to close resource file\n";
+    // A failure on closing the file should not fail the parsing
+  }
+  if (!tmp_res.has_value()) {
+    std::cerr << "Failed to read resource file\n";
+    return false;
+  }
+
+  const auto ss{tmp_res.value()};
+
+  return true;
+} // TODO
 
 void Df::Resources::setDifferenceColours(const Glib::ustring &s) {
   const auto preWhitespaceRegexp{Glib::Regex::create("^\\s*")};

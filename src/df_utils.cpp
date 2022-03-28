@@ -60,3 +60,27 @@ void Df::printMessage(const Glib::ustring &s) {
   } catch (const Glib::ConvertError &) {
   }
 }
+
+std::optional<std::vector<Glib::ustring>>
+Df::readconfiglines(std::ifstream &fd) {
+  if (fd.fail()) {
+    std::cerr << "File input stream is in failed state\n";
+    return std::nullopt;
+  }
+
+  std::ostringstream sstr;
+  sstr << fd.rdbuf();
+  auto file_content{Glib::locale_to_utf8(sstr.str())};
+
+  if (fd.fail()) {
+    std::cerr << "File input stream is in failed state after reading\n";
+    return std::nullopt;
+  }
+
+  const auto cr_regex{Glib::Regex::create("\\r")};
+  file_content = cr_regex->replace(file_content, 0, "",
+                                   static_cast<Glib::RegexMatchFlags>(0));
+
+  const auto lf_regex{Glib::Regex::create("\\n")};
+  return lf_regex->split(file_content);
+}

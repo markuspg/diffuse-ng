@@ -319,9 +319,6 @@ def splitlines(s):
 def readlines(fd):
     return strip_eols(splitlines(fd.read()))
 
-def readconfiglines(fd):
-    return unicode(fd.read(), 'utf_8').replace(u'\r', u'').split(u'\n')
-
 class Resources:
     # keyboard action processing
     def setKeyBinding(self, ctx, s, v):
@@ -401,17 +398,7 @@ class Resources:
                 if pattern.search(s):
                     return key
 
-    # parse resource files
     def parse(self, file_name):
-        # only process files once
-        if file_name in self.resource_files:
-            return
-
-        self.resource_files.add(file_name)
-        f = open(file_name, 'r')
-        ss = readconfiglines(f)
-        f.close()
-
         # FIXME: improve validation
         for i, s in enumerate(ss):
             args = shlex_split(s, True)

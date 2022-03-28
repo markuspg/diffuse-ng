@@ -25,11 +25,16 @@
 
 #include <glibmm/ustring.h>
 
+#include <fstream>
+#include <optional>
+#include <vector>
+
 namespace Diffuse {
 bool isWindows();
 void logDebug(const Glib::ustring &s);
 void logError(const Glib::ustring &s);
 void printMessage(const Glib::ustring &s);
+std::optional<std::vector<Glib::ustring>> readconfiglines(std::ifstream &fd);
 } // namespace Diffuse
 
 #endif // DF_UTILS_H
