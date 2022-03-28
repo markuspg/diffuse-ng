@@ -149,6 +149,12 @@ void Df::FileDiffViewer::setCharMode() {}
  */
 void Df::FileDiffViewer::setLineMode() {}
 
+/**
+ * @brief Set startup options
+ * @param opts
+ */
+void Df::FileDiffViewer::setOptions(const Options &opts) { options = opts; }
+
 Df::FileDiffViewer::Line::Line(std::optional<unsigned> &line_no,
                                std::optional<Glib::ustring> &txt)
     : line_number{line_no}, text{txt} {}

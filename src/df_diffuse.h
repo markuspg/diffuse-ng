@@ -59,8 +59,6 @@ public:
 
   using Encoding = std::optional<Glib::ustring>;
   using Labels = std::vector<Glib::ustring>;
-  using Options =
-      std::map<Glib::ustring, std::variant<unsigned long, Glib::ustring>>;
   struct Revision {
     std::optional<Glib::ustring> revision;
     Encoding encoding;

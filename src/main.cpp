@@ -2947,10 +2947,6 @@ class FileDiffViewer(gtk.Table):
         self._button_actions[data]()
         self.closeUndoBlock()
 
-    # set startup options
-    def setOptions(self, options):
-        self.options = options
-
     # updates the display font and resizes viewports as necessary
     def setFont(self, font):
         self.font = font
@@ -7715,7 +7711,7 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
   Df::Diffuse::Encoding encoding;
   std::map<Glib::ustring, std::function<void(const Df::Diffuse::Specs &,
                                              const Df::Diffuse::Labels &,
-                                             const Df::Diffuse::Options &)>>
+                                             const Df::Options &)>>
       funcs{{"commit",
              std::bind(&Df::Diffuse::createCommitFileTabs, &diff, _1, _2, _3)},
             {"modified", std::bind(&Df::Diffuse::createModifiedFileTabs, &diff,
@@ -7727,7 +7723,7 @@ gobject.signal_new('save_as', Diffuse.FileDiffViewer.PaneHeader, gobject.SIGNAL_
   bool had_specs = false;
   Df::Diffuse::Labels labels;
   Glib::ustring mode{"single"};
-  Df::Diffuse::Options options;
+  Df::Options options;
   Df::Diffuse::Revisions revs;
   Df::Diffuse::Specs specs;
 

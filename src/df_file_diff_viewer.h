@@ -27,7 +27,12 @@
 
 #include <gtkmm/table.h>
 
+#include <variant>
+
 namespace Diffuse {
+using Options =
+    std::map<Glib::ustring, std::variant<unsigned long, Glib::ustring>>;
+
 /**
  * @brief Widget used to compare and merge text files
  */
@@ -99,6 +104,7 @@ public:
   FileDiffViewer(guint n, Preferences &prefs);
 
   bool hasDifferences() const;
+  void setOptions(const Options &options);
 
 private:
   void align_mode_enter_line_mode();
@@ -139,7 +145,7 @@ private:
   int current_line = 0;
   int current_pane = 1;
   int cursor_column = -1;
-  std::map<void *, void *> options;
+  Options options;
   Preferences &prefs;
   int selection_char = 0;
   int selection_line = 0;
