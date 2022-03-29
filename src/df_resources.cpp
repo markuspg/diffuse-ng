@@ -259,6 +259,40 @@ bool Df::Resources::parse(const std::string &file_name) {
     if (args.empty()) {
       continue;
     }
+
+    try {
+      // e.g. add Python syntax highlighting:
+      //   import /usr/share/diffuse/syntax/python.syntax
+      if (("import" == args[0]) && (2 == args.size())) {
+      }
+      // e.g. make Ctrl+o trigger the open_file menu item
+      //   keybinding menu open_file Ctrl+o
+      else if (("keybinding" == args[0]) && (4 == args.size())) {
+        setKeyBinding(args[1], args[2], args[3]);
+      }
+      // e.g. set the regular background colour to white
+      //   colour text_background 1.0 1.0 1.0
+      else if ((("color" == args[0]) || ("colour" == args[0])) &&
+               (5 == args.size())) {
+        colours.emplace(args[1], Colour{std::stof(args[2]), std::stof(args[3]),
+                                        std::stof(args[4])});
+      }
+      // e.g. set opacity of the line_selection colour
+      //   float line_selection_opacity 0.4
+      else if (("float" == args[0]) && (3 == args.size())) {
+        floats.emplace(args[1], std::stof(args[2]));
+      }
+      // e.g. set the help browser
+      //   string help_browser gnome-help
+      else if (("string" == args[0]) && (3 == args.size())) {
+        strings.emplace(args[1], args[2]);
+        if ("difference_colours" == args[1]) {
+          setDifferenceColours(args[2]);
+        }
+      }
+    } catch (const std::runtime_error &) {
+      std::cerr << "Oh oh, something went wrong here!\n"; // TODO: Improve
+    }
   }
 
   return true;

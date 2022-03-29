@@ -339,8 +339,6 @@ class Resources:
     def parse(self, file_name):
         for i, s in enumerate(ss):
             try:
-                # eg. add Python syntax highlighting:
-                #    import /usr/share/diffuse/syntax/python.syntax
                 if args[0] == u'import' and len(args) == 2:
                     path = os.path.expanduser(args[1])
                     # relative paths are relative to the parsed file
@@ -353,24 +351,6 @@ class Resources:
                         # any processing errors are reported with
                         # normalised file names
                         self.parse(os.path.abspath(path))
-                # eg. make Ctrl+o trigger the open_file menu item
-                #    keybinding menu open_file Ctrl+o
-                elif args[0] == u'keybinding' and len(args) == 4:
-                    self.setKeyBinding(args[1], args[2], args[3])
-                # eg. set the regular background colour to white
-                #    colour text_background 1.0 1.0 1.0
-                elif args[0] in [ u'colour', u'color' ] and len(args) == 5:
-                    self.colours[args[1]] = Colour(float(args[2]), float(args[3]), float(args[4]))
-                # eg. set opacity of the line_selection colour
-                #    float line_selection_opacity 0.4
-                elif args[0] == u'float' and len(args) == 3:
-                    self.floats[args[1]] = float(args[2])
-                # eg. set the help browser
-                #    string help_browser gnome-help
-                elif args[0] == u'string' and len(args) == 3:
-                    self.strings[args[1]] = args[2]
-                    if args[1] == u'difference_colours':
-                        self.setDifferenceColours(args[2])
                 # eg. start a syntax specification for Python
                 #    syntax Python normal text
                 # where 'normal' is the name of the default state and
