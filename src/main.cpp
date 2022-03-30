@@ -178,7 +178,6 @@ def globEscape(s):
   Gtk::Window::set_default_icon_name("diffuse");
 
 /*
-# class to build and run a finite state machine for identifying syntax tokens
 class SyntaxParser:
     # create a new state machine that begins in initial_state and classifies
     # all characters not matched by the patterns as default_token_type
@@ -351,33 +350,6 @@ class Resources:
                         # any processing errors are reported with
                         # normalised file names
                         self.parse(os.path.abspath(path))
-                # eg. start a syntax specification for Python
-                #    syntax Python normal text
-                # where 'normal' is the name of the default state and
-                # 'text' is the classification of all characters not
-                # explicitly matched by a syntax highlighting rule
-                elif args[0] == u'syntax' and (len(args) == 2 or len(args) == 4):
-                    key = args[1]
-                    if len(args) == 2:
-                        # remove file pattern for a syntax specification
-                        try:
-                            del self.syntax_file_patterns[key]
-                        except KeyError:
-                            pass
-                        # remove magic pattern for a syntax specification
-                        try:
-                            del self.syntax_magic_patterns[key]
-                        except KeyError:
-                            pass
-                        # remove a syntax specification
-                        self.current_syntax = None
-                        try:
-                            del self.syntaxes[key]
-                        except KeyError:
-                            pass
-                    else:
-                        self.current_syntax = SyntaxParser(args[2], args[3])
-                        self.syntaxes[key] = self.current_syntax
                 # eg. transition from state 'normal' to 'comment' when
                 # the pattern '#' is matched and classify the matched
                 # characters as 'python_comment'

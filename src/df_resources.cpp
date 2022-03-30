@@ -290,6 +290,29 @@ bool Df::Resources::parse(const std::string &file_name) {
           setDifferenceColours(args[2]);
         }
       }
+      // e.g. start a syntax specification for Python
+      //   syntax Python normal text
+      // where "normal" is the name of the default state and "text" is the
+      // classification of all characters not explicitly matched by a syntax
+      // highlighting rule
+      else if (("syntax" == args[0]) &&
+               ((2 == args.size()) || (4 == args.size()))) {
+        const auto key{args[1]};
+        if (2 == args.size()) {
+          // Remove file pattern for a syntax specification
+          syntax_file_patterns.erase(key);
+
+          // Remove magic pattern for a syntax specification
+          syntax_magic_patterns.erase(key);
+
+          // Remove a syntax specification
+          current_syntax.reset();
+          syntaxes.erase(key);
+        } else {
+          current_syntax = std::make_shared<SyntaxParser>(args[2], args[3]);
+          syntaxes.emplace(key, current_syntax);
+        }
+      }
     } catch (const std::runtime_error &) {
       std::cerr << "Oh oh, something went wrong here!\n"; // TODO: Improve
     }

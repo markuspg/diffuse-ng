@@ -24,11 +24,12 @@
 #define DF_RESOURCES_H
 
 #include "df_colour.h"
+#include "df_syntax_parser.h"
 
 #include <glibmm/ustring.h>
 
 #include <map>
-#include <optional>
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -69,10 +70,10 @@ private:
   std::set<std::string> resource_files;
   std::map<Glib::ustring, Glib::ustring> strings;
   // Syntax highlighting support
-  std::optional<void *> current_syntax;
-  std::map<void *, void *> syntaxes;
-  std::map<void *, void *> syntax_file_patterns;
-  std::map<void *, void *> syntax_magic_patterns;
+  std::shared_ptr<SyntaxParser> current_syntax;
+  std::map<Glib::ustring, std::shared_ptr<SyntaxParser>> syntaxes;
+  std::map<Glib::ustring, void *> syntax_file_patterns;
+  std::map<Glib::ustring, void *> syntax_magic_patterns;
 };
 } // namespace Diffuse
 
