@@ -363,22 +363,6 @@ class Resources:
                             raise ValueError()
                     self.current_syntax.addPattern(args[1], args[2], args[3], re.compile(args[4], flags))
                 # eg. default to the Python syntax rules when viewing
-                # a file ending with '.py' or '.pyw'
-                #    syntax_files Python '\.pyw?$'
-                elif args[0] == u'syntax_files' and (len(args) == 2 or len(args) == 3):
-                    key = args[1]
-                    if len(args) == 2:
-                        # remove file pattern for a syntax specification
-                        try:
-                            del self.syntax_file_patterns[key]
-                        except KeyError:
-                            pass
-                    else:
-                        flags = 0
-                        if isWindows():
-                            flags |= re.IGNORECASE
-                        self.syntax_file_patterns[key] = re.compile(args[2], flags)
-                # eg. default to the Python syntax rules when viewing
                 # a files starting with patterns like #!/usr/bin/python
                 #    syntax_magic Python '^#!/usr/bin/python$'
                 elif args[0] == u'syntax_magic' and len(args) > 1:

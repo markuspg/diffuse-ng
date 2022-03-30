@@ -313,6 +313,25 @@ bool Df::Resources::parse(const std::string &file_name) {
           syntaxes.emplace(key, current_syntax);
         }
       }
+      // e.g. default to the Python syntax rules when viewing a file ending with
+      // ".py" or ".pyw"
+      //   syntax_files Python '\.pyw?$'
+      else if (("syntax_files" == args[0]) &&
+               ((2 == args.size()) || (3 == args.size()))) {
+        const auto key{args[1]};
+        if (2 == args.size()) {
+          // Remove file pattern for a syntax specification
+          syntax_file_patterns.erase(key);
+        } else {
+          Glib::RegexCompileFlags flags{
+              static_cast<Glib::RegexCompileFlags>(0)};
+          if (isWindows()) {
+            flags |= Glib::RegexCompileFlags::REGEX_CASELESS;
+          }
+          syntax_file_patterns.emplace(key,
+                                       Glib::Regex::create(args[2], flags));
+        }
+      }
     } catch (const std::runtime_error &) {
       std::cerr << "Oh oh, something went wrong here!\n"; // TODO: Improve
     }

@@ -26,6 +26,7 @@
 #include "df_colour.h"
 #include "df_syntax_parser.h"
 
+#include <glibmm/regex.h>
 #include <glibmm/ustring.h>
 
 #include <map>
@@ -72,7 +73,7 @@ private:
   // Syntax highlighting support
   std::shared_ptr<SyntaxParser> current_syntax;
   std::map<Glib::ustring, std::shared_ptr<SyntaxParser>> syntaxes;
-  std::map<Glib::ustring, void *> syntax_file_patterns;
+  std::map<Glib::ustring, Glib::RefPtr<Glib::Regex>> syntax_file_patterns;
   std::map<Glib::ustring, void *> syntax_magic_patterns;
 };
 } // namespace Diffuse
