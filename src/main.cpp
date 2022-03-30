@@ -350,18 +350,6 @@ class Resources:
                         # any processing errors are reported with
                         # normalised file names
                         self.parse(os.path.abspath(path))
-                # eg. transition from state 'normal' to 'comment' when
-                # the pattern '#' is matched and classify the matched
-                # characters as 'python_comment'
-                #    syntax_pattern normal comment python_comment '#'
-                elif args[0] == u'syntax_pattern' and self.current_syntax is not None and len(args) >= 5:
-                    flags = 0
-                    for arg in args[5:]:
-                        if arg == u'ignorecase':
-                            flags |= re.IGNORECASE
-                        else:
-                            raise ValueError()
-                    self.current_syntax.addPattern(args[1], args[2], args[3], re.compile(args[4], flags))
                 # eg. default to the Python syntax rules when viewing
                 # a files starting with patterns like #!/usr/bin/python
                 #    syntax_magic Python '^#!/usr/bin/python$'

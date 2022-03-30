@@ -313,6 +313,22 @@ bool Df::Resources::parse(const std::string &file_name) {
           syntaxes.emplace(key, current_syntax);
         }
       }
+      // e.g. transition from state "normal" to "comment" when the pattern "#"
+      // is matched and classify the matched characters as "python_comment"
+      //   syntax_pattern normal comment python_comment '#'
+      else if (("syntax_pattern" == args[0]) && current_syntax &&
+               (5 <= args.size())) {
+        Glib::RegexCompileFlags flags{static_cast<Glib::RegexCompileFlags>(0)};
+        for (auto cit{args.cbegin() + 5}; cit != args.cend(); ++cit) {
+          if ("ignorecase" == *cit) {
+            flags |= Glib::RegexCompileFlags::REGEX_CASELESS;
+          } else {
+            throw std::invalid_argument{"Invalid option for syntax pattern"};
+          }
+        }
+        current_syntax->addPattern(args[1], args[2], args[3],
+                                   Glib::Regex::create(args[4], flags));
+      }
       // e.g. default to the Python syntax rules when viewing a file ending with
       // ".py" or ".pyw"
       //   syntax_files Python '\.pyw?$'

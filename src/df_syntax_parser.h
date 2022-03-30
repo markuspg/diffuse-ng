@@ -23,6 +23,7 @@
 #ifndef DF_SYNTAX_PARSER_H
 #define DF_SYNTAX_PARSER_H
 
+#include <glibmm/regex.h>
 #include <glibmm/ustring.h>
 
 namespace Diffuse {
@@ -34,6 +35,11 @@ class SyntaxParser {
 public:
   SyntaxParser(const Glib::ustring &initial_state,
                const Glib::ustring &default_token_type);
+
+  void addPattern(const Glib::ustring &prev_state,
+                  const Glib::ustring &next_state,
+                  const Glib::ustring &token_type,
+                  const Glib::RefPtr<Glib::Regex> &pattern);
 };
 } // namespace Diffuse
 

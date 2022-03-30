@@ -26,3 +26,8 @@ namespace Df = Diffuse;
 
 Df::SyntaxParser::SyntaxParser(const Glib::ustring &initial_state,
                                const Glib::ustring &default_token_type) {}
+
+void Df::SyntaxParser::addPattern(const Glib::ustring &prev_state,
+                                  const Glib::ustring &next_state,
+                                  const Glib::ustring &token_type,
+                                  const Glib::RefPtr<Glib::Regex> &pattern) {}
