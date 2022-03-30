@@ -350,27 +350,6 @@ class Resources:
                         # any processing errors are reported with
                         # normalised file names
                         self.parse(os.path.abspath(path))
-                # eg. default to the Python syntax rules when viewing
-                # a files starting with patterns like #!/usr/bin/python
-                #    syntax_magic Python '^#!/usr/bin/python$'
-                elif args[0] == u'syntax_magic' and len(args) > 1:
-                    key = args[1]
-                    if len(args) == 2:
-                        # remove magic pattern for a syntax specification
-                        try:
-                            del self.syntax_magic_patterns[key]
-                        except KeyError:
-                            pass
-                    else:
-                        flags = 0
-                        for arg in args[3:]:
-                            if arg == u'ignorecase':
-                                flags |= re.IGNORECASE
-                            else:
-                                raise ValueError()
-                        self.syntax_magic_patterns[key] = re.compile(args[2], flags)
-                else:
-                    raise ValueError()
             except: # Grr... the 're' module throws weird errors
             #except ValueError:
                 logError(_('Error processing line %(line)d of %(file)s.') % { 'line': i + 1, 'file': file_name })

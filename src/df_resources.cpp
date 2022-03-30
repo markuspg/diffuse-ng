@@ -348,6 +348,30 @@ bool Df::Resources::parse(const std::string &file_name) {
                                        Glib::Regex::create(args[2], flags));
         }
       }
+      // e.g. default to the Python syntax rules when viewing a file starting
+      // with patterns like #!/usr/bin/python
+      //   syntax_magic Python '^#!/usr/bin/python$'
+      else if (("syntax_magic" == args[0]) && (1 < args.size())) {
+        const auto key{args[1]};
+        if (2 == args.size()) {
+          // Remove magic pattern for a syntax specification
+          syntax_magic_patterns.erase(key);
+        } else {
+          Glib::RegexCompileFlags flags{
+              static_cast<Glib::RegexCompileFlags>(0)};
+          for (auto cit{args.cbegin() + 3}; cit != args.cend(); ++cit) {
+            if ("ignorecase" == *cit) {
+              flags |= Glib::RegexCompileFlags::REGEX_CASELESS;
+            } else {
+              throw std::invalid_argument{"Invalid option for magic pattern"};
+            }
+          }
+          syntax_magic_patterns.emplace(key,
+                                        Glib::Regex::create(args[2], flags));
+        }
+      } else {
+        throw std::invalid_argument{"Invalid resource line"};
+      }
     } catch (const std::runtime_error &) {
       std::cerr << "Oh oh, something went wrong here!\n"; // TODO: Improve
     }

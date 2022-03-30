@@ -74,7 +74,7 @@ private:
   std::shared_ptr<SyntaxParser> current_syntax;
   std::map<Glib::ustring, std::shared_ptr<SyntaxParser>> syntaxes;
   std::map<Glib::ustring, Glib::RefPtr<Glib::Regex>> syntax_file_patterns;
-  std::map<Glib::ustring, void *> syntax_magic_patterns;
+  std::map<Glib::ustring, Glib::RefPtr<Glib::Regex>> syntax_magic_patterns;
 };
 } // namespace Diffuse
 
