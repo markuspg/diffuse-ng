@@ -33,6 +33,19 @@ namespace Diffuse {
  */
 class SyntaxParser {
 public:
+  /**
+   * @brief Struct representing a transition between states
+   */
+  struct Transition {
+    //! The pattern which initiates the transition when being matched
+    const Glib::RefPtr<Glib::Regex> pattern;
+    //! The classification of the matched characters
+    const Glib::ustring token_type;
+    //! The state machine's new state
+    const Glib::ustring next_state;
+  };
+  using Transitions = std::vector<Transition>;
+
   SyntaxParser(const Glib::ustring &initial_state,
                const Glib::ustring &default_token_type);
 
@@ -40,6 +53,17 @@ public:
                   const Glib::ustring &next_state,
                   const Glib::ustring &token_type,
                   const Glib::RefPtr<Glib::Regex> &pattern);
+
+private:
+  //! Default classification of characters that are not explicitly matched by
+  //! any state transition patterns
+  const Glib::ustring default_token_type;
+  //! Initial state for the state machine when parsing a new file
+  const Glib::ustring initial_state;
+  //! Mappings from a state to a list of Transition object indicating the new
+  //! state for the state machine when "pattern" is matched and how to classify
+  //! the matched characters
+  std::map<Glib::ustring, Transitions> transitions_lookup;
 };
 } // namespace Diffuse
 

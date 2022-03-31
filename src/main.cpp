@@ -179,31 +179,6 @@ def globEscape(s):
 
 /*
 class SyntaxParser:
-    # create a new state machine that begins in initial_state and classifies
-    # all characters not matched by the patterns as default_token_type
-    def __init__(self, initial_state, default_token_type):
-        # initial state for the state machine when parsing a new file
-        self.initial_state = initial_state
-        # default classification of characters that are not explicitly matched
-        # by any state transition patterns
-        self.default_token_type = default_token_type
-        # mappings from a state to a list of (pattern, token_type, next_state)
-        # tuples indicating the new state for the state machine when 'pattern'
-        # is matched and how to classify the matched characters
-        self.transitions_lookup = { initial_state : [] }
-
-    # Adds a new edge to the finite state machine from prev_state to
-    # next_state.  Characters will be identified as token_type when pattern is
-    # matched.  Any newly referenced state will be added.  Patterns for edges
-    # leaving a state will be tested in the order they were added to the finite
-    # state machine.
-    def addPattern(self, prev_state, next_state, token_type, pattern):
-        lookup = self.transitions_lookup
-        for state in prev_state, next_state:
-            if state not in lookup:
-                lookup[state] = []
-        lookup[prev_state].append([pattern, token_type, next_state])
-
     # given a string and an initial state, identify the final state and tokens
     def parse(self, state_name, s):
         lookup = self.transitions_lookup

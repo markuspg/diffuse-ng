@@ -24,10 +24,42 @@
 
 namespace Df = Diffuse;
 
-Df::SyntaxParser::SyntaxParser(const Glib::ustring &initial_state,
-                               const Glib::ustring &default_token_type) {}
+/**
+ * @brief Create a new state machine that begins in initial_state and
+ *   classifies all characters not matched by the patterns as
+ *   default_token_type
+ * @param[in] initial_state The name of the initial state the state machine
+ *   shall be in
+ * @param[in] default_token_type The token type unmatched characters shall be
+ *   of
+ */
+Df::SyntaxParser::SyntaxParser(const Glib::ustring &init_state,
+                               const Glib::ustring &dflt_token_type)
+    : default_token_type{dflt_token_type}, initial_state{init_state},
+      transitions_lookup{{init_state, {}}} {}
 
+/**
+ * @brief Add new edge to the finite state machine from prev_state to next_state
+ *
+ * Characters will be identified as token_type when pattern is matched. Any
+ * newly referenced state will be added. Patterns for edges leaving a state will
+ * be tested in the order they were added to the finite state machine.
+ *
+ * @param prev_state
+ * @param next_state
+ * @param token_type
+ * @param pattern
+ */
 void Df::SyntaxParser::addPattern(const Glib::ustring &prev_state,
                                   const Glib::ustring &next_state,
                                   const Glib::ustring &token_type,
-                                  const Glib::RefPtr<Glib::Regex> &pattern) {}
+                                  const Glib::RefPtr<Glib::Regex> &pattern) {
+  for (const auto &state :
+       std::array<Glib::ustring, 2>{prev_state, next_state}) {
+    if (transitions_lookup.cend() == transitions_lookup.find(state)) {
+      transitions_lookup.emplace(state, Transitions{});
+    }
+  }
+  transitions_lookup[prev_state].emplace_back(
+      Transition{pattern, token_type, next_state});
+}
