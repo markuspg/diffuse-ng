@@ -2126,47 +2126,7 @@ def step_adjustment(adj, delta):
     v = min(v, int(adj.upper - adj.page_size))
     adj.set_value(v)
 
-# This is a replacement for gtk.ScrolledWindow as it forced expose events to be
-# handled immediately after changing the viewport position.  This could cause
-# the application to become unresponsive for a while as it processed a large
-# queue of keypress and expose event pairs.
 class ScrolledWindow(gtk.Table):
-    scroll_directions = set((gtk.gdk.SCROLL_UP, gtk.gdk.SCROLL_DOWN, gtk.gdk.SCROLL_LEFT, gtk.gdk.SCROLL_RIGHT))
-    def __init__(self, hadj, vadj):
-        gtk.Table.__init__(self, 2, 2)
-        self.position = (0, 0)
-        self.scroll_count = 0
-        self.partial_redraw = False
-
-        self.hadj, self.vadj = hadj, vadj
-        vport = gtk.Viewport()
-        darea = gtk.DrawingArea()
-        self.darea = darea
-        # replace darea's queue_draw_area with our own so we can tell when
-        # to disable/enable our scrolling optimisation
-        self.darea_queue_draw_area = darea.queue_draw_area
-        darea.queue_draw_area = self.redraw_region
-        vport.add(darea)
-        darea.show()
-        self.attach(vport, 0, 1, 0, 1)
-        vport.show()
-
-        self.vbar = bar = gtk.VScrollbar(vadj)
-        self.attach(bar, 1, 2, 0, 1, gtk.FILL, gtk.EXPAND|gtk.FILL)
-        bar.show()
-
-        self.hbar = bar = gtk.HScrollbar(hadj)
-        self.attach(bar, 0, 1, 1, 2, gtk.EXPAND|gtk.FILL, gtk.FILL)
-        bar.show()
-
-        # listen to our signals
-        hadj.connect('value_changed', self.value_changed_cb)
-        vadj.connect('value_changed', self.value_changed_cb)
-        darea.connect('configure_event', self.configure_cb)
-        darea.connect('scroll_event', self.scroll_cb)
-        darea.connect('expose_event', self.expose_cb)
-
-    # updates the adjustments to match the new widget size
     def configure_cb(self, widget, event):
         w, h = event.width, event.height
         for adj, d in (self.hadj, w), (self.vadj, h):
@@ -2176,7 +2136,6 @@ class ScrolledWindow(gtk.Table):
             adj.page_size = d
             adj.page_increment = d
 
-    # update the vertical adjustment when the mouse's scroll wheel is used
     def scroll_cb(self, widget, event):
         d = event.direction
         if d in self.scroll_directions:
@@ -2206,9 +2165,6 @@ class ScrolledWindow(gtk.Table):
             else:
                 self.partial_redraw = False
                 self.darea.queue_draw()
-
-    def expose_cb(self, widget, event):
-        self.scroll_count = 0
 
     # replacement for darea.queue_draw_area that notifies us when a partial
     # redraw happened

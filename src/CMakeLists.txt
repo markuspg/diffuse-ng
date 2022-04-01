@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME_LC}
     df_notebook_tab.cpp
     df_preferences.cpp
     df_resources.cpp
+    df_scrolled_window.cpp
     df_syntax_parser.cpp
     df_utils.cpp
     df_vcss.cpp
