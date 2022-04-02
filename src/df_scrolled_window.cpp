@@ -21,6 +21,7 @@
  */
 
 #include "df_scrolled_window.h"
+#include "df_utils.h"
 
 namespace Df = Diffuse;
 
@@ -65,6 +66,22 @@ Df::ScrolledWindow::ScrolledWindow(Gtk::Adjustment &hdj, Gtk::Adjustment &vdj)
  * @return
  */
 bool Df::ScrolledWindow::configure_cb(const GdkEventConfigure *event) {
+  const auto h{event->height};
+  const auto w{event->width};
+
+  for (auto &item :
+       std::vector<std::pair<Gtk::Adjustment &, int>>{{hadj, w}, {vadj, h}}) {
+    auto &adj{item.first};
+    auto d{item.second};
+
+    const auto v{adj.get_value()};
+    if ((v + d) > adj.get_upper()) {
+      adj.set_value(std::max(0.0, adj.get_upper() - d));
+    }
+    adj.set_page_size(d);
+    adj.set_page_increment(d);
+  }
+
   return false;
 }
 
@@ -81,6 +98,30 @@ bool Df::ScrolledWindow::expose_cb([
  * @return
  */
 bool Df::ScrolledWindow::scroll_cb(const GdkEventScroll *event) {
+  const auto d{event->direction};
+
+  if (scroll_directions.cend() !=
+      std::find(scroll_directions.cbegin(), scroll_directions.cend(), d)) {
+    auto delta{100.0};
+
+    if ((GDK_SCROLL_UP == d) || (GDK_SCROLL_LEFT == d)) {
+      delta = -delta;
+    }
+    auto vertical{((GDK_SCROLL_UP == d) || (GDK_SCROLL_DOWN == d))};
+
+    if (Gdk::SHIFT_MASK & event->state) {
+      vertical = !vertical;
+    }
+
+    Gtk::Adjustment *adj = nullptr;
+    if (vertical) {
+      adj = &vadj;
+    } else {
+      adj = &hadj;
+    }
+    step_adjustment(*adj, delta);
+  }
+
   return false;
 }
 

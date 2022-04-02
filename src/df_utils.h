@@ -23,6 +23,8 @@
 #ifndef DF_UTILS_H
 #define DF_UTILS_H
 
+#include <gtkmm/adjustment.h>
+
 #include <glibmm/ustring.h>
 
 #include <fstream>
@@ -37,6 +39,7 @@ void printMessage(const Glib::ustring &s);
 std::optional<std::vector<Glib::ustring>> readconfiglines(std::ifstream &fd);
 std::vector<Glib::ustring> shlex_split(const Glib::ustring &s,
                                        bool allow_comments = false);
+void step_adjustment(Gtk::Adjustment &adj, double delta);
 } // namespace Diffuse
 
 #endif // DF_UTILS_H

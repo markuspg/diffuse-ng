@@ -168,3 +168,16 @@ std::vector<Glib::ustring> Df::shlex_split(const Glib::ustring &s,
 
   return r;
 }
+
+/**
+ * @brief Utility method to step advance an adjustment
+ * @param adj
+ * @param delta
+ */
+void Df::step_adjustment(Gtk::Adjustment &adj, const double delta) {
+  auto v{adj.get_value() + delta};
+  // Clamp to the allowed range
+  v = std::max(v, adj.get_lower());
+  v = std::min(v, adj.get_upper() - adj.get_page_size());
+  adj.set_value(v);
+}

@@ -2118,39 +2118,6 @@ class VCSs:
                 if repo:
                     return repo
 
-# utility method to step advance an adjustment
-def step_adjustment(adj, delta):
-    v = adj.get_value() + delta
-    # clamp to the allowed range
-    v = max(v, int(adj.lower))
-    v = min(v, int(adj.upper - adj.page_size))
-    adj.set_value(v)
-
-class ScrolledWindow(gtk.Table):
-    def configure_cb(self, widget, event):
-        w, h = event.width, event.height
-        for adj, d in (self.hadj, w), (self.vadj, h):
-            v = adj.get_value()
-            if v + d > adj.upper:
-                adj.set_value(max(0, adj.upper - d))
-            adj.page_size = d
-            adj.page_increment = d
-
-    def scroll_cb(self, widget, event):
-        d = event.direction
-        if d in self.scroll_directions:
-            delta = 100
-            if d in (gtk.gdk.SCROLL_UP, gtk.gdk.SCROLL_LEFT):
-                delta = -delta
-            vertical = (d in (gtk.gdk.SCROLL_UP, gtk.gdk.SCROLL_DOWN))
-            if event.state & gtk.gdk.SHIFT_MASK:
-                vertical = not vertical
-            if vertical:
-                adj = self.vadj
-            else:
-                adj = self.hadj
-            step_adjustment(adj, delta)
-
     def value_changed_cb(self, widget):
         old_x, old_y = self.position
         pos_x = int(self.hadj.get_value())
