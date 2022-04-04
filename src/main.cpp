@@ -2118,27 +2118,6 @@ class VCSs:
                 if repo:
                     return repo
 
-    def value_changed_cb(self, widget):
-        old_x, old_y = self.position
-        pos_x = int(self.hadj.get_value())
-        pos_y = int(self.vadj.get_value())
-        self.position = (pos_x, pos_y)
-        if self.darea.window is not None:
-            # window.scroll() although visually nice, is slow, revert to
-            # queue_draw() if scroll a lot without seeing an expose event
-            if self.scroll_count < 2 and not self.partial_redraw:
-                self.scroll_count += 1
-                self.darea.window.scroll(old_x - pos_x, old_y - pos_y)
-            else:
-                self.partial_redraw = False
-                self.darea.queue_draw()
-
-    # replacement for darea.queue_draw_area that notifies us when a partial
-    # redraw happened
-    def redraw_region(self, x, y, w, h):
-        self.partial_redraw = True
-        self.darea_queue_draw_area(x, y, w, h)
-
 # Enforcing manual alignment is accomplished by dividing the lines of text into
 # sections that are matched independently.  'blocks' is an array of integers
 # describing how many lines (including null lines for spacing) that are in each

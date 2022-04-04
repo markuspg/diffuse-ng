@@ -44,12 +44,13 @@ public:
 
 private:
   struct Position {
-    const double x;
-    const double y;
+    double x;
+    double y;
   };
 
   bool configure_cb(const GdkEventConfigure *event);
   bool expose_cb(const GdkEventExpose *event);
+  void redraw_region(const Position &x_y, const Position &w_h);
   bool scroll_cb(const GdkEventScroll *event);
   void value_changed_cb();
 

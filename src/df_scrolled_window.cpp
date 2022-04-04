@@ -93,6 +93,18 @@ bool Df::ScrolledWindow::expose_cb([
 }
 
 /**
+ * @brief Replacement for darea.queue_draw_area that notifies when a partial
+ *   redraw happened
+ * @param x_y
+ * @param w_h
+ */
+void Df::ScrolledWindow::redraw_region(const Position &x_y,
+                                       const Position &w_h) {
+  partial_redraw = true;
+  // darea_queue_draw_area(x_y.x, x_y.y, w_h.w, w_h.h);
+}
+
+/**
  * @brief Update the vertical adjustment when the mouse's scroll wheel is used
  * @param[in] event
  * @return
@@ -125,4 +137,19 @@ bool Df::ScrolledWindow::scroll_cb(const GdkEventScroll *event) {
   return false;
 }
 
-void Df::ScrolledWindow::value_changed_cb() {}
+void Df::ScrolledWindow::value_changed_cb() {
+  const auto old_x_y{position};
+  const auto pos_x{hadj.get_value()};
+  const auto pos_y{vadj.get_value()};
+  position = {pos_x, pos_y};
+  // TODO:
+  // if self.darea.window is not None:
+  //     # window.scroll() although visually nice, is slow, revert to
+  //     # queue_draw() if scroll a lot without seeing an expose event
+  //     if self.scroll_count < 2 and not self.partial_redraw:
+  //         self.scroll_count += 1
+  //         self.darea.window.scroll(old_x - pos_x, old_y - pos_y)
+  //     else:
+  //         self.partial_redraw = False
+  //         self.darea.queue_draw()
+}
