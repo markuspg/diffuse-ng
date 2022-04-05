@@ -22,22 +22,85 @@
 
 #include "df_preferences.h"
 #include "df_font_button.h"
+#include "df_globals.h"
 
 #include <glibmm/convert.h>
+
+#include <glib/gi18n.h>
 
 namespace Df = Diffuse;
 
 Df::Preferences::Preferences(const std::string &path)
-    : disable_when{
-          {"display_right_margin", {"display_show_right_margin", false}},
-          {"display_ignore_whitespace_changes",
-           {"display_ignore_whitespace", true}},
-          {"display_ignore_blanklines", {"display_ignore_whitespace", true}},
-          {"display_ignore_endofline", {"display_ignore_whitespace", true}},
-          {"align_ignore_whitespace_changes",
-           {"align_ignore_whitespace", true}},
-          {"align_ignore_blanklines", {"align_ignore_whitespace", true}},
-          {"align_ignore_endofline", {"align_ignore_whitespace", true}}} {}
+    : disable_when{{"display_right_margin",
+                    {"display_show_right_margin", false}},
+                   {"display_ignore_whitespace_changes",
+                    {"display_ignore_whitespace", true}},
+                   {"display_ignore_blanklines",
+                    {"display_ignore_whitespace", true}},
+                   {"display_ignore_endofline",
+                    {"display_ignore_whitespace", true}},
+                   {"align_ignore_whitespace_changes",
+                    {"align_ignore_whitespace", true}},
+                   {"align_ignore_blanklines",
+                    {"align_ignore_whitespace", true}},
+                   {"align_ignore_endofline",
+                    {"align_ignore_whitespace", true}}},
+      templt{
+          {_("Display"),
+           {FontPreference{"display_font", "Monospace 10", _("Font")},
+            IntPreference{"display_tab_width", 8, _("Tab width"), 1, 1024},
+            BoolPreference{"display_show_right_margin", true,
+                           _("Show right margin")},
+            IntPreference{"display_right_margin", 80, _("Right margin"), 1,
+                          8192},
+            BoolPreference{"display_show_line_numbers", true,
+                           _("Show line numbers")},
+            BoolPreference{"display_show_whitespace", false,
+                           _("Show white space characters")},
+            BoolPreference{"display_ignore_case", false,
+                           _("Ignore case differences")},
+            BoolPreference{"display_ignore_whitespace", false,
+                           _("Ignore white space differences")},
+            BoolPreference{"display_ignore_whitespace_changes", false,
+                           _("Ignore changes to white space")},
+            BoolPreference{"display_ignore_blanklines", false,
+                           _("Ignore blank line differences")},
+            BoolPreference{"display_ignore_endofline", false,
+                           _("Ignore end of line differences")}}},
+          {_("Alignment"),
+           {BoolPreference{"align_ignore_case", false, _("Ignore case")},
+            BoolPreference{"align_ignore_whitespace", true,
+                           _("Ignore white space")},
+            BoolPreference{"align_ignore_whitespace_changes", false,
+                           _("Ignore changes to white space")},
+            BoolPreference{"align_ignore_blanklines", false,
+                           _("Ignore blank lines")},
+            BoolPreference{"align_ignore_endofline", true,
+                           _("Ignore end of line characters")}}},
+          {_("Editor"),
+           {BoolPreference{"editor_auto_indent", true, _("Auto indent")},
+            BoolPreference{"editor_expand_tabs", false,
+                           _("Expand tabs to spaces")},
+            IntPreference{"editor_soft_tab_width", 8, _("Soft tab width"), 1,
+                          1024}}},
+          {_("Tabs"),
+           {IntPreference{"tabs_default_panes", 2, _("Default panes"), 2, 16},
+            BoolPreference{"tabs_always_show", false,
+                           _("Always show the tab bar")},
+            BoolPreference{
+                "tabs_warn_before_quit", true,
+                Glib::ustring::compose(
+                    _("Warn me when closing a tab will quit %1"), APP_NAME)}}},
+          {_("Regional Settings"),
+           {EncodingPreference{"encoding_default_codec",
+                               "" /* TODO: sys.getfilesystemencoding() */,
+                               _("Default codec")},
+            StringPreference{
+                "encoding_auto_detect_codecs",
+                "" /* TODO: ' '.join(auto_detect_codecs) */,
+                _("Order of codecs used to identify encoding")}}} /*,
+{, {,
+*/} {}
 
 std::string Df::Preferences::convertToNativePath(const Glib::ustring &s) {
   return Glib::locale_from_utf8(s);
@@ -63,3 +126,29 @@ void Df::Preferences::setString(const Glib::ustring &name,
                                 const Glib::ustring &value) {
   string_prefs[name] = value;
 }
+
+Df::Preferences::BoolPreference::BoolPreference(const Glib::ustring &name,
+                                                const bool dflt,
+                                                const Glib::ustring &label)
+    : Preference{name, label}, dflt{dflt} {}
+
+Df::Preferences::EncodingPreference::EncodingPreference(
+    const Glib::ustring &name, const Glib::ustring &dflt,
+    const Glib::ustring &label)
+    : Preference{name, label}, dflt{dflt} {}
+
+Df::Preferences::FontPreference::FontPreference(const Glib::ustring &name,
+                                                const Glib::ustring &dflt,
+                                                const Glib::ustring &label)
+    : Preference{name, label}, dflt{dflt} {}
+
+Df::Preferences::IntPreference::IntPreference(const Glib::ustring &name,
+                                              const int dflt,
+                                              const Glib::ustring &label,
+                                              const int min, const int max)
+    : Preference{name, label}, dflt{dflt}, min{min}, max{max} {}
+
+Df::Preferences::StringPreference::StringPreference(const Glib::ustring &name,
+                                                    const Glib::ustring &dflt,
+                                                    const Glib::ustring &label)
+    : Preference{name, label}, dflt{dflt} {}

@@ -26,6 +26,8 @@
 #include <glibmm/ustring.h>
 
 #include <map>
+#include <variant>
+#include <vector>
 
 namespace Diffuse {
 /**
@@ -34,6 +36,52 @@ namespace Diffuse {
  */
 class Preferences {
 public:
+  struct Preference {
+    Glib::ustring name;
+    Glib::ustring label;
+  };
+
+  struct BoolPreference : public Preference {
+    BoolPreference(const Glib::ustring &name, const bool dflt,
+                   const Glib::ustring &label);
+
+    const bool dflt;
+  };
+  struct EncodingPreference : public Preference {
+    EncodingPreference(const Glib::ustring &name, const Glib::ustring &dflt,
+                       const Glib::ustring &label);
+
+    const Glib::ustring dflt;
+  };
+  struct FilePreference : public Preference {};
+  struct FontPreference : public Preference {
+    FontPreference(const Glib::ustring &name, const Glib::ustring &dflt,
+                   const Glib::ustring &label);
+
+    const Glib::ustring dflt;
+  };
+  struct IntPreference : public Preference {
+    IntPreference(const Glib::ustring &name, int dflt,
+                  const Glib::ustring &label, int min, int max);
+
+    const int dflt;
+    const int min;
+    const int max;
+  };
+  struct StringPreference : public Preference {
+    StringPreference(const Glib::ustring &name, const Glib::ustring &dflt,
+                     const Glib::ustring &label);
+
+    const Glib::ustring dflt;
+  };
+
+  struct Category {
+    Glib::ustring name;
+    std::vector<std::variant<BoolPreference, EncodingPreference, FilePreference,
+                             FontPreference, IntPreference, StringPreference>>
+        preferences;
+  };
+
   Preferences(const std::string &path);
 
   std::string convertToNativePath(const Glib::ustring &s);
@@ -58,6 +106,9 @@ private:
 
   //! Conditions to determine if a preference should be greyed out
   std::map<Glib::ustring, DisableWhenCondition> disable_when;
+
+  //! Describe a preferenec dialogue, its layout and default values
+  std::vector<Category> templt;
 };
 } // namespace Diffuse
 

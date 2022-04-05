@@ -379,63 +379,6 @@ class Preferences:
             # being tried
             auto_detect_codecs.insert(2, e)
 
-        # self.template describes how preference dialogue layout
-        #
-        # this will be traversed later to build the preferences dialogue and
-        # discover which preferences exist
-        #
-        # folders are described using:
-        #    [ 'FolderSet', label1, template1, label2, template2, ... ]
-        # lists are described using:
-        #    [ 'List', template1, template2, template3, ... ]
-        # individual preferences are described using one of the following
-        # depending upon its type and the desired widget:
-        #    [ 'Boolean', name, default, label ]
-        #    [ 'Integer', name, default, label ]
-        #    [ 'String', name, default, label ]
-        #    [ 'File', name, default, label ]
-        #    [ 'Font', name, default, label ]
-        self.template = [ 'FolderSet',
-            _('Display'),
-            [ 'List',
-              [ 'Font', 'display_font', 'Monospace 10', _('Font') ],
-              [ 'Integer', 'display_tab_width', 8, _('Tab width'), 1, 1024 ],
-              [ 'Boolean', 'display_show_right_margin', True, _('Show right margin') ],
-              [ 'Integer', 'display_right_margin', 80, _('Right margin'), 1, 8192 ],
-              [ 'Boolean', 'display_show_line_numbers', True, _('Show line numbers') ],
-              [ 'Boolean', 'display_show_whitespace', False, _('Show white space characters') ],
-              [ 'Boolean', 'display_ignore_case', False, _('Ignore case differences') ],
-              [ 'Boolean', 'display_ignore_whitespace', False, _('Ignore white space differences') ],
-              [ 'Boolean', 'display_ignore_whitespace_changes', False, _('Ignore changes to white space') ],
-              [ 'Boolean', 'display_ignore_blanklines', False, _('Ignore blank line differences') ],
-              [ 'Boolean', 'display_ignore_endofline', False, _('Ignore end of line differences') ]
-            ],
-            _('Alignment'),
-            [ 'List',
-              [ 'Boolean', 'align_ignore_case', False, _('Ignore case') ],
-              [ 'Boolean', 'align_ignore_whitespace', True, _('Ignore white space') ],
-              [ 'Boolean', 'align_ignore_whitespace_changes', False, _('Ignore changes to white space') ],
-              [ 'Boolean', 'align_ignore_blanklines', False, _('Ignore blank lines') ],
-              [ 'Boolean', 'align_ignore_endofline', True, _('Ignore end of line characters') ]
-            ],
-            _('Editor'),
-            [ 'List',
-              [ 'Boolean', 'editor_auto_indent', True, _('Auto indent') ],
-              [ 'Boolean', 'editor_expand_tabs', False, _('Expand tabs to spaces') ],
-              [ 'Integer', 'editor_soft_tab_width', 8, _('Soft tab width'), 1, 1024 ]
-            ],
-            _('Tabs'),
-            [ 'List',
-              [ 'Integer', 'tabs_default_panes', 2, _('Default panes'), 2, 16 ],
-              [ 'Boolean', 'tabs_always_show', False, _('Always show the tab bar') ],
-              [ 'Boolean', 'tabs_warn_before_quit', True, _('Warn me when closing a tab will quit %s') % APP_NAME ]
-            ],
-            _('Regional Settings'),
-            [ 'List',
-              [ 'Encoding', 'encoding_default_codec', sys.getfilesystemencoding(), _('Default codec') ],
-              [ 'String', 'encoding_auto_detect_codecs', ' '.join(auto_detect_codecs), _('Order of codecs used to identify encoding') ]
-            ],
-        ]
         if isWindows():
             root = os.environ.get('SYSTEMDRIVE', None)
             if root is None:
