@@ -23,6 +23,7 @@
 #include "df_preferences.h"
 #include "df_font_button.h"
 #include "df_globals.h"
+#include "df_utils.h"
 
 #include <glibmm/convert.h>
 
@@ -100,7 +101,25 @@ Df::Preferences::Preferences(const std::string &path)
                 "" /* TODO: ' '.join(auto_detect_codecs) */,
                 _("Order of codecs used to identify encoding")}}} /*,
 {, {,
-*/} {}
+*/} {
+  // Find available encodings
+  // TODO: self.encodings = sorted(set(encodings.aliases.aliases.values()))
+
+  const Glib::ustring svk_bin{isWindows() ? "svk.bat" : "svk"};
+
+  auto codeset{g_get_codeset()};
+  const auto e{norm_encoding(codeset)};
+  g_free(codeset);
+  codeset = nullptr;
+
+  std::vector<Glib::ustring> auto_detect_codecs{"utf_8", "utf_16", "latin_1"};
+  if (auto_detect_codecs.cend() ==
+      std::find(auto_detect_codecs.cbegin(), auto_detect_codecs.cend(), e)) {
+    // Insert after UTF-8 as the default encoding may prevent UTF-8 from
+    // being tried
+    auto_detect_codecs.emplace(auto_detect_codecs.cbegin() + 1, e);
+  }
+}
 
 std::string Df::Preferences::convertToNativePath(const Glib::ustring &s) {
   return Glib::locale_from_utf8(s);

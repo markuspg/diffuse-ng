@@ -35,6 +35,7 @@ namespace Diffuse {
 bool isWindows();
 void logDebug(const Glib::ustring &s);
 void logError(const Glib::ustring &s);
+Glib::ustring norm_encoding(const Glib::ustring &e);
 void printMessage(const Glib::ustring &s);
 std::optional<std::vector<Glib::ustring>> readconfiglines(std::ifstream &fd);
 std::vector<Glib::ustring> shlex_split(const Glib::ustring &s,

@@ -333,11 +333,6 @@ class Resources:
   Df::Resources theResources;
 
 /*
-# map an encoding name to its standard form
-def norm_encoding(e):
-    if e is not None:
-        return e.replace('-', '_').lower()
-
 # widget to help pick an encoding
 class EncodingMenu(gtk.HBox):
     def __init__(self, prefs, autodetect=False):
@@ -364,21 +359,6 @@ class EncodingMenu(gtk.HBox):
 
 class Preferences:
     def __init__(self, path):
-        # find available encodings
-        self.encodings = sorted(set(encodings.aliases.aliases.values()))
-
-        if isWindows():
-            svk_bin = 'svk.bat'
-        else:
-            svk_bin = 'svk'
-
-        auto_detect_codecs = [ 'utf_8', 'utf_16', 'latin_1' ]
-        e = norm_encoding(sys.getfilesystemencoding())
-        if e not in auto_detect_codecs:
-            # insert after UTF-8 as the default encoding may prevent UTF-8 from
-            # being tried
-            auto_detect_codecs.insert(2, e)
-
         if isWindows():
             root = os.environ.get('SYSTEMDRIVE', None)
             if root is None:

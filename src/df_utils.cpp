@@ -51,6 +51,19 @@ void Df::logError(const Glib::ustring &s) {
 }
 
 /**
+ * @brief Map an encoding name to its standard form
+ * @param[in] e The encoding identifier which shall be mapped
+ * @return The given encoding mapped to its standard form
+ */
+Glib::ustring Df::norm_encoding(const Glib::ustring &e) {
+  // TODO: 'e' could be optional
+  static const auto regexp{Glib::Regex::create("-")};
+
+  return regexp->replace(e, 0, "_", static_cast<Glib::RegexMatchFlags>(0))
+      .lowercase();
+}
+
+/**
  * @brief Print a UTF-8 encoded string to stdout in the host's native encoding
  * @param[in] s The string which shall be printed
  */
