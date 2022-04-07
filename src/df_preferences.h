@@ -53,7 +53,12 @@ public:
 
     const Glib::ustring dflt;
   };
-  struct FilePreference : public Preference {};
+  struct FilePreference : public Preference {
+    FilePreference(const Glib::ustring &name, const Glib::ustring &dflt,
+                   const Glib::ustring &label);
+
+    const Glib::ustring dflt;
+  };
   struct FontPreference : public Preference {
     FontPreference(const Glib::ustring &name, const Glib::ustring &dflt,
                    const Glib::ustring &label);

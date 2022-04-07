@@ -119,6 +119,24 @@ Df::Preferences::Preferences(const std::string &path)
     // being tried
     auto_detect_codecs.emplace(auto_detect_codecs.cbegin() + 1, e);
   }
+
+  if (isWindows()) {
+    bool found;
+    auto root{Glib::getenv("SYSTEMDRIVE", found)};
+    if (!found || root.empty()) {
+      root = "C:\\\\";
+    } else if ((2 > root.size()) || ("\\\\" != root.substr(root.size() - 2))) {
+      root += "\\\\";
+    }
+    templt.emplace_back(
+        Category{_("Cygwin"),
+                 {FilePreference{"cygwin_root",
+                                 Glib::locale_to_utf8(
+                                     Glib::build_filename(root, "cygwin")),
+                                 _("Root directory")},
+                  StringPreference{"cygwin_cygdrive_prefix", "/cygdrive",
+                                   _("Cygdrive prefix")}}});
+  }
 }
 
 std::string Df::Preferences::convertToNativePath(const Glib::ustring &s) {
@@ -154,6 +172,11 @@ Df::Preferences::BoolPreference::BoolPreference(const Glib::ustring &name,
 Df::Preferences::EncodingPreference::EncodingPreference(
     const Glib::ustring &name, const Glib::ustring &dflt,
     const Glib::ustring &label)
+    : Preference{name, label}, dflt{dflt} {}
+
+Df::Preferences::FilePreference::FilePreference(const Glib::ustring &name,
+                                                const Glib::ustring &dflt,
+                                                const Glib::ustring &label)
     : Preference{name, label}, dflt{dflt} {}
 
 Df::Preferences::FontPreference::FontPreference(const Glib::ustring &name,

@@ -359,20 +359,6 @@ class EncodingMenu(gtk.HBox):
 
 class Preferences:
     def __init__(self, path):
-        if isWindows():
-            root = os.environ.get('SYSTEMDRIVE', None)
-            if root is None:
-                root = 'C:\\'
-            elif not root.endswith('\\'):
-                root += '\\'
-            self.template.extend([
-                    _('Cygwin'),
-                    [ 'List',
-                      [ 'File', 'cygwin_root', os.path.join(root, 'cygwin'), _('Root directory') ],
-                      [ 'String', 'cygwin_cygdrive_prefix', '/cygdrive', _('Cygdrive prefix') ]
-                    ]
-                ])
-
         # create template for Version Control options
         vcs = [ ('bzr', 'Bazaar', 'bzr'),
                 ('cvs', 'CVS', 'cvs'),
