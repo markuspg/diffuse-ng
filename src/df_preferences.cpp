@@ -29,9 +29,16 @@
 
 #include <glib/gi18n.h>
 
+#include <cstring>
+#include <iostream>
+
 namespace Df = Diffuse;
 
-Df::Preferences::Preferences(const std::string &path)
+static constexpr auto unknown_entry_exc_txt{
+    "Unknown entry in configuration file"};
+static constexpr auto unknown_entry_exc_txt_size{sizeof(unknown_entry_exc_txt)};
+
+Df::Preferences::Preferences(const std::string &pth)
     : disable_when{{"display_right_margin",
                     {"display_show_right_margin", false}},
                    {"display_ignore_whitespace_changes",
@@ -46,6 +53,7 @@ Df::Preferences::Preferences(const std::string &path)
                     {"align_ignore_whitespace", true}},
                    {"align_ignore_endofline",
                     {"align_ignore_whitespace", true}}},
+      path{pth},
       templt{
           {_("Display"),
            {FontPreference{"display_font", "Monospace 10", _("Font")},
@@ -181,6 +189,60 @@ Df::Preferences::Preferences(const std::string &path)
   default_bool_prefs = bool_prefs;
   default_int_prefs = int_prefs;
   default_string_prefs = string_prefs;
+
+  // Load the user's preferences
+  if (Glib::file_test(path, Glib::FileTest::FILE_TEST_IS_REGULAR)) {
+    try {
+      std::ifstream f{path};
+      if (f.fail()) {
+        std::cerr << "Failed to open the user's preferences file\n";
+        return;
+      }
+      const auto ss{readconfiglines(f)};
+      if (!ss.has_value()) {
+        return;
+      }
+      f.close();
+
+      auto j = 0u;
+      for (const auto &line : ss.value()) {
+        ++j;
+        try {
+          const auto chunks{shlex_split(line, true)};
+          if (!chunks.empty()) {
+            const auto p{chunks.front()};
+            if ((2 == chunks.size()) &&
+                (bool_prefs.cend() != bool_prefs.find(p))) {
+              bool_prefs[p] = ("True" == chunks[1]);
+            } else if ((2 == chunks.size()) &&
+                       (int_prefs.cend() != int_prefs.find(p))) {
+              int_prefs[p] = std::clamp(std::stoi(chunks[1]), int_prefs_min[p],
+                                        int_prefs_max[p]);
+            } else if ((2 == chunks.size()) &&
+                       (string_prefs.cend() != string_prefs.find(p))) {
+              string_prefs[p] = chunks[1];
+            } else {
+              throw std::runtime_error{unknown_entry_exc_txt};
+            }
+          }
+        } catch (const std::exception &exc) {
+          if (!std::strncmp(unknown_entry_exc_txt, exc.what(),
+                            unknown_entry_exc_txt_size)) {
+            throw;
+          }
+          logDebug(Glib::ustring::compose("Error processing line %1 of %2.", j,
+                                          Glib::locale_to_utf8(path)));
+        }
+      }
+    } catch (const std::exception &exc) {
+      if (!std::strncmp(unknown_entry_exc_txt, exc.what(),
+                        unknown_entry_exc_txt_size)) {
+        throw;
+      }
+      logDebug(Glib::ustring::compose("Error reading %1.",
+                                      Glib::locale_to_utf8(path)));
+    }
+  }
 }
 
 std::string Df::Preferences::convertToNativePath(const Glib::ustring &s) {

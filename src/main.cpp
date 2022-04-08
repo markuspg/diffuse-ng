@@ -358,35 +358,6 @@ class EncodingMenu(gtk.HBox):
             return self.encodings[i]
 
 class Preferences:
-    def __init__(self, path):
-        # load the user's preferences
-        self.path = path
-        if os.path.isfile(self.path):
-            try:
-                f = open(self.path, 'r')
-                ss = readconfiglines(f)
-                f.close()
-                for j, s in enumerate(ss):
-                    try:
-                        a = shlex_split(s, True)
-                        if len(a) > 0:
-                            p = a[0]
-                            if len(a) == 2 and p in self.bool_prefs:
-                                self.bool_prefs[p] = (a[1] == 'True')
-                            elif len(a) == 2 and p in self.int_prefs:
-                                self.int_prefs[p] = max(self.int_prefs_min[p], min(int(a[1]), self.int_prefs_max[p]))
-                            elif len(a) == 2 and p in self.string_prefs:
-                                self.string_prefs[p] = a[1]
-                            else:
-                                raise ValueError()
-                    except ValueError:
-                        # this may happen if the prefs were written by a
-                        # different version -- don't bother the user
-                        logDebug('Error processing line %d of %s.' % (j + 1, self.path))
-            except IOError:
-                # bad $HOME value? -- don't bother the user
-                logDebug('Error reading %s.' % (self.path, ))
-
     # callback used when a preference is toggled
     def _toggled_cb(self, widget, widgets, name):
         # disable any preferences than are no longer relevant

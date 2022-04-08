@@ -125,6 +125,8 @@ private:
   //! Conditions to determine if a preference should be greyed out
   std::map<Glib::ustring, DisableWhenCondition> disable_when;
 
+  const std::string path;
+
   //! Describe a preferenec dialogue, its layout and default values
   std::vector<Category> templt;
 };
