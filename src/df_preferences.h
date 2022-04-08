@@ -109,11 +109,17 @@ private:
     bool state;
   };
 
+  void initFromTemplate();
+  void initFromVCSsTemplate(const VcsPreferences &vcs_prefs);
+
   std::map<Glib::ustring, bool> bool_prefs;
+  std::map<Glib::ustring, bool> default_bool_prefs;
   std::map<Glib::ustring, int> int_prefs;
+  std::map<Glib::ustring, int> default_int_prefs;
   std::map<Glib::ustring, int> int_prefs_min;
   std::map<Glib::ustring, int> int_prefs_max;
   std::map<Glib::ustring, Glib::ustring> string_prefs;
+  std::map<Glib::ustring, Glib::ustring> default_string_prefs;
   std::map<Glib::ustring, Glib::ustring> string_prefs_enums;
 
   //! Conditions to determine if a preference should be greyed out

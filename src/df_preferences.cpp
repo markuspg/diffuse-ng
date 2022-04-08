@@ -176,6 +176,11 @@ Df::Preferences::Preferences(const std::string &path)
   }
   vcs_template.emplace_back(std::move(vcs_folders_template));
   templt.emplace_back(Category{_("Version Control"), std::move(vcs_template)});
+
+  initFromTemplate();
+  default_bool_prefs = bool_prefs;
+  default_int_prefs = int_prefs;
+  default_string_prefs = string_prefs;
 }
 
 std::string Df::Preferences::convertToNativePath(const Glib::ustring &s) {
@@ -192,6 +197,59 @@ int Df::Preferences::getInt(const Glib::ustring &name) {
 
 Glib::ustring Df::Preferences::getString(const Glib::ustring &name) {
   return string_prefs.at(name);
+}
+
+/**
+ * @brief Traverse templt to discover the preferences and their default values
+ */
+void Df::Preferences::initFromTemplate() {
+  for (const auto &category : templt) {
+    for (const auto &pref : category.preferences) {
+      if (std::holds_alternative<BoolPreference>(pref)) {
+        const auto &bool_pref{std::get<BoolPreference>(pref)};
+        bool_prefs[bool_pref.name] = bool_pref.dflt;
+      } else if (std::holds_alternative<IntPreference>(pref)) {
+        const auto &int_pref{std::get<IntPreference>(pref)};
+        int_prefs[int_pref.name] = int_pref.dflt;
+        int_prefs_min[int_pref.name] = int_pref.min;
+        int_prefs_max[int_pref.name] = int_pref.max;
+      } else if (std::holds_alternative<EncodingPreference>(pref)) {
+        const auto &enc_pref{std::get<EncodingPreference>(pref)};
+        string_prefs[enc_pref.name] = enc_pref.dflt;
+      } else if (std::holds_alternative<FilePreference>(pref)) {
+        const auto &file_pref{std::get<FilePreference>(pref)};
+        string_prefs[file_pref.name] = file_pref.dflt;
+      } else if (std::holds_alternative<FontPreference>(pref)) {
+        const auto &font_pref{std::get<FontPreference>(pref)};
+        string_prefs[font_pref.name] = font_pref.dflt;
+      } else if (std::holds_alternative<StringPreference>(pref)) {
+        const auto &str_pref{std::get<StringPreference>(pref)};
+        string_prefs[str_pref.name] = str_pref.dflt;
+      } else if (std::holds_alternative<VcsPreferences>(pref)) {
+        initFromVCSsTemplate(std::get<VcsPreferences>(pref));
+      } else {
+        throw std::runtime_error{"Unhandled type in Preferences template"};
+      }
+    }
+  }
+}
+
+void Df::Preferences::initFromVCSsTemplate(const VcsPreferences &vcs_prefs) {
+  for (const auto &vcs_pref : vcs_prefs) {
+    for (const auto &pref : vcs_pref.opts) {
+      if (std::holds_alternative<BoolPreference>(pref)) {
+        const auto &bool_pref{std::get<BoolPreference>(pref)};
+        bool_prefs[bool_pref.name] = bool_pref.dflt;
+      } else if (std::holds_alternative<std::vector<FilePreference>>(pref)) {
+        const auto &file_prefs{std::get<std::vector<FilePreference>>(pref)};
+        for (const auto &file_pref : file_prefs) {
+          string_prefs[file_pref.name] = file_pref.dflt;
+        }
+      } else {
+        throw std::runtime_error{"Unhandled type in VCS Preferences template"};
+      }
+    }
+  }
 }
 
 void Df::Preferences::setBool(const Glib::ustring &name, const bool value) {

@@ -359,10 +359,6 @@ class EncodingMenu(gtk.HBox):
 
 class Preferences:
     def __init__(self, path):
-        self._initFromTemplate(self.template)
-        self.default_bool_prefs = self.bool_prefs.copy()
-        self.default_int_prefs = self.int_prefs.copy()
-        self.default_string_prefs = self.string_prefs.copy()
         # load the user's preferences
         self.path = path
         if os.path.isfile(self.path):
@@ -390,26 +386,6 @@ class Preferences:
             except IOError:
                 # bad $HOME value? -- don't bother the user
                 logDebug('Error reading %s.' % (self.path, ))
-
-    # recursively traverses 'template' to discover the preferences and
-    # initialise their default values in self.bool_prefs, self.int_prefs, and
-    # self.string_prefs
-    def _initFromTemplate(self, template):
-        if template[0] == 'FolderSet' or template[0] == 'List':
-            i = 1
-            while i < len(template):
-                if template[0] == 'FolderSet':
-                    i += 1
-                self._initFromTemplate(template[i])
-                i += 1
-        elif template[0] == 'Boolean':
-            self.bool_prefs[template[1]] = template[2]
-        elif template[0] == 'Integer':
-            self.int_prefs[template[1]] = template[2]
-            self.int_prefs_min[template[1]] = template[4]
-            self.int_prefs_max[template[1]] = template[5]
-        elif template[0] in [ 'String', 'File', 'Font', 'Encoding' ]:
-            self.string_prefs[template[1]] = template[2]
 
     # callback used when a preference is toggled
     def _toggled_cb(self, widget, widgets, name):
