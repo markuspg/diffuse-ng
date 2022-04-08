@@ -137,6 +137,45 @@ Df::Preferences::Preferences(const std::string &path)
                   StringPreference{"cygwin_cygdrive_prefix", "/cygdrive",
                                    _("Cygdrive prefix")}}});
   }
+
+  // Create template for Version Control options
+  struct VcsInfo {
+    const Glib::ustring shortName;
+    const Glib::ustring fullName;
+    const std::optional<Glib::ustring> executableName;
+  };
+  const std::vector<VcsInfo> vcs{
+      {"bzr", "Bazaar", "bzr"},     {"cvs", "CVS", "cvs"},
+      {"darcs", "Darcs", "darcs"},  {"git", "Git", "git"},
+      {"hg", "Mercurial", "hg"},    {"mtn", "Monotone", "mtn"},
+      {"rcs", "RCS", std::nullopt}, {"svn", "Subversion", "svn"},
+      {"svk", "SVK", svk_bin}};
+  PrefsVec vcs_template{StringPreference{
+      "vcs_search_order", "bzr cvs darcs git hg mtn rcs svn svk",
+      _("Version control system search order")}};
+  VcsPreferences vcs_folders_template;
+  for (const auto &vc : vcs) {
+    std::vector<std::variant<BoolPreference, std::vector<FilePreference>>> temp;
+    if ("rcs" == vc.shortName) {
+      // RCS uses multiple commands
+      temp.emplace_back(std::vector<FilePreference>{
+          {vc.shortName + "_bin", "co", _("\"co\" command")},
+          {vc.shortName + "_bin_rlog", "rlog", _("\"rlog\" command")}});
+    } else {
+      temp.emplace_back(std::vector<FilePreference>{
+          {vc.shortName + "_bin", vc.executableName.value(), _("Command")}});
+    }
+    if (isWindows()) {
+      temp.emplace_back(BoolPreference{vc.shortName + "_bash", false,
+                                       _("Launch from a Bash login shell")});
+      if ("git" != vc.shortName) {
+        temp.emplace_back(BoolPreference{vc.shortName + "_cygwin", false,
+                                         _("Update paths for Cygwin")});
+      }
+    }
+  }
+  vcs_template.emplace_back(std::move(vcs_folders_template));
+  templt.emplace_back(Category{_("Version Control"), std::move(vcs_template)});
 }
 
 std::string Df::Preferences::convertToNativePath(const Glib::ustring &s) {

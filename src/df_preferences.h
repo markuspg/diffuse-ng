@@ -79,12 +79,19 @@ public:
 
     const Glib::ustring dflt;
   };
+  struct VcsPreference : public Preference {
+    const Glib::ustring vcs_name;
+    std::vector<std::variant<BoolPreference, std::vector<FilePreference>>> opts;
+  };
+  using VcsPreferences = std::vector<VcsPreference>;
 
+  using PrefsVec =
+      std::vector<std::variant<BoolPreference, EncodingPreference,
+                               FilePreference, FontPreference, IntPreference,
+                               StringPreference, VcsPreferences>>;
   struct Category {
     Glib::ustring name;
-    std::vector<std::variant<BoolPreference, EncodingPreference, FilePreference,
-                             FontPreference, IntPreference, StringPreference>>
-        preferences;
+    PrefsVec preferences;
   };
 
   Preferences(const std::string &path);

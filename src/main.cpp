@@ -359,36 +359,6 @@ class EncodingMenu(gtk.HBox):
 
 class Preferences:
     def __init__(self, path):
-        # create template for Version Control options
-        vcs = [ ('bzr', 'Bazaar', 'bzr'),
-                ('cvs', 'CVS', 'cvs'),
-                ('darcs', 'Darcs', 'darcs'),
-                ('git', 'Git', 'git'),
-                ('hg', 'Mercurial', 'hg'),
-                ('mtn', 'Monotone', 'mtn'),
-                ('rcs', 'RCS', None),
-                ('svn', 'Subversion', 'svn'),
-                ('svk', 'SVK', svk_bin) ]
-
-        vcs_template = [ 'List',
-              [ 'String', 'vcs_search_order', 'bzr cvs darcs git hg mtn rcs svn svk', _('Version control system search order') ] ]
-        vcs_folders_template = [ 'FolderSet' ]
-        for key, name, cmd in vcs:
-            temp = [ 'List' ]
-            if key == 'rcs':
-                # RCS uses multiple commands
-                temp.extend([ [ 'File', key + '_bin_co', 'co', _('"co" command') ],
-                              [ 'File', key + '_bin_rlog', 'rlog', _('"rlog" command') ] ])
-            else:
-                temp.extend([ [ 'File', key + '_bin', cmd, _('Command') ] ])
-            if isWindows():
-                temp.append([ 'Boolean', key + '_bash', False, _('Launch from a Bash login shell') ])
-                if key != 'git':
-                    temp.append([ 'Boolean', key + '_cygwin', False, _('Update paths for Cygwin') ])
-            vcs_folders_template.extend([ name, temp ])
-        vcs_template.append(vcs_folders_template)
-
-        self.template.extend([ _('Version Control'), vcs_template ])
         self._initFromTemplate(self.template)
         self.default_bool_prefs = self.bool_prefs.copy()
         self.default_int_prefs = self.int_prefs.copy()
