@@ -5833,7 +5833,6 @@ def url_hook(dialog, link, userdata):
 gtk.about_dialog_set_url_hook(url_hook, None)
 
 class Diffuse(gtk.Window):
-    # specialisation of FileDiffViewer for Diffuse
     class FileDiffViewer(FileDiffViewer):
         # pane header
         class PaneHeader(gtk.HBox):
@@ -5886,37 +5885,7 @@ class Diffuse(gtk.Window):
                     self.has_edits = has_edits
                     self.updateTitle()
 
-        # pane footer
         class PaneFooter(gtk.HBox):
-            def __init__(self):
-                gtk.HBox.__init__(self)
-
-                self.cursor = label = gtk.Label()
-                self.pack_start(label, False, False, 0)
-                label.show()
-
-                separator = gtk.VSeparator()
-                self.pack_end(separator, False, False, 10)
-                separator.show()
-
-                self.encoding = label = gtk.Label()
-                self.pack_end(label, False, False, 0)
-                label.show()
-
-                separator = gtk.VSeparator()
-                self.pack_end(separator, False, False, 10)
-                separator.show()
-
-                self.format = label = gtk.Label()
-                self.pack_end(label, False, False, 0)
-                label.show()
-
-                separator = gtk.VSeparator()
-                self.pack_end(separator, False, False, 10)
-                separator.show()
-
-                self.set_size_request(0, self.get_size_request()[1])
-
             # set the cursor label
             def updateCursor(self, viewer, f):
                 if viewer.mode == CHAR_MODE and viewer.current_pane == f:
@@ -5939,12 +5908,6 @@ class Diffuse(gtk.Window):
                 if s & UNIX_FORMAT:
                     v.append('Unix')
                 self.format.set_text('/'.join(v))
-
-            # set the format label
-            def setEncoding(self, s):
-                if s is None:
-                    s = ''
-                self.encoding.set_text(s)
 
         def __init__(self, n, prefs, title):
             FileDiffViewer.__init__(self, n, prefs)

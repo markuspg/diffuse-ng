@@ -28,6 +28,7 @@
 
 #include <gtkmm/accelgroup.h>
 #include <gtkmm/iconfactory.h>
+#include <gtkmm/separator.h>
 #include <gtkmm/stock.h>
 
 #include <glibmm/miscutils.h>
@@ -392,6 +393,46 @@ Df::Diffuse::FileDiffViewer::signal_syntax_changed() {
 Df::Diffuse::FileDiffViewer::type_signal_title_changed
 Df::Diffuse::FileDiffViewer::signal_title_changed() {
   return m_title_changed;
+}
+
+Df::Diffuse::FileDiffViewer::PaneFooter::PaneFooter() {
+  pack_start(cursor, false, false, 0);
+  cursor.show();
+
+  Gtk::VSeparator separator;
+  pack_end(separator, false, false, 10);
+  separator.show();
+
+  pack_end(encoding, false, false, 0);
+  encoding.show();
+
+  Gtk::VSeparator separator2;
+  pack_end(separator2, false, false, 10);
+  separator2.show();
+
+  pack_end(format, false, false, 0);
+  format.show();
+
+  Gtk::VSeparator separator3;
+  pack_end(separator3, false, false, 10);
+  separator3.show();
+
+  int h, w;
+  get_size_request(w, h);
+  set_size_request(0, h);
+}
+
+/**
+ * @brief Set the encoding label
+ * @param s
+ */
+void Df::Diffuse::FileDiffViewer::PaneFooter::setEncoding(
+    const std::optional<Glib::ustring> &s) {
+  if (s) {
+    encoding.set_text(s.value());
+  } else {
+    encoding.set_text("");
+  }
 }
 
 /**

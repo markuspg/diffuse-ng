@@ -40,8 +40,26 @@ namespace Diffuse {
  */
 class Diffuse : public Gtk::Window {
 public:
+  /**
+   * @brief Specialisation of FileDiffViewer for Diffuse
+   */
   class FileDiffViewer : public ::Diffuse::FileDiffViewer {
   public:
+    /**
+     * @brief Pane footer
+     */
+    class PaneFooter : public Gtk::HBox {
+    public:
+      PaneFooter();
+
+      void setEncoding(const std::optional<Glib::ustring> &s);
+
+    private:
+      Gtk::Label cursor;
+      Gtk::Label encoding;
+      Gtk::Label format;
+    };
+
     using type_signal_status_changed = sigc::signal<void()>;
     using type_signal_syntax_changed = sigc::signal<void()>;
     using type_signal_title_changed = sigc::signal<void()>;
