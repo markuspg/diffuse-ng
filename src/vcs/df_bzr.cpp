@@ -22,6 +22,8 @@
 
 #include "df_bzr.h"
 
+#include <glibmm/fileutils.h>
+
 namespace Df = Diffuse;
 
 Df::Bzr::Bzr(const std::string &rt) : VcsSupp{rt} {}
@@ -30,7 +32,20 @@ Df::Bzr::~Bzr() {}
 
 void Df::Bzr::getCommitTemplate() {}
 
-void Df::Bzr::getFileTemplate() {}
+Df::VcsSupp::FileTemplate Df::Bzr::getFileTemplate(const Preferences &prefs,
+                                                   const std::string &name) {
+  // Merge conflict
+  const auto left{name + ".OTHER"};
+  const auto right{name + ".THIS"};
+
+  if (Glib::file_test(left, Glib::FileTest::FILE_TEST_EXISTS) &&
+      Glib::file_test(right, Glib::FileTest::FILE_TEST_EXISTS)) {
+    return {{left, std::nullopt}, {name, std::nullopt}, {right, std::nullopt}};
+  }
+
+  // Default case
+  return {{name, "-1"}, {name, std::nullopt}};
+}
 
 void Df::Bzr::getFolderTemplate() {}
 

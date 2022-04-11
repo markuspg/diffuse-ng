@@ -804,15 +804,6 @@ class _VcsFolderSet:
         return False
 
 class _Bzr:
-    def getFileTemplate(self, prefs, name):
-        # merge conflict
-        left = name + '.OTHER'
-        right = name + '.THIS'
-        if os.path.isfile(left) and os.path.isfile(right):
-            return [ (left, None), (name, None), (right, None) ]
-        # default case
-        return [ (name, '-1'), (name, None) ]
-
     def getCommitTemplate(self, prefs, rev, names):
         # build command
         args = [ prefs.getString('bzr_bin'), 'log', '-v', '-r', rev ]
@@ -962,9 +953,6 @@ class _Bzr:
         return popenRead(self.root, [ prefs.getString('bzr_bin'), 'cat', '--name-from-revision', '-r', rev, safeRelativePath(self.root, name, prefs, 'bzr_cygwin') ], prefs, 'bzr_bash')
 
 class _Cvs:
-    def getFileTemplate(self, prefs, name):
-        return [ (name, 'BASE'), (name, None) ]
-
     def getCommitTemplate(self, prefs, rev, names):
         result = []
         try:
@@ -1029,9 +1017,6 @@ class _Cvs:
         return popenRead(self.root, [ prefs.getString('cvs_bin'), '-Q', 'update', '-p', '-r', rev, safeRelativePath(self.root, name, prefs, 'cvs_cygwin') ], prefs, 'cvs_bash')
 
 class _Darcs:
-    def getFileTemplate(self, prefs, name):
-        return [ (name, ''), (name, None) ]
-
     def _getCommitTemplate(self, prefs, names, rev):
         mods = (rev is None)
         # build command
@@ -1148,9 +1133,6 @@ class _Darcs:
         return popenRead(self.root, args, prefs, 'darcs_bash')
 
 class _Git:
-    def getFileTemplate(self, prefs, name):
-        return [ (name, 'HEAD'), (name, None) ]
-
     def getCommitTemplate(self, prefs, rev, names):
         # build command
         args = [ prefs.getString('git_bin'), 'show', '--pretty=format:', '--name-status', rev ]

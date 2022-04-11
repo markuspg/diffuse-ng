@@ -30,7 +30,10 @@ Df::Cvs::~Cvs() {}
 
 void Df::Cvs::getCommitTemplate() {}
 
-void Df::Cvs::getFileTemplate() {}
+Df::VcsSupp::FileTemplate Df::Cvs::getFileTemplate(const Preferences &prefs,
+                                                   const std::string &name) {
+  return {{name, "BASE"}, {name, std::nullopt}};
+}
 
 void Df::Cvs::getFolderTemplate() {}
 

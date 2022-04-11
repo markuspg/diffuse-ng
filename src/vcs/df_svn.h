@@ -39,7 +39,8 @@ public:
   ~Svn() override;
 
   void getCommitTemplate() override;
-  void getFileTemplate() override;
+  FileTemplate getFileTemplate(const Preferences &prefs,
+                               const std::string &name) override;
   void getFolderTemplate() override;
   void getRevision() override;
 

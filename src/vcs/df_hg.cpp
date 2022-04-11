@@ -30,7 +30,8 @@ Df::Hg::~Hg() {}
 
 void Df::Hg::getCommitTemplate() {}
 
-void Df::Hg::getFileTemplate() {}
+Df::VcsSupp::FileTemplate Df::Hg::getFileTemplate(const Preferences &prefs,
+                                                  const std::string &name) {}
 
 void Df::Hg::getFolderTemplate() {}
 

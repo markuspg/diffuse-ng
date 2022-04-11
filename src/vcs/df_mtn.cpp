@@ -30,7 +30,8 @@ Df::Mtn::~Mtn() {}
 
 void Df::Mtn::getCommitTemplate() {}
 
-void Df::Mtn::getFileTemplate() {}
+Df::VcsSupp::FileTemplate Df::Mtn::getFileTemplate(const Preferences &prefs,
+                                                   const std::string &name) {}
 
 void Df::Mtn::getFolderTemplate() {}
 

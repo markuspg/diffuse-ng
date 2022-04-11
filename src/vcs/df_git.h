@@ -33,6 +33,9 @@ class Git : public VcsSupp {
 public:
   explicit Git(const std::string &root);
   ~Git() override;
+
+  FileTemplate getFileTemplate(const Preferences &prefs,
+                               const std::string &name) override;
 };
 } // namespace Diffuse
 

@@ -30,7 +30,8 @@ Df::Svn::~Svn() {}
 
 void Df::Svn::getCommitTemplate() {}
 
-void Df::Svn::getFileTemplate() {}
+Df::VcsSupp::FileTemplate Df::Svn::getFileTemplate(const Preferences &prefs,
+                                                   const std::string &name) {}
 
 void Df::Svn::getFolderTemplate() {}
 

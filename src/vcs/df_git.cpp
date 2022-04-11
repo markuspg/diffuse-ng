@@ -27,3 +27,8 @@ namespace Df = Diffuse;
 Df::Git::Git(const std::string &rt) : VcsSupp{rt} {}
 
 Df::Git::~Git() {}
+
+Df::VcsSupp::FileTemplate Df::Git::getFileTemplate(const Preferences &prefs,
+                                                   const std::string &name) {
+  return {{name, "HEAD"}, {name, std::nullopt}};
+}

@@ -30,7 +30,10 @@ Df::Darcs::~Darcs() {}
 
 void Df::Darcs::getCommitTemplate() {}
 
-void Df::Darcs::getFileTemplate() {}
+Df::VcsSupp::FileTemplate Df::Darcs::getFileTemplate(const Preferences &prefs,
+                                                     const std::string &name) {
+  return {{name, ""}, {name, std::nullopt}};
+}
 
 void Df::Darcs::getFolderTemplate() {}
 

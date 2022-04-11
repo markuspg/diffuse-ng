@@ -23,6 +23,8 @@
 #ifndef DF_VCS_SUPP_H
 #define DF_VCS_SUPP_H
 
+#include "../df_preferences.h"
+
 #include <string>
 
 namespace Diffuse {
@@ -40,6 +42,8 @@ namespace Diffuse {
  */
 class VcsSupp {
 public:
+  using FileTemplate =
+      std::vector<std::pair<std::string, std::optional<Glib::ustring>>>;
   /**
    * @brief VcsSupp
    * @param[in] root The path to the root folder of the repository
@@ -55,7 +59,8 @@ public:
    * @brief Indicate which revisions to display for a file when none were
    *   requested explicitly
    */
-  virtual void getFileTemplate() = 0;
+  virtual FileTemplate getFileTemplate(const Preferences &prefs,
+                                       const std::string &name) = 0;
   /**
    * @brief Indicate which file revisions to display for a set of folders
    */
